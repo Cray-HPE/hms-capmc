@@ -1,0 +1,225 @@
+# Copyright 2019-2020 Hewlett Packard Enterprise Development LP
+
+# Tavern test cases for the Cray Advanced Platform Monitoring and Control (CAPMC) get_node_rules API.
+# Author: Mitch Schooler
+# Service: Cray Advanced Platform Monitoring and Control
+
+# HMS test metrics test cases: 15
+# 1. POST /get_node_rules empty payload API response code
+# 2. POST /get_node_rules empty payload API response body
+# 3. POST /get_node_rules invalid payload API response code
+# 4. POST /get_node_rules invalid payload API response body
+# 5. POST /get_node_rules garbage payload API response code
+# 6. POST /get_node_rules garbage payload API response body
+# 7. GET /get_node_rules API response code
+# 8. GET /get_node_rules API response body
+# 9. HEAD /get_node_rules API response code
+# 10. PUT /get_node_rules API response code
+# 11. PUT /get_node_rules API response body
+# 12. DELETE /get_node_rules API response code
+# 13. DELETE /get_node_rules API response body
+# 14. Disabled (CASMPET-1067) - OPTIONS /get_node_rules API response code
+# 15. Disabled (CASMPET-1067) - OPTIONS /get_node_rules API response body
+# 16. PATCH /get_node_rules API response code
+# 17. PATCH /get_node_rules API response body
+---
+test_name: Verify get_node_rules POST method with empty payload
+
+stages:
+  # 1. POST /get_node_rules empty payload API response code
+  # 2. POST /get_node_rules empty payload API response body
+  - name: Get the node rules using POST with an empty payload
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_rules"
+      json: {}
+      method: POST
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      body:
+        e: 0
+        err_msg: ""
+        latency_node_on: !int "{default_latency_node_on:d}"
+        latency_node_off: !int "{default_latency_node_off:d}"
+        latency_node_reinit: !int "{default_latency_node_reinit:d}"
+        max_on_req_count: !int "{default_max_on_req_count:d}"
+        max_off_req_count: !int "{default_max_off_req_count:d}"
+        max_off_time: !int "{default_max_off_time:d}"
+        min_off_time: !int "{default_min_off_time:d}"
+        max_reinit_req_count: !int "{default_max_reinit_req_count:d}"
+
+---
+test_name: Verify get_node_rules POST method with invalid payload
+
+stages:
+  # 3. POST /get_node_rules invalid payload API response code
+  # 4. POST /get_node_rules invalid payload API response body
+  - name: Attempt to get the node rules using POST with an invalid payload
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_rules"
+      json: {"fake_key": "fake_value"}
+      method: POST
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      body:
+        e: 0
+        err_msg: ""
+        latency_node_on: !int "{default_latency_node_on:d}"
+        latency_node_off: !int "{default_latency_node_off:d}"
+        latency_node_reinit: !int "{default_latency_node_reinit:d}"
+        max_on_req_count: !int "{default_max_on_req_count:d}"
+        max_off_req_count: !int "{default_max_off_req_count:d}"
+        max_off_time: !int "{default_max_off_time:d}"
+        min_off_time: !int "{default_min_off_time:d}"
+        max_reinit_req_count: !int "{default_max_reinit_req_count:d}"
+
+---
+test_name: Verify get_node_rules POST method with garbage payload
+
+stages:
+  # 5. POST /get_node_rules garbage payload API response code
+  # 6. POST /get_node_rules garbage payload API response body
+  - name: Attempt to get the node rules using POST with a garbage payload
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_rules"
+      json: {"^*(&*$#%&^@$##^%$&I%": "^%*&$@%^#@%$#*&^#^%&#"}
+      method: POST
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      body:
+        e: 0
+        err_msg: ""
+        latency_node_on: !int "{default_latency_node_on:d}"
+        latency_node_off: !int "{default_latency_node_off:d}"
+        latency_node_reinit: !int "{default_latency_node_reinit:d}"
+        max_on_req_count: !int "{default_max_on_req_count:d}"
+        max_off_req_count: !int "{default_max_off_req_count:d}"
+        max_off_time: !int "{default_max_off_time:d}"
+        min_off_time: !int "{default_min_off_time:d}"
+        max_reinit_req_count: !int "{default_max_reinit_req_count:d}"
+
+---
+test_name: Verify get_node_rules GET method
+
+stages:
+  # 7. GET /get_node_rules API response code
+  # 8. GET /get_node_rules API response body
+  - name: Attempt to get the node rules using GET method
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_rules"
+      method: GET
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      body:
+        e: 0
+        err_msg: ""
+        latency_node_on: !int "{default_latency_node_on:d}"
+        latency_node_off: !int "{default_latency_node_off:d}"
+        latency_node_reinit: !int "{default_latency_node_reinit:d}"
+        max_on_req_count: !int "{default_max_on_req_count:d}"
+        max_off_req_count: !int "{default_max_off_req_count:d}"
+        max_off_time: !int "{default_max_off_time:d}"
+        min_off_time: !int "{default_min_off_time:d}"
+        max_reinit_req_count: !int "{default_max_reinit_req_count:d}"
+
+---
+test_name: Verify invalid get_node_rules HEAD method fails
+
+stages:
+  # 9. HEAD /get_node_rules API response code
+  - name: Attempt to make an API call with an unsupported HEAD method
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_rules"
+      method: HEAD
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+
+---
+test_name: Verify invalid get_node_rules PUT method fails
+
+stages:
+  # 10. PUT /get_node_rules API response code
+  # 11. PUT /get_node_rules API response body
+  - name: Attempt to make an API call with an unsupported PUT method
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_rules"
+      method: PUT
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+      body:
+        e: 405
+        err_msg: "(PUT) Not Allowed"
+
+---
+test_name: Verify invalid get_node_rules DELETE method fails
+
+stages:
+  # 12. DELETE /get_node_rules API response code
+  # 13. DELETE /get_node_rules API response body
+  - name: Attempt to make an API call with an unsupported DELETE method
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_rules"
+      method: DELETE
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+      body:
+        e: 405
+        err_msg: "(DELETE) Not Allowed"
+
+#---
+#test_name: Verify invalid get_node_rules OPTIONS method fails
+#
+#stages:
+#  # 14. Disabled (CASMPET-1067) - OPTIONS /get_node_rules API response code
+#  # 15. Disabled (CASMPET-1067) - OPTIONS /get_node_rules API response body
+#  - name: Attempt to make an API call with an unsupported OPTIONS method
+#    request:
+#      url: "{base_url}/capmc/capmc/v1/get_node_rules"
+#      method: OPTIONS
+#      headers:
+#        Authorization: "Bearer {access_token}"
+#      verify: !bool "{verify}"
+#    response:
+#      status_code: 405
+#      body:
+#        e: 405
+#        err_msg: "(OPTIONS) Not Allowed"
+#
+---
+test_name: Verify invalid get_node_rules PATCH method fails
+
+stages:
+  # 16. PATCH /get_node_rules API response code
+  # 17. PATCH /get_node_rules API response body
+  - name: Attempt to make an API call with an unsupported PATCH method
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_rules"
+      method: PATCH
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+      body:
+        e: 405
+        err_msg: "(PATCH) Not Allowed"

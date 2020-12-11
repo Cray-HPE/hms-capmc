@@ -1,0 +1,573 @@
+# Copyright 2019-2020 Hewlett Packard Enterprise Development LP
+
+# Tavern test cases for the Cray Advanced Platform Monitoring and Control (CAPMC) get_node_status API.
+# Author: Mitch Schooler
+# Service: Cray Advanced Platform Monitoring and Control
+
+# HMS test metrics test cases: 20
+# 1. POST /get_node_status empty payload API response code
+# 2. POST /get_node_status empty payload API response body
+# 3. POST /get_node_status show_all filter API response code
+# 4. POST /get_node_status show_all filter API response body
+# 5. POST /get_node_status show_off filter API response code
+# 6. POST /get_node_status show_off filter API response body
+# 7. POST /get_node_status show_on filter API response code
+# 8. POST /get_node_status show_on filter API response body
+# 9. POST /get_node_status show_halt filter API response code
+# 10. POST /get_node_status show_halt filter API response body
+# 11. POST /get_node_status show_standby filter API response code
+# 12. POST /get_node_status show_standby filter API response body
+# 13. POST /get_node_status show_ready filter API response code
+# 14. POST /get_node_status show_ready filter API response body
+# 15. POST /get_node_status show_diag filter API response code
+# 16. POST /get_node_status show_diag filter API response body
+# 17. POST /get_node_status show_disabled filter API response code
+# 18. POST /get_node_status show_disabled filter API response body
+# 19. POST /get_node_status show_on show_off filters API response code
+# 20. POST /get_node_status show_on show_off filters API response body
+---
+test_name: Verify get_node_status POST method with empty payload
+
+stages:
+  # 1. POST /get_node_status empty payload API response code
+  # 2. POST /get_node_status empty payload API response body
+  - name: Get the state of all nodes
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_status"
+      json: {}
+      method: POST
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      body:
+        $ext:
+          function: tavern.testutils.helpers:validate_pykwalify
+          extra_kwargs:
+            schema:
+              type: map
+              required: True 
+              mapping:
+                "e":
+                  type: int
+                  required: True
+                  enum:
+                    - 0
+                "err_msg":
+                  required: True
+                  type: str
+                  enum:
+                    - ""
+                "on":
+                  type: seq
+                  matching: all
+                  required: False
+                  sequence:
+                    - type: int
+                      unique: True
+                "off":
+                  type: seq
+                  matching: all
+                  required: False 
+                  sequence:
+                    - type: int
+                      unique: True
+                "halt":
+                  type: seq
+                  matching: all
+                  required: False
+                  sequence:
+                    - type: int
+                      unique: True
+                "standby":
+                  type: seq
+                  matching: all
+                  required: False
+                  sequence:
+                    - type: int
+                      unique: True
+                "ready":
+                  type: seq
+                  matching: all
+                  required: False
+                  sequence:
+                    - type: int
+                      unique: True
+                "disabled":
+                  type: seq
+                  matching: all
+                  required: False
+                  sequence:
+                    - type: int
+                      unique: True
+                "flags":
+                  type: map
+                  required: False
+                  mapping:
+                    alert:
+                      type: seq
+                      matching: all
+                      required: False
+                      sequence:
+                        - type: int
+                          unique: True
+
+---
+test_name: Verify get_node_status POST method with 'show_all' filter
+
+stages:
+  # 3. POST /get_node_status show_all filter API response code
+  # 4. POST /get_node_status show_all filter API response body
+  - name: Get nodes in any state
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_status"
+      json: {"filter": "show_all"}
+      method: POST
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      body:
+        $ext:
+          function: tavern.testutils.helpers:validate_pykwalify
+          extra_kwargs:
+            schema:
+              type: map
+              required: True
+              mapping:
+                "e":
+                  type: int
+                  required: True
+                  enum:
+                    - 0
+                "err_msg":
+                  required: True
+                  type: str
+                  enum:
+                    - ""
+                "on":
+                  type: seq
+                  matching: all
+                  required: False
+                  sequence:
+                    - type: int
+                      unique: True
+                "off":
+                  type: seq
+                  matching: all
+                  required: False
+                  sequence:
+                    - type: int
+                      unique: True
+                "halt":
+                  type: seq
+                  matching: all
+                  required: False
+                  sequence:
+                    - type: int
+                      unique: True
+                "standby":
+                  type: seq
+                  matching: all
+                  required: False
+                  sequence:
+                    - type: int
+                      unique: True
+                "ready":
+                  type: seq
+                  matching: all
+                  required: False
+                  sequence:
+                    - type: int
+                      unique: True
+                "disabled":
+                  type: seq
+                  matching: all
+                  required: False
+                  sequence:
+                    - type: int
+                      unique: True
+                "flags":
+                  type: map
+                  required: False
+                  mapping:
+                    alert:
+                      type: seq
+                      matching: all
+                      required: False
+                      sequence:
+                        - type: int
+                          unique: True
+
+---
+test_name: Verify get_node_status POST method with 'show_off' filter
+
+stages:
+  # 5. POST /get_node_status show_off filter API response code
+  # 6. POST /get_node_status show_off filter API response body
+  - name: Get all nodes in the 'off' state
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_status"
+      json: {"filter": "show_off"}
+      method: POST
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      body:
+        $ext:
+          function: tavern.testutils.helpers:validate_content
+          extra_kwargs:
+            comparisons:
+              - jmespath: "length(keys(@))"
+                operator: "lt"
+                expected: 4
+              - jmespath: "length(keys(@))"
+                operator: "gt"
+                expected: 1
+              - jmespath: "contains(keys(@), 'on')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'halt')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'standby')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'ready')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'disabled')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'e')"
+                operator: "eq"
+                expected: True
+              - jmespath: "contains(keys(@), 'err_msg')"
+                operator: "eq"
+                expected: True
+
+---
+test_name: Verify get_node_status POST method with 'show_on' filter
+
+stages:
+  # 7. POST /get_node_status show_on filter API response code
+  # 8. POST /get_node_status show_on filter API response body
+  - name: Get all nodes in the 'on' state
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_status"
+      json: {"filter": "show_on"}
+      method: POST
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      body:
+        $ext:
+          function: tavern.testutils.helpers:validate_content
+          extra_kwargs:
+            comparisons:
+              - jmespath: "length(keys(@))"
+                operator: "lt"
+                expected: 4
+              - jmespath: "length(keys(@))"
+                operator: "gt"
+                expected: 1
+              - jmespath: "contains(keys(@), 'off')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'halt')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'standby')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'ready')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'disabled')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'e')"
+                operator: "eq"
+                expected: True
+              - jmespath: "contains(keys(@), 'err_msg')"
+                operator: "eq"
+                expected: True
+
+---
+test_name: Verify get_node_status POST method with 'show_halt' filter
+
+stages:
+  # 9. POST /get_node_status show_halt filter API response code
+  # 10. POST /get_node_status show_halt filter API response body
+  - name: Get all nodes in the 'halt' state
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_status"
+      json: {"filter": "show_halt"}
+      method: POST
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      body:
+        $ext:
+          function: tavern.testutils.helpers:validate_content
+          extra_kwargs:
+            comparisons:
+              - jmespath: "length(keys(@))"
+                operator: "lt"
+                expected: 4
+              - jmespath: "length(keys(@))"
+                operator: "gt"
+                expected: 1
+              - jmespath: "contains(keys(@), 'on')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'off')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'standby')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'ready')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'disabled')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'e')"
+                operator: "eq"
+                expected: True
+              - jmespath: "contains(keys(@), 'err_msg')"
+                operator: "eq"
+                expected: True
+
+---
+test_name: Verify get_node_status POST method with 'show_standby' filter
+
+stages:
+  # 11. POST /get_node_status show_standby filter API response code
+  # 12. POST /get_node_status show_standby filter API response body
+  - name: Get all nodes in the 'standby' state
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_status"
+      json: {"filter": "show_standby"}
+      method: POST
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      body:
+        $ext:
+          function: tavern.testutils.helpers:validate_content
+          extra_kwargs:
+            comparisons:
+              - jmespath: "length(keys(@))"
+                operator: "lt"
+                expected: 4
+              - jmespath: "length(keys(@))"
+                operator: "gt"
+                expected: 1
+              - jmespath: "contains(keys(@), 'on')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'off')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'halt')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'ready')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'disabled')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'e')"
+                operator: "eq"
+                expected: True
+              - jmespath: "contains(keys(@), 'err_msg')"
+                operator: "eq"
+                expected: True
+
+---
+test_name: Verify get_node_status POST method with 'show_ready' filter
+
+stages:
+  # 13. POST /get_node_status show_ready filter API response code
+  # 14. POST /get_node_status show_ready filter API response body
+  - name: Get all nodes in the 'ready' state
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_status"
+      json: {"filter": "show_ready"}
+      method: POST
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      body:
+        $ext:
+          function: tavern.testutils.helpers:validate_content
+          extra_kwargs:
+            comparisons:
+              - jmespath: "length(keys(@))"
+                operator: "lt"
+                expected: 4
+              - jmespath: "length(keys(@))"
+                operator: "gt"
+                expected: 1
+              - jmespath: "contains(keys(@), 'on')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'off')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'halt')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'standby')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'disabled')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'e')"
+                operator: "eq"
+                expected: True
+              - jmespath: "contains(keys(@), 'err_msg')"
+                operator: "eq"
+                expected: True
+
+---
+test_name: Verify get_node_status POST method with 'show_diag' filter
+
+stages:
+  # 15. POST /get_node_status show_diag filter API response code
+  # 16. POST /get_node_status show_diag filter API response body
+  - name: Get all nodes in the 'diag' state of which there should be none
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_status"
+      json: {"filter": "show_diag"}
+      method: POST
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      body:
+        $ext:
+          function: tavern.testutils.helpers:validate_content
+          extra_kwargs:
+            comparisons:
+              - jmespath: "length(keys(@))"
+                operator: "eq"
+                expected: 2
+              - jmespath: "contains(keys(@), 'e')"
+                operator: "eq"
+                expected: True
+              - jmespath: "contains(keys(@), 'err_msg')"
+                operator: "eq"
+                expected: True
+
+---
+test_name: Verify get_node_status POST method with 'show_disabled' filter
+
+stages:
+  # 17. POST /get_node_status show_disabled filter API response code
+  # 18. POST /get_node_status show_disabled filter API response body
+  - name: Get all nodes in the 'disabled' state of which there should be none
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_status"
+      json: {"filter": "show_disabled"}
+      method: POST
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      body:
+        $ext:
+          function: tavern.testutils.helpers:validate_content
+          extra_kwargs:
+            comparisons:
+              - jmespath: "length(keys(@))"
+                operator: "lt"
+                expected: 4
+              - jmespath: "length(keys(@))"
+                operator: "gt"
+                expected: 1
+              - jmespath: "contains(keys(@), 'on')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'off')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'halt')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'standby')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'ready')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'e')"
+                operator: "eq"
+                expected: True
+              - jmespath: "contains(keys(@), 'err_msg')"
+                operator: "eq"
+                expected: True
+
+---
+test_name: Verify get_node_status POST method with multiple filters
+
+stages:
+  # 19. POST /get_node_status show_on show_off filters API response code
+  # 20. POST /get_node_status show_on show_off filters API response body
+  - name: Get all nodes in the 'on' or 'off' states
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_node_status"
+      json: {"filter": "show_on|show_off"}
+      method: POST
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      body:
+        $ext:
+          function: tavern.testutils.helpers:validate_content
+          extra_kwargs:
+            comparisons:
+              - jmespath: "length(keys(@))"
+                operator: "lt"
+                expected: 5
+              - jmespath: "length(keys(@))"
+                operator: "gt"
+                expected: 1
+              - jmespath: "contains(keys(@), 'halt')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'standby')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'ready')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'disabled')"
+                operator: "eq"
+                expected: False
+              - jmespath: "contains(keys(@), 'e')"
+                operator: "eq"
+                expected: True
+              - jmespath: "contains(keys(@), 'err_msg')"
+                operator: "eq"
+                expected: True

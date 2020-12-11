@@ -1,0 +1,89 @@
+{
+	"e": 0,
+	"err_msg": "",
+	"groups": [
+		{
+			"name": "3_0GiB_NoAccel",
+			"desc": "3_0GiB_NoAccel",
+			"host_limit_max": 850,
+			"host_limit_min": 350,
+			"static": 0,
+			"supply": 900,
+			"powerup": 250,
+			"nids": [
+				1002,
+				1003
+			],
+			"controls": [
+				{
+					"name": "Node Power Control",
+					"desc": "Node Power Control",
+					"max": 850,
+					"min": 350
+				},
+				{
+					"name": "Accelerator0 Power Control",
+					"desc": "Accelerator0 Power Control",
+					"max": 350,
+					"min": 200
+				}
+			]
+		},
+		{
+			"name": "3_256GiB_2667MHz_NoAccel",
+			"desc": "3_256GiB_2667MHz_NoAccel",
+			"host_limit_max": 850,
+			"host_limit_min": 350,
+			"static": 0,
+			"supply": 900,
+			"powerup": 250,
+			"nids": [
+				1004,
+				1005
+			],
+			"controls": [
+				{
+					"name": "Node Power Control",
+					"desc": "Node Power Control",
+					"max": 850,
+					"min": 350
+				},
+				{
+					"name": "Accelerator0 Power Control",
+					"desc": "Accelerator0 Power Control",
+					"max": 350,
+					"min": 200
+				}
+			]
+		},
+		{
+			"name": "3_Intel(R)Xeon(R)Gold5115CPU@2.40GHz_10c_64GiB_2400MHz_NoAccel",
+			"desc": "3_Intel(R)Xeon(R)Gold5115CPU@2.40GHz_10c_64GiB_2400MHz_NoAccel",
+			"host_limit_max": 850,
+			"host_limit_min": 350,
+			"static": 0,
+			"supply": 900,
+			"powerup": 250,
+			"nids": [
+				2,
+				3,
+				4,
+				1
+			],
+			"controls": [
+				{
+					"name": "Node Power Control",
+					"desc": "Node Power Control",
+					"max": 850,
+					"min": 350
+				},
+				{
+					"name": "Accelerator0 Power Control",
+					"desc": "Accelerator0 Power Control",
+					"max": 350,
+					"min": 200
+				}
+			]
+		}
+	]
+}

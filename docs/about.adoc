@@ -1,0 +1,4 @@
+== About this Document
+This document contains reference information about the Cray Advanced
+Platform Monitoring and Control (CAPMC) API.
+

@@ -1,0 +1,10 @@
+extends: default
+
+rules:
+  # don't bother with this rule for Swagger/OpenAPI
+  document-start: disable
+
+  # 80 characters should be enough, but don't fail if a line is longer
+  line-length:
+    max: 80
+    level: warning

@@ -1,0 +1,31 @@
+
+\def\secondpage{
+
+\begin{center}
+\textbf{Revision History}
+    \begin{tabular}{ | l | l | p{4.5in} | }
+        \hline
+        Date & Revision & Summary \\ \hline
+        Jun 2015 & 1.0   & Initial Release \\ \hline
+        Dec 2015 & 1.1   & New features and clarifications matching the SMW-8.0 / CLE-6.0 software release \\ \hline
+        Oct 2016 & 1.2   & Modify 'get\_system\_parameters' API 'ramp\_limited' member data type. \\
+                 &       & Clarify 'node\_status --filter' parameter syntax. \\
+                 &       & Clarify '--nids nidlist' parameter syntax in various CLI interface descriptions. \\
+                 &       & Fix 'node\_on' refs in 'node\_off' example \\
+                 &       & Fix 'json --resource' CLI example \\
+                 &       & Add 'node\_reinit' API call \\
+                 &       & Add MCDRAM, NUMA, SSD API calls \\ \hline
+	Feb 2017 & 1.2.1 & Update to use Intel offical trademark names \\ \hline
+	Jul 2018 & 1.2.2 & Fix 'node\_reinit' API call response description \\ \hline
+        \hline
+    \end{tabular}
+\end{center}
+
+\null\vfill
+\noindent
+\textcopyright 2015-2018 Cray Inc. All Rights Reserved
+}
+\let\maketitlehelper\maketitle
+\def\maketitle{\maketitlehelper \secondpage}
+\definecolor{VerbatimBorderColor}{rgb}{1,1,1}
+

@@ -1,0 +1,92 @@
+{
+   "Components" : [
+      {
+         "Arch" : "X86",
+         "Flag" : "OK",
+         "NID" : 1,
+         "Enabled" : true,
+         "State" : "Ready",
+         "Type" : "Node",
+         "ID" : "x2014c0s27b1n0",
+         "Role" : "Compute",
+         "NetType" : "Sling"
+      },
+      {
+         "Role" : "Compute",
+         "NetType" : "Sling",
+         "ID" : "x2014c0s27b2n0",
+         "State" : "Ready",
+         "Type" : "Node",
+         "Enabled" : true,
+         "NID" : 2,
+         "Flag" : "OK",
+         "Arch" : "X86"
+      },
+      {
+         "Role" : "Compute",
+         "NetType" : "Sling",
+         "ID" : "x5000c1s1b0n0",
+         "Type" : "Node",
+         "State" : "Standby",
+         "Enabled" : true,
+         "NID" : 1004,
+         "Flag" : "OK",
+         "Arch" : "X86"
+      },
+      {
+         "ID" : "x5000c1s0b1n0",
+         "State" : "Off",
+         "Type" : "Node",
+         "Role" : "Compute",
+         "NetType" : "Sling",
+         "Flag" : "OK",
+         "Arch" : "X86",
+         "Enabled" : true,
+         "NID" : 1002
+      },
+      {
+         "Arch" : "X86",
+         "Flag" : "OK",
+         "NID" : 1003,
+         "Enabled" : true,
+         "Type" : "Node",
+         "State" : "Off",
+         "ID" : "x5000c1s0b1n1",
+         "Role" : "Compute",
+         "NetType" : "Sling"
+      },
+      {
+         "Enabled" : true,
+         "NID" : 3,
+         "Flag" : "OK",
+         "Arch" : "X86",
+         "NetType" : "Sling",
+         "Role" : "Compute",
+         "ID" : "x2014c0s27b3n0",
+         "State" : "Ready",
+         "Type" : "Node"
+      },
+      {
+         "NID" : 4,
+         "Enabled" : true,
+         "Arch" : "X86",
+         "Flag" : "OK",
+         "Role" : "Compute",
+         "NetType" : "Sling",
+         "State" : "Ready",
+         "Type" : "Node",
+         "ID" : "x2014c0s27b4n0"
+      },
+      {
+         "Enabled" : true,
+         "NID" : 1005,
+         "Flag" : "OK",
+         "Arch" : "X86",
+         "Role" : "Compute",
+         "NetType" : "Sling",
+         "ID" : "x5000c1s1b0n1",
+         "Type" : "Node",
+         "State" : "Ready"
+      }
+   ]
+}

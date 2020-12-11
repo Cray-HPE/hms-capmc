@@ -1,0 +1,46 @@
+[{
+    "name": "3_ssd_bbt_bbst_Intel(R)Xeon(R)Gold5115CPU@2.40GHz_tdp_10_64_2400_accelerator",
+    "desc": "3_ssd_bbt_bbst_Intel(R)Xeon(R)Gold5115CPU@2.40GHz_tdp_10_64_2400_accelerator",
+    "xnames": [
+        "x2014c0s27b2n0",
+        "x2014c0s27b3n0",
+        "x2014c0s27b4n0",
+        "x2014c0s27b1n0"
+    ]
+},
+{
+    "name": "3_ssd_bbt_bbst_cpuid_tdp_numcores_0_memspeedmhz_accelerator",
+    "desc": "3_ssd_bbt_bbst_cpuid_tdp_numcores_0_memspeedmhz_accelerator",
+    "xnames": [
+        "x5000c1s0b1n0",
+        "x5000c1s0b1n1"
+    ]
+},
+{
+    "name": "3_ssd_bbt_bbst_cpuid_tdp_numcores_256_2667_accelerator",
+    "desc": "3_ssd_bbt_bbst_cpuid_tdp_numcores_256_2667_accelerator",
+    "xnames": [
+        "x5000c1s1b0n0",
+        "x5000c1s1b0n1",
+        "x5000c1s0b0n0",
+        "x5000c1s0b0n1",
+        "x5000c1s1b1n1",
+        "x5000c1s1b1n0"
+    ]
+},
+{
+    "name": "3_ssd_bbt_bbst_cpuid_tdp_64_244_0_accelerator",
+    "desc": "3_ssd_bbt_bbst_cpuid_tdp_64_244_0_accelerator",
+    "xnames": [
+        "x2014c0s29b1n0",
+        "x2014c0s29b2n0",
+        "x2014c0s29b4n0"
+    ]
+},
+{
+    "name": "3_ssd_bbt_bbst_cpuid_tdp_64_244_3200_accelerator",
+    "desc": "3_ssd_bbt_bbst_cpuid_tdp_64_244_3200_accelerator",
+    "xnames": [
+        "x2014c0s29b3n0"
+    ]
+}]
