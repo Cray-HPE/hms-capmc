@@ -1,0 +1,209 @@
+
+== Examples 
+
+The CAPMC node power control APIs implement a simple interface for
+powering off or on nodes and querying node state information.  All power
+control operations operate on newtork identifiers (NIDs).  The CAPMC
+Service uses information from the HMS Hardware State Manager to map NIDs
+to physical node/controller names.  Additionally, the HMS Hardware State
+Manager suppiles the CAPMC service with Redfish information for powering
+off or on nodes and querying node state information.
+
+In the following examples, the CAPMC service is located at
+https://sms-1/apis/capmc.
+
+Use the CAPMC API to perform the following tasks.
+
+=== Power Off Nodes
+
+The CAPMC service enqueues _power off_ operations for the list of node
+NIDs.  The CAPMC service issues Redfish Computer System Reset Action using
+the `ForceOff` ResetType.  This turns the node off immediately (a
+non-graceful shutdown).
+
+[NOTE]
+===============================
+This API call is **asynchronous**.
+
+The return status does not indicate the success or failure to power off
+nodes. The caller can determine node power state by polling node status.
+(See <<get_node_status,Get Node Status>>)
+===============================
+
+
+[source,shell]
+.Power off nodes (NIDs) 244, 256, 288, and 320 (jq formats output).
+----
+$ curl -s -k -d '{ "reason": "", "nids": [ 224, 256, 288, 320 ] }' -H 'Accept: application/json' -H 'Content-type: application-json' https://sms-1/apis/capmc/node_off | jq
+----
+.Output
+----
+{
+  "e": 0,
+  "err_msg": ""
+}
+----
+
+
+////
+TODO If raw HTTP request/response are useful then remove block comment.
+.HTTP Request
+[source,http]
+----
+POST /apis/capmc/node_off HTTP/1.1
+Host: sms-1
+Accept: application/json
+Content-Type: applilcation/json
+Content-Lenth: 48
+
+{"reason":"","nids:[224,256,288,320]}
+----
+
+.HTTP Response
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+Date: Wed, 12 Sep 2018 14:30:00 GMT
+Content-Length: 21
+
+{"e":0,"err_msg":""}
+----
+////
+
+
+=== Power On Nodes
+The CAPMC service enqueues _power on_ operations for the list of node
+NIDs.  The CAPMC service issues Redfish Computer System Reset Action using
+the `On` ResetType.  This turns the node on.  There is no guarantee after
+a successful `On` ResetType that the node PowerState will transition to
+`On`.  Turning a node on starts the boot sequence (POST, BIOS, iPXE, etc.).
+
+[NOTE]
+===============================
+This API call is **asynchronous**.
+
+The return status does not indicate the success or failure to power on
+nodes. The caller can determine node power state by polling node status.
+(See <<get_node_status,Get Node Status>>)
+===============================
+
+[source,shell]
+.Power on nodes (NIDs) 244, 256, 288, and 320
+----
+$ curl -s -k -d '{ "reason": "", "nids": [ 224, 256, 288, 320 ] }' -H 'Accept: application/json' -H 'Content-type: application-json' https://sms-1/apis/capmc/node_on | jq
+
+----
+.Output
+----
+{
+  "e": 0,
+  "err_msg": ""
+}
+----
+
+////
+TODO If raw HTTP request/response are useful then remove block comment.
+.HTTP Request
+[source,http]
+----
+POST /apis/capmc/node_on HTTP/1.1
+Host: sms-1
+Accept: application/json
+Content-Type: applilcation/json
+Content-Lenth: 48
+
+{"reason":"","nids:[224,256,288,320]}
+----
+
+.HTTP Response
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+Date: Wed, 12 Sep 2018 14:30:00 GMT
+Content-Length: 21
+
+{"e":0,"err_msg":""}
+----
+////
+
+
+[[get_node_status]]
+=== Get Node Status
+
+The CAPMC service queries nodes for their Redfish PowerState.  Queries can
+be for the full sytem or a subset as specified by a NID list or status
+filter(s).  Specifying multiple status filters is possible using the `|`
+character to separate filters.  Valid filters are: `show_all`,
+`show_off`, `show_on`, `show_halt`, `show_standby`,
+`show_ready`, `show_diag`, and `show_disabled`.  Currently, all
+filters other than `show_all`, `show_off`, and `show_on` will *not*
+produce any results.  Omitting the filter defaults to `show_all`.
+
+Node status should be queried after asynchronous operations to determine
+if the operation was successful.
+
+[source,shell]
+.Get the status of nodes (NIDs) 244 and 320.
+----
+$ curl -s -k -d '{ "nids": [ 224, 320 ] }' -H 'Accept: application/json' -H 'Content-type: application-json' https://sms-1/apis/capmc/get_node_status | jq
+----
+.Output
+----
+{
+  "e": 0,
+  "err_msg": "",
+  "on": [
+    224,
+    320
+  ]
+}
+----
+
+
+////
+TODO If raw HTTP request/response are useful then remove block comment.
+.HTTP Request
+[source,http]
+----
+POST /apis/capmc/get_node_status HTTP/1.1
+Host: sms-1
+Accept: application/json
+Content-Length: 24
+Content-Type: application/json
+
+{"nids":[224,256,288,320]}
+----
+
+.HTTP Response
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+Date: Wed, 12 Sep 2018 14:30:00 GMT
+Content-Length: 36
+
+{"e":0,"err_msg":"","on":[224,328]}
+----
+////
+[source,shell]
+.Get the status of all nodes
+----
+$ curl -s -k -d '{ }' -H 'Accept: application/json' -H 'Content-type: application-json' https://sms-1/apis/capmc/get_node_status | jq
+----
+.Output
+----
+{
+  "e": 0,
+  "err_msg": "",
+  "on": [
+    224,
+    320
+  ]
+  "off": [
+    256,
+    288
+  ]
+}
+----

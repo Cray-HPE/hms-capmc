@@ -1,0 +1,23 @@
+# Copyright 2020 Hewlett Packard Enterprise Development LP
+
+# Tavern test cases for the Cray Advanced Platform Monitoring and Control (CAPMC) get_xname_status API.
+# Author: Mitch Schooler
+# Service: Cray Advanced Platform Monitoring and Control
+
+# HMS test metrics test cases: 1
+# 1. POST /get_xname_status empty payload API response code
+---
+test_name: Verify get_xname_status POST method with empty payload
+
+stages:
+  # 1. POST /get_xname_status empty payload API response code
+  - name: Get the status of all xnames
+    request:
+      url: "{base_url}/capmc/capmc/v1/get_xname_status"
+      json: {}
+      method: POST
+      headers:
+        Authorization: "Bearer {access_token}"
+      verify: !bool "{verify}"
+    response:
+      status_code: 200

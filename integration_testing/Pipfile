@@ -1,0 +1,11 @@
+[[source]]
+name = "dst-pip-mirror"
+url = "http://dst.us.cray.com/dstpiprepo/simple/"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+
+[requires]
+python_version = "3"

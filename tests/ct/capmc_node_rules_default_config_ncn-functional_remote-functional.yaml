@@ -1,0 +1,12 @@
+name: capmc_node_rules_default_config
+description: Shared CAPMC node_rules default values for CAPMC API tests.
+
+variables:
+  default_latency_node_off: 60
+  default_latency_node_on: 120
+  default_latency_node_reinit: 180
+  default_max_off_req_count: -1
+  default_max_off_time: -1
+  default_max_on_req_count: -1
+  default_max_reinit_req_count: -1
+  default_min_off_time: -1

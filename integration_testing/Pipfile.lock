@@ -1,0 +1,20 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "1f3410abb4af4fa08536c377a486b9648e99786656af234028f0d48b50274b87"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3"
+        },
+        "sources": [
+            {
+                "name": "dst-pip-mirror",
+                "url": "http://dst.us.cray.com/dstpiprepo/simple/",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {},
+    "develop": {}
+}

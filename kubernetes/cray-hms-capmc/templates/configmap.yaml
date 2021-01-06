@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cray-capmc-configuration
+  namespace: services
+data:
+  config.toml: |-
+{{ .Files.Get "files/config.toml" | indent 4 }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: capmc-cacert-info
+data:
+  CA_URI: "{{ .Values.hms_ca_uri }}"
+
