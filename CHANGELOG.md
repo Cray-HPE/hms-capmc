@@ -24,6 +24,14 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+
+## [1.21.0] - 2021-01-14
+
+### Changed
+
+- Updated license file.
+
+
 ## [1.20.0] - 2020-12-11
 
 ### Changed
