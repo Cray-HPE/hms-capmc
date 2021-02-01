@@ -1,6 +1,26 @@
 #!/bin/bash -l
 #
-# Copyright 2020 Hewlett Packard Enterprise Development LP
+# MIT License
+#
+# (C) Copyright [2020-2021] Hewlett Packard Enterprise Development LP
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
 #
 ###############################################################
 #
@@ -16,7 +36,7 @@
 #
 #     DATE STARTED      : 01/22/2020
 #
-#     LAST MODIFIED     : 09/15/2020
+#     LAST MODIFIED     : 02/01/2021
 #
 #     SYNOPSIS
 #       This is a test wrapper for HMS Cray Advanced Platform Monitoring and
@@ -49,6 +69,7 @@
 #       schooler   01/22/2020   initial implementation
 #       schooler   01/27/2020   add capmc_node_rules_default_config file
 #       schooler   09/15/2020   use latest hms_common_file_generator
+#       schooler   02/01/2021   set VERIFY=False for running on PIT nodes
 #
 #     DEPENDENCIES
 #       - hms-pytest wrapper script which is expected to be packaged
@@ -95,8 +116,8 @@ CAPMC_NODE_RULES_DEFAULT_CONFIG_FILE_PATH="/opt/cray/tests/ncn-functional/hms/hm
 CAPMC_TEST_DIR="/opt/cray/tests/ncn-functional/hms/hms-capmc"
 API_TARGET="https://api-gw-service-nmn.local/apis"
 
-# set SSL certificate checking to True for test execution from the NCN
-VERIFY="True"
+# set SSL certificate checking to False for test execution from PIT nodes
+VERIFY="False"
 echo "VERIFY=${VERIFY}"
 
 # set up signal handling

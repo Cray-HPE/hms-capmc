@@ -1,4 +1,24 @@
-# Copyright 2019-2020 Hewlett Packard Enterprise Development LP
+# MIT License
+
+# (C) Copyright [2019-2021] Hewlett Packard Enterprise Development LP
+
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
 
 # Tavern test cases for the Cray Advanced Platform Monitoring and Control (CAPMC) get_node_status API.
 # Author: Mitch Schooler
@@ -41,77 +61,76 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 200
-      body:
-        $ext:
-          function: tavern.testutils.helpers:validate_pykwalify
-          extra_kwargs:
-            schema:
-              type: map
-              required: True 
-              mapping:
-                "e":
-                  type: int
-                  required: True
-                  enum:
-                    - 0
-                "err_msg":
-                  required: True
-                  type: str
-                  enum:
-                    - ""
-                "on":
-                  type: seq
-                  matching: all
-                  required: False
-                  sequence:
-                    - type: int
-                      unique: True
-                "off":
-                  type: seq
-                  matching: all
-                  required: False 
-                  sequence:
-                    - type: int
-                      unique: True
-                "halt":
-                  type: seq
-                  matching: all
-                  required: False
-                  sequence:
-                    - type: int
-                      unique: True
-                "standby":
-                  type: seq
-                  matching: all
-                  required: False
-                  sequence:
-                    - type: int
-                      unique: True
-                "ready":
-                  type: seq
-                  matching: all
-                  required: False
-                  sequence:
-                    - type: int
-                      unique: True
-                "disabled":
-                  type: seq
-                  matching: all
-                  required: False
-                  sequence:
-                    - type: int
-                      unique: True
-                "flags":
-                  type: map
-                  required: False
-                  mapping:
-                    alert:
-                      type: seq
-                      matching: all
-                      required: False
-                      sequence:
-                        - type: int
-                          unique: True
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "on":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "off":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "halt":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "standby":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "ready":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "disabled":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "flags":
+                type: map
+                required: False
+                mapping:
+                  key:
+                    type: seq
+                    matching: all
+                    required: False
+                    sequence:
+                      - type: int
+                        unique: True
 
 ---
 test_name: Verify get_node_status POST method with 'show_all' filter
@@ -129,77 +148,76 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 200
-      body:
-        $ext:
-          function: tavern.testutils.helpers:validate_pykwalify
-          extra_kwargs:
-            schema:
-              type: map
-              required: True
-              mapping:
-                "e":
-                  type: int
-                  required: True
-                  enum:
-                    - 0
-                "err_msg":
-                  required: True
-                  type: str
-                  enum:
-                    - ""
-                "on":
-                  type: seq
-                  matching: all
-                  required: False
-                  sequence:
-                    - type: int
-                      unique: True
-                "off":
-                  type: seq
-                  matching: all
-                  required: False
-                  sequence:
-                    - type: int
-                      unique: True
-                "halt":
-                  type: seq
-                  matching: all
-                  required: False
-                  sequence:
-                    - type: int
-                      unique: True
-                "standby":
-                  type: seq
-                  matching: all
-                  required: False
-                  sequence:
-                    - type: int
-                      unique: True
-                "ready":
-                  type: seq
-                  matching: all
-                  required: False
-                  sequence:
-                    - type: int
-                      unique: True
-                "disabled":
-                  type: seq
-                  matching: all
-                  required: False
-                  sequence:
-                    - type: int
-                      unique: True
-                "flags":
-                  type: map
-                  required: False
-                  mapping:
-                    alert:
-                      type: seq
-                      matching: all
-                      required: False
-                      sequence:
-                        - type: int
-                          unique: True
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "on":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "off":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "halt":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "standby":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "ready":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "disabled":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "flags":
+                type: map
+                required: False
+                mapping:
+                  key:
+                    type: seq
+                    matching: all
+                    required: False
+                    sequence:
+                      - type: int
+                        unique: True
 
 ---
 test_name: Verify get_node_status POST method with 'show_off' filter
@@ -217,38 +235,37 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 200
-      body:
-        $ext:
-          function: tavern.testutils.helpers:validate_content
-          extra_kwargs:
-            comparisons:
-              - jmespath: "length(keys(@))"
-                operator: "lt"
-                expected: 4
-              - jmespath: "length(keys(@))"
-                operator: "gt"
-                expected: 1
-              - jmespath: "contains(keys(@), 'on')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'halt')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'standby')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'ready')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'disabled')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'e')"
-                operator: "eq"
-                expected: True
-              - jmespath: "contains(keys(@), 'err_msg')"
-                operator: "eq"
-                expected: True
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_content
+        extra_kwargs:
+          comparisons:
+            - jmespath: "length(keys(@))"
+              operator: "lt"
+              expected: 4
+            - jmespath: "length(keys(@))"
+              operator: "gt"
+              expected: 1
+            - jmespath: "contains(keys(@), 'on')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'halt')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'standby')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'ready')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'disabled')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'e')"
+              operator: "eq"
+              expected: True
+            - jmespath: "contains(keys(@), 'err_msg')"
+              operator: "eq"
+              expected: True
 
 ---
 test_name: Verify get_node_status POST method with 'show_on' filter
@@ -266,38 +283,37 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 200
-      body:
-        $ext:
-          function: tavern.testutils.helpers:validate_content
-          extra_kwargs:
-            comparisons:
-              - jmespath: "length(keys(@))"
-                operator: "lt"
-                expected: 4
-              - jmespath: "length(keys(@))"
-                operator: "gt"
-                expected: 1
-              - jmespath: "contains(keys(@), 'off')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'halt')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'standby')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'ready')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'disabled')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'e')"
-                operator: "eq"
-                expected: True
-              - jmespath: "contains(keys(@), 'err_msg')"
-                operator: "eq"
-                expected: True
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_content
+        extra_kwargs:
+          comparisons:
+            - jmespath: "length(keys(@))"
+              operator: "lt"
+              expected: 4
+            - jmespath: "length(keys(@))"
+              operator: "gt"
+              expected: 1
+            - jmespath: "contains(keys(@), 'off')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'halt')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'standby')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'ready')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'disabled')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'e')"
+              operator: "eq"
+              expected: True
+            - jmespath: "contains(keys(@), 'err_msg')"
+              operator: "eq"
+              expected: True
 
 ---
 test_name: Verify get_node_status POST method with 'show_halt' filter
@@ -315,38 +331,37 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 200
-      body:
-        $ext:
-          function: tavern.testutils.helpers:validate_content
-          extra_kwargs:
-            comparisons:
-              - jmespath: "length(keys(@))"
-                operator: "lt"
-                expected: 4
-              - jmespath: "length(keys(@))"
-                operator: "gt"
-                expected: 1
-              - jmespath: "contains(keys(@), 'on')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'off')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'standby')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'ready')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'disabled')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'e')"
-                operator: "eq"
-                expected: True
-              - jmespath: "contains(keys(@), 'err_msg')"
-                operator: "eq"
-                expected: True
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_content
+        extra_kwargs:
+          comparisons:
+            - jmespath: "length(keys(@))"
+              operator: "lt"
+              expected: 4
+            - jmespath: "length(keys(@))"
+              operator: "gt"
+              expected: 1
+            - jmespath: "contains(keys(@), 'on')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'off')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'standby')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'ready')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'disabled')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'e')"
+              operator: "eq"
+              expected: True
+            - jmespath: "contains(keys(@), 'err_msg')"
+              operator: "eq"
+              expected: True
 
 ---
 test_name: Verify get_node_status POST method with 'show_standby' filter
@@ -364,38 +379,37 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 200
-      body:
-        $ext:
-          function: tavern.testutils.helpers:validate_content
-          extra_kwargs:
-            comparisons:
-              - jmespath: "length(keys(@))"
-                operator: "lt"
-                expected: 4
-              - jmespath: "length(keys(@))"
-                operator: "gt"
-                expected: 1
-              - jmespath: "contains(keys(@), 'on')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'off')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'halt')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'ready')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'disabled')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'e')"
-                operator: "eq"
-                expected: True
-              - jmespath: "contains(keys(@), 'err_msg')"
-                operator: "eq"
-                expected: True
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_content
+        extra_kwargs:
+          comparisons:
+            - jmespath: "length(keys(@))"
+              operator: "lt"
+              expected: 4
+            - jmespath: "length(keys(@))"
+              operator: "gt"
+              expected: 1
+            - jmespath: "contains(keys(@), 'on')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'off')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'halt')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'ready')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'disabled')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'e')"
+              operator: "eq"
+              expected: True
+            - jmespath: "contains(keys(@), 'err_msg')"
+              operator: "eq"
+              expected: True
 
 ---
 test_name: Verify get_node_status POST method with 'show_ready' filter
@@ -413,38 +427,37 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 200
-      body:
-        $ext:
-          function: tavern.testutils.helpers:validate_content
-          extra_kwargs:
-            comparisons:
-              - jmespath: "length(keys(@))"
-                operator: "lt"
-                expected: 4
-              - jmespath: "length(keys(@))"
-                operator: "gt"
-                expected: 1
-              - jmespath: "contains(keys(@), 'on')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'off')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'halt')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'standby')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'disabled')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'e')"
-                operator: "eq"
-                expected: True
-              - jmespath: "contains(keys(@), 'err_msg')"
-                operator: "eq"
-                expected: True
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_content
+        extra_kwargs:
+          comparisons:
+            - jmespath: "length(keys(@))"
+              operator: "lt"
+              expected: 4
+            - jmespath: "length(keys(@))"
+              operator: "gt"
+              expected: 1
+            - jmespath: "contains(keys(@), 'on')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'off')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'halt')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'standby')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'disabled')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'e')"
+              operator: "eq"
+              expected: True
+            - jmespath: "contains(keys(@), 'err_msg')"
+              operator: "eq"
+              expected: True
 
 ---
 test_name: Verify get_node_status POST method with 'show_diag' filter
@@ -462,20 +475,19 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 200
-      body:
-        $ext:
-          function: tavern.testutils.helpers:validate_content
-          extra_kwargs:
-            comparisons:
-              - jmespath: "length(keys(@))"
-                operator: "eq"
-                expected: 2
-              - jmespath: "contains(keys(@), 'e')"
-                operator: "eq"
-                expected: True
-              - jmespath: "contains(keys(@), 'err_msg')"
-                operator: "eq"
-                expected: True
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_content
+        extra_kwargs:
+          comparisons:
+            - jmespath: "length(keys(@))"
+              operator: "eq"
+              expected: 2
+            - jmespath: "contains(keys(@), 'e')"
+              operator: "eq"
+              expected: True
+            - jmespath: "contains(keys(@), 'err_msg')"
+              operator: "eq"
+              expected: True
 
 ---
 test_name: Verify get_node_status POST method with 'show_disabled' filter
@@ -493,38 +505,37 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 200
-      body:
-        $ext:
-          function: tavern.testutils.helpers:validate_content
-          extra_kwargs:
-            comparisons:
-              - jmespath: "length(keys(@))"
-                operator: "lt"
-                expected: 4
-              - jmespath: "length(keys(@))"
-                operator: "gt"
-                expected: 1
-              - jmespath: "contains(keys(@), 'on')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'off')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'halt')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'standby')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'ready')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'e')"
-                operator: "eq"
-                expected: True
-              - jmespath: "contains(keys(@), 'err_msg')"
-                operator: "eq"
-                expected: True
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_content
+        extra_kwargs:
+          comparisons:
+            - jmespath: "length(keys(@))"
+              operator: "lt"
+              expected: 4
+            - jmespath: "length(keys(@))"
+              operator: "gt"
+              expected: 1
+            - jmespath: "contains(keys(@), 'on')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'off')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'halt')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'standby')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'ready')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'e')"
+              operator: "eq"
+              expected: True
+            - jmespath: "contains(keys(@), 'err_msg')"
+              operator: "eq"
+              expected: True
 
 ---
 test_name: Verify get_node_status POST method with multiple filters
@@ -542,32 +553,31 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 200
-      body:
-        $ext:
-          function: tavern.testutils.helpers:validate_content
-          extra_kwargs:
-            comparisons:
-              - jmespath: "length(keys(@))"
-                operator: "lt"
-                expected: 5
-              - jmespath: "length(keys(@))"
-                operator: "gt"
-                expected: 1
-              - jmespath: "contains(keys(@), 'halt')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'standby')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'ready')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'disabled')"
-                operator: "eq"
-                expected: False
-              - jmespath: "contains(keys(@), 'e')"
-                operator: "eq"
-                expected: True
-              - jmespath: "contains(keys(@), 'err_msg')"
-                operator: "eq"
-                expected: True
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_content
+        extra_kwargs:
+          comparisons:
+            - jmespath: "length(keys(@))"
+              operator: "lt"
+              expected: 5
+            - jmespath: "length(keys(@))"
+              operator: "gt"
+              expected: 1
+            - jmespath: "contains(keys(@), 'halt')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'standby')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'ready')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'disabled')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'e')"
+              operator: "eq"
+              expected: True
+            - jmespath: "contains(keys(@), 'err_msg')"
+              operator: "eq"
+              expected: True
