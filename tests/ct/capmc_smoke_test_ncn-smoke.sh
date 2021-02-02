@@ -1,6 +1,26 @@
 #!/bin/bash -l
 #
-# Copyright 2019-2020 Hewlett Packard Enterprise Development LP
+# MIT License
+#
+# (C) Copyright [2019-2021] Hewlett Packard Enterprise Development LP
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
 #
 ###############################################################
 #
@@ -16,7 +36,7 @@
 #
 #     DATE STARTED      : 04/23/2019
 #
-#     LAST MODIFIED     : 09/15/2020
+#     LAST MODIFIED     : 02/01/2021
 #
 #     SYNOPSIS
 #       This is a smoke test for the HMS CAPMC API that makes basic HTTP
@@ -60,6 +80,8 @@
 #       schooler   07/28/2020   remove get_xname_status test case due
 #                               to execution time limit
 #       schooler   09/15/2020   use latest hms_smoke_test_lib
+#       schooler   02/01/2021   remove get_system_power and get_system_power_details
+#                               test cases that now require SMA to be installed
 #
 #     DEPENDENCIES
 #       - hms_smoke_test_lib_ncn-resources_remote-resources.sh which is
@@ -71,23 +93,19 @@
 #
 ###############################################################
 
-# HMS test metrics test cases: 16
+# HMS test metrics test cases: 12
 # 1. Check cray-capmc pod statuses
 # 2. GET /health API response code
 # 3. GET /liveness API response code
 # 4. GET /readiness API response code
 # 5. GET /get_node_rules API response code
 # 6. GET /get_system_parameters API response code
-# 7. GET /get_system_power API response code
-# 8. GET /get_system_power_details API response code
-# 9. POST /get_node_rules API response code
-# 10. POST /get_node_status API response code
-# 11. POST /get_nid_map API response code
-# 12. POST /get_power_cap API response code
-# 13. POST /get_power_cap_capabilities API response code
-# 14. POST /get_system_parameters API response code
-# 15. POST /get_system_power API response code
-# 16. POST /get_system_power_details API response code
+# 7. POST /get_node_rules API response code
+# 8. POST /get_node_status API response code
+# 9. POST /get_nid_map API response code
+# 10. POST /get_power_cap API response code
+# 11. POST /get_power_cap_capabilities API response code
+# 12. POST /get_system_parameters API response code
 
 # initialize test variables
 TEST_RUN_TIMESTAMP=$(date +"%Y%m%dT%H%M%S")
@@ -124,9 +142,7 @@ function main()
         "apis/capmc/capmc/v1/liveness" \
         "apis/capmc/capmc/v1/readiness" \
         "apis/capmc/capmc/v1/get_node_rules" \
-        "apis/capmc/capmc/v1/get_system_parameters" \
-        "apis/capmc/capmc/v1/get_system_power" \
-        "apis/capmc/capmc/v1/get_system_power_details"
+        "apis/capmc/capmc/v1/get_system_parameters"
     do
         URL=$(url "${URL_ARGS}")
         URL_RET=$?
@@ -147,9 +163,7 @@ function main()
         "apis/capmc/capmc/v1/get_nid_map" \
         "apis/capmc/capmc/v1/get_power_cap" \
         "apis/capmc/capmc/v1/get_power_cap_capabilities" \
-        "apis/capmc/capmc/v1/get_system_parameters" \
-        "apis/capmc/capmc/v1/get_system_power" \
-        "apis/capmc/capmc/v1/get_system_power_details"
+        "apis/capmc/capmc/v1/get_system_parameters"
     do
         URL=$(url "${URL_ARGS}")
         URL_RET=$?
