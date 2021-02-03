@@ -603,6 +603,8 @@ rsc.io/sampler v1.3.0/go.mod h1:T1hPZKmBbMNahiBKFy5HrXp6adAjACjK9JXDnKaTXpA=
 stash.us.cray.com/HMS/hms-base v1.7.3/go.mod h1:2bT2ZeXBgXsrIsAtw0P6ILlTNilgOzzpJ/1NV545Tl0=
 stash.us.cray.com/HMS/hms-base v1.8.1 h1:TcWWe5TgCMfiezcVUABJZjmwztnAZclvmAzogPQkzjg=
 stash.us.cray.com/HMS/hms-base v1.8.1/go.mod h1:2bT2ZeXBgXsrIsAtw0P6ILlTNilgOzzpJ/1NV545Tl0=
+stash.us.cray.com/HMS/hms-base v1.11.1 h1:PKAA2vVxmfRk4AnIkQ8+Y4zdDpJPIfsu41xLDDb3mR4=
+stash.us.cray.com/HMS/hms-base v1.11.1/go.mod h1:2bT2ZeXBgXsrIsAtw0P6ILlTNilgOzzpJ/1NV545Tl0=
 stash.us.cray.com/HMS/hms-certs v1.0.0/go.mod h1:yK/1eoJNbg0eOeChb6afN/jvtsRvEv3rNlU8PVBadtg=
 stash.us.cray.com/HMS/hms-certs v1.0.6 h1:BaoSp33ZcFif2yvhUjBATGw30CCnKyOT/lIFMKble3U=
 stash.us.cray.com/HMS/hms-certs v1.0.6/go.mod h1:C4+YclXkrhQJA3I+Dq+ZaYFtvdwJWNlJgwGF8CSHIB0=
@@ -615,3 +617,5 @@ stash.us.cray.com/HMS/hms-securestorage v1.8.0 h1:5skYCBUzJmHfsqOPrPGyZdgP+pW+1k
 stash.us.cray.com/HMS/hms-securestorage v1.8.0/go.mod h1:/tRNXYwCBvVdbhu6a+i5R3Jftag4x8921qWwA+jo4JA=
 stash.us.cray.com/HMS/hms-smd v1.25.3 h1:snzh5N8D4l00WMN3WopBgKSHQcsWPION2egHgTJLMXo=
 stash.us.cray.com/HMS/hms-smd v1.25.3/go.mod h1:JNfM0ebpnLlduMo6P0Ka6otNoYkWaj0HgGGVr8d/MmI=
+stash.us.cray.com/HMS/hms-smd v1.27.1 h1:VINJOCpXA9Y3uJXrbybzqDJjrM5WPm+XffXWfXT77mg=
+stash.us.cray.com/HMS/hms-smd v1.27.1/go.mod h1:vWcMjstAHmzm4/JhKOlu4QuYam2+7OcbUXyTiDUrm4E=

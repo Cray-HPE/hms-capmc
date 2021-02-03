@@ -25,6 +25,11 @@ Security - in case of vulnerabilities
 -->
 
 
+## [1.22.0] - 2021-02-03
+
+### Changed
+- Updated vendor packages
+
 ## [1.21.0] - 2021-01-14
 
 ### Changed
