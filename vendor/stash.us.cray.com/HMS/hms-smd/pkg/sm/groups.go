@@ -17,6 +17,8 @@ var e = base.NewHMSError("sm", "GenericError")
 
 var ErrGroupBadField = base.NewHMSError("sm",
 	"group or partition field has invalid characters")
+var ErrPartBadName = base.NewHMSError("sm",
+	"Bad partition name. Must be p# or p#.#")
 
 // Normalize group field by lowercasing
 func NormalizeGroupField(f string) string {
@@ -249,8 +251,8 @@ func (p *Partition) Verify() error {
 	}
 	p.verified = true
 
-	if err := VerifyGroupField(p.Name); err != nil {
-		return err
+	if base.GetHMSType(p.Name) != base.Partition {
+		return ErrPartBadName
 	}
 	for _, f := range p.Tags {
 		if err := VerifyGroupField(f); err != nil {

@@ -24,6 +24,11 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.19.13] - 2021-02-02
+
+### Changed
+- Updated vendor packages
+
 ## [1.19.12] - 2020-12-11
 
 ### Changed
