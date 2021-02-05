@@ -24,6 +24,11 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.19.14] - 2021-02-02
+
+### Changed
+- Update Copyright/License
+
 ## [1.19.13] - 2021-02-02
 
 ### Changed
