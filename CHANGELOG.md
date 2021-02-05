@@ -23,9 +23,16 @@ Removed - for now removed features
 Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
+## [1.23.1] - 2021-02-05
+
+### Changed
+
+- Added User-Agent headers to outbound HTTP requests.
+
 ## [1.23.0] - 2021-02-05
 
 ### Changed
+
 - Updated vendor packages and licensing
 
 ## [1.22.0] - 2021-02-03

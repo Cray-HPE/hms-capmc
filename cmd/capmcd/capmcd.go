@@ -67,6 +67,7 @@ type API struct {
 // different versions of the API
 type APIs []API
 
+var serviceName string
 var svc CapmcD
 var hms_ca_uri string
 var rfClientLock sync.RWMutex
@@ -501,6 +502,14 @@ func main() {
 
 	log.SetFlags(log.Lshortfile | log.LstdFlags)
 
+	serviceName,err = base.GetServiceInstanceName()
+	if (err != nil) {
+		serviceName = "CAPMC"
+		log.Printf("WARNING: can't get service/instance name, using: '%s'",
+			serviceName)
+	}
+	log.Printf("Service name/instance: '%s'",serviceName)
+
 	svc.config = loadConfig(configFile)
 
 	// log the hostname of this instance - mostly useful for pod name in
@@ -574,7 +583,7 @@ func main() {
 			hms_certs.ConfigParams.LogInsecureFailover = false
 		}
 	}
-	hms_certs.Init(nil)
+	hms_certs.InitInstance(nil,serviceName)
 
 	log.Printf("CAPMC serivce starting (debug=%v)\n", svc.debug)
 

@@ -55,6 +55,7 @@ var (
 		key:        "capmc-client.key",
 		cacert:     "capmc-cacert.pem",
 	}
+	serviceName string
 )
 
 // Util functions
@@ -184,7 +185,14 @@ func submitRequestRaw(path string, requestJson []byte) (string, error) {
 
 	tr := &http.Transport{TLSClientConfig: tlsConfig}
 	client := &http.Client{Transport: tr}
-	resp, err := client.Post(osconfig.serviceUrl+"/capmc/"+path, "text/json", bytes.NewBuffer(requestJson))
+	req,rerr := http.NewRequest("POST",osconfig.serviceUrl+"/capmc/"+path,bytes.NewBuffer(requestJson))
+	if (rerr != nil) {
+		panic(rerr)
+	}
+	base.SetHTTPUserAgent(req,serviceName)
+	req.Header.Add("Content-Type","text/json")
+
+	resp, err := client.Do(req)
 	if err != nil {
 		panic(err)
 	}
@@ -236,6 +244,10 @@ func main() {
 	if len(os.Args) <= 1 {
 		fmt.Println("TODO: show help")
 		os.Exit(1)
+	}
+	serviceName,err := base.GetServiceInstanceName()
+	if (err != nil) {
+		serviceName = "CAPMC_CLI"
 	}
 	applet, ok := appletMap[os.Args[1]]
 	if !ok {
