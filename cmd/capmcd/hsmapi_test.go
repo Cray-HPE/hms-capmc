@@ -154,7 +154,7 @@ func TestGetRestrictStr(t *testing.T) {
 func NewTestClient(f RoundTripFunc) *hms_certs.HTTPClientPair {
 	hms_certs.ConfigParams.LogInsecureFailover = false
 	rc,_ := makeClient(0,5)
-	rc.InsecureClient = &http.Client{ Transport: RoundTripFunc(f), }
+	rc.InsecureClient.HTTPClient = &http.Client{ Transport: RoundTripFunc(f), }
 	rc.SecureClient = rc.InsecureClient
 	return rc
 }

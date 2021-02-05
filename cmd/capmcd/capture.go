@@ -234,7 +234,8 @@ func capture(req *http.Request) (*http.Response, error) {
 // the real services is also constructed.
 func captureClient(flags clientFlags, timeout time.Duration) *hms_certs.HTTPClientPair {
 	realClient,_ = makeClient((flags|clientInsecure), timeout)
-	realClient.InsecureClient = &http.Client{
+
+	realClient.InsecureClient.HTTPClient = &http.Client{
         Transport: RoundTripFunc(capture),
     }
 	realClient.SecureClient = realClient.InsecureClient

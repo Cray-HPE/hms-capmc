@@ -78,7 +78,7 @@ func replay(req *http.Request) (*http.Response, error) {
 // for given requests without an external connection.
 func replayClient() *hms_certs.HTTPClientPair {
 	rc,_ := makeClient(0,5)
-	rc.InsecureClient = &http.Client{ Transport: RoundTripFunc(replay), }
+	rc.InsecureClient.HTTPClient = &http.Client{ Transport: RoundTripFunc(replay), }
 	rc.SecureClient = rc.InsecureClient
 	return rc
 }
