@@ -36,6 +36,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"stash.us.cray.com/HMS/hms-base"
 	"stash.us.cray.com/HMS/hms-certs/pkg/hms_certs"
 )
 
@@ -227,6 +228,7 @@ func capture(req *http.Request) (*http.Response, error) {
 	var td testData
 	td.SaveReq(req)
 
+	base.SetHTTPUserAgent(req,serviceName)
 	resp, err := realClient.Do(req)
 	captureMutex.Lock()
 	defer captureMutex.Unlock()
