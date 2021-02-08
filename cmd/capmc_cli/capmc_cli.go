@@ -232,6 +232,8 @@ func jsonInput(args []string) {
 }
 
 func main() {
+	var err error
+
 	getConfig()
 
 	appletMap := map[string]func([]string){
@@ -246,7 +248,7 @@ func main() {
 		fmt.Println("TODO: show help")
 		os.Exit(1)
 	}
-	serviceName,err := base.GetServiceInstanceName()
+	serviceName,err = base.GetServiceInstanceName()
 	if (err != nil) {
 		serviceName = "CAPMC_CLI"
 	}
