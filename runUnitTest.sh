@@ -26,6 +26,6 @@
 
 
 # Build the build base image
-docker build -t cray/hms-capmc-build-base -f Dockerfile.build-base .
+docker build --no-cache -t cray/hms-capmc-build-base -f Dockerfile.build-base .
 
-docker build -t cray/hms-capmc-testing -f Dockerfile.testing .
+docker build --no-cache -t cray/hms-capmc-testing -f Dockerfile.testing .
