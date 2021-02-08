@@ -36,6 +36,7 @@ import (
 	"net/http"
 	"os"
 	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
+	"stash.us.cray.com/HMS/hms-base"
 	"strings"
 )
 
