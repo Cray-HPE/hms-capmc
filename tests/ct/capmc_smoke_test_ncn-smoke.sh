@@ -36,7 +36,7 @@
 #
 #     DATE STARTED      : 04/23/2019
 #
-#     LAST MODIFIED     : 01/25/2021
+#     LAST MODIFIED     : 02/10/2021
 #
 #     SYNOPSIS
 #       This is a smoke test for the HMS CAPMC API that makes basic HTTP
@@ -82,6 +82,8 @@
 #       schooler   09/15/2020   use latest hms_smoke_test_lib
 #       schooler   01/25/2021   remove get_system_power and get_system_power_details
 #                               test cases that now require SMA to be installed
+#       schooler   02/10/2021   remove get_power_cap_capabilities test case that is
+#                               also dependent on SMA being installed
 #
 #     DEPENDENCIES
 #       - hms_smoke_test_lib_ncn-resources_remote-resources.sh which is
@@ -93,7 +95,7 @@
 #
 ###############################################################
 
-# HMS test metrics test cases: 12
+# HMS test metrics test cases: 11
 # 1. Check cray-capmc pod statuses
 # 2. GET /health API response code
 # 3. GET /liveness API response code
@@ -104,8 +106,7 @@
 # 8. POST /get_node_status API response code
 # 9. POST /get_nid_map API response code
 # 10. POST /get_power_cap API response code
-# 11. POST /get_power_cap_capabilities API response code
-# 12. POST /get_system_parameters API response code
+# 11. POST /get_system_parameters API response code
 
 # initialize test variables
 TEST_RUN_TIMESTAMP=$(date +"%Y%m%dT%H%M%S")
@@ -162,7 +163,6 @@ function main()
         "apis/capmc/capmc/v1/get_node_status" \
         "apis/capmc/capmc/v1/get_nid_map" \
         "apis/capmc/capmc/v1/get_power_cap" \
-        "apis/capmc/capmc/v1/get_power_cap_capabilities" \
         "apis/capmc/capmc/v1/get_system_parameters"
     do
         URL=$(url "${URL_ARGS}")
