@@ -131,6 +131,13 @@ stages:
                     sequence:
                       - type: int
                         unique: True
+        function: tavern.testutils.helpers:validate_content
+        extra_kwargs:
+          comparisons:
+            # response body should have at least one node status and not only "e" and "err_msg" keys
+            - jmespath: "length(keys(@))"
+              operator: "gt"
+              expected: 2
 
 ---
 test_name: Verify get_node_status POST method with 'show_all' filter
@@ -218,6 +225,13 @@ stages:
                     sequence:
                       - type: int
                         unique: True
+        function: tavern.testutils.helpers:validate_content
+        extra_kwargs:
+          comparisons:
+            # response body should have at least one node status and not only "e" and "err_msg" keys
+            - jmespath: "length(keys(@))"
+              operator: "gt"
+              expected: 2
 
 ---
 test_name: Verify get_node_status POST method with 'show_off' filter
