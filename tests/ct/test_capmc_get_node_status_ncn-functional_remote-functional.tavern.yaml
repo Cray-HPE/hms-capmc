@@ -54,7 +54,7 @@ stages:
   - name: Get the state of all nodes
     request:
       url: "{base_url}/capmc/capmc/v1/get_node_status"
-      json: {}
+      json: {"source": "hsm"}
       method: POST
       headers:
         Authorization: "Bearer {access_token}"
@@ -148,7 +148,7 @@ stages:
   - name: Get nodes in any state
     request:
       url: "{base_url}/capmc/capmc/v1/get_node_status"
-      json: {"filter": "show_all"}
+      json: {"filter": "show_all", "source": "hsm"}
       method: POST
       headers:
         Authorization: "Bearer {access_token}"
