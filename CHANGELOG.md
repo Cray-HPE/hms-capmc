@@ -24,6 +24,11 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.19.15] - 2021-02-11
+
+### Changed
+- Updated CAPMC CT node and xname status tests to fail when no states are returned
+
 ## [1.19.14] - 2021-02-02
 
 ### Changed
