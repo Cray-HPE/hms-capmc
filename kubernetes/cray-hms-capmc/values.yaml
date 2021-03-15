@@ -51,6 +51,13 @@ cray-service:
           path: /capmc/readiness
         initialDelaySeconds: 5
         periodSeconds: 60
+      resources:
+        limits:
+          cpu: "10"
+          memory: 2Gi
+        requests:
+          cpu: "2"
+          memory: 128Mi
       volumeMounts:
         - name: cray-capmc-config-vol
           mountPath: /usr/local/etc/capmc-service/config.toml

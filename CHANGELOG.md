@@ -23,6 +23,12 @@ Removed - for now removed features
 Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
+## [1.23.2] - 2021-03-15
+
+### Changed
+
+- Set CPU resource limits higher than the default
+
 ## [1.23.1] - 2021-02-05
 
 ### Changed
