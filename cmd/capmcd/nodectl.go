@@ -168,7 +168,8 @@ func (d *CapmcD) doNodeOnOffCtrl(w http.ResponseWriter, r *http.Request, command
 		targetedXname = append(targetedXname, v.Hostname)
 	}
 
-	err = d.reserveComponents(targetedXname, command)
+	// Since the target is only nodes, we won't need a new target list
+	_, err = d.reserveComponents(targetedXname, command)
 	defer d.releaseComponents(targetedXname)
 
 	if err != nil {
