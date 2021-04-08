@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.19.17] - 2021-04-07
+
+### Fixed
+
+- Certain cases allowed parentless reservations preventing power operations
+
 ## [1.19.16] - 2021-03-16
 
 ### Changed
