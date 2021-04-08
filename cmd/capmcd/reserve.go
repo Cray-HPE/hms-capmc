@@ -24,9 +24,9 @@
 
 package main
 
-func (d *CapmcD) reserveComponents(xnames []string, cmd string) error {
+func (d *CapmcD) reserveComponents(xnames []string, cmd string) ([]string, error) {
 	if !d.reservationsEnabled {
-		return nil
+		return nil, nil
 	}
 
 	targetMap := make(map[string]bool)
@@ -51,7 +51,7 @@ func (d *CapmcD) reserveComponents(xnames []string, cmd string) error {
 		}
 		descendants, err = d.GenerateXnameDescendantList(squery)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
@@ -66,7 +66,7 @@ func (d *CapmcD) reserveComponents(xnames []string, cmd string) error {
 	}
 
 	err = d.reservation.Aquire(targetedXnames)
-	return err
+	return targetedXnames, err
 }
 
 func (d *CapmcD) releaseComponents(xnames []string) error {

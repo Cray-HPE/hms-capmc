@@ -198,7 +198,9 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 		targetedXname = append(targetedXname, v.Hostname)
 	}
 
-	err := d.reserveComponents(targetedXname, command)
+	// Grab the new list just in case a power off was done on a chassis
+	// or compute module
+	targetedXname, err := d.reserveComponents(targetedXname, command)
 	defer d.releaseComponents(targetedXname)
 
 	if err != nil {
