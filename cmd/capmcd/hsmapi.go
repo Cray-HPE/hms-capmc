@@ -265,7 +265,6 @@ func (d *CapmcD) GetNodes(query HSMQuery) ([]*NodeInfo, error) {
 		components         []*base.Component
 		componentEndpoints []*sm.ComponentEndpoint
 		credentials        map[string]compcreds.CompCredentials
-		err                error
 		cepQuery           HSMQuery
 	)
 
@@ -275,67 +274,93 @@ func (d *CapmcD) GetNodes(query HSMQuery) ([]*NodeInfo, error) {
 		return nil, fmt.Errorf("Connection to the secure store isn't ready. Can not get redfish credentials.")
 	}
 
-	// Form the query parameter string used for the HSM queries
-	restrict := getRestrictStr(query)
+	credentials = make(map[string]compcreds.CompCredentials)
 
-	// TODO: consider using channels so the GETs are done in parallel.
-	// However, with nid queries, the GetComponents() and GetComponentEndpoints()
-	// calls can't be done in parallel because the returned list of components
-	// from HSM is needed to make the query for GetComponentEndpoints().
-	// Either way, GetRedfishEndpoints() can't be done in parallel because the
-	// info from GetComponentEndpoints() is needed to make the query for
-	// GetRedfishEndpoints().  RedfishEndpoints are only needed for BMCUser and
-	// BMCPass.  That call can be removed when the username and password are
-	// moved from HSM to Vault.
-	// In short, GetComponents() and GetComponentEndpoints() calls could still
-	// potentially be done in parallel for xname queries or queries that get
-	// all components
+	clist1 := query.ComponentIDs
 
-	// Get requested Components from HSM
-	components, err = d.GetComponents(restrict)
-	if err != nil {
-		log.Printf("Error requesting components\n")
-		return nil, err
-	}
-	// No components found. Bail
-	if len(components) == 0 {
-		log.Printf("No components returned\n")
-		return []*NodeInfo{}, nil
-	}
-
-	// We'll use the list of components that we got back from our component
-	// query for this next query only when components requested equals
-	// components returned. Otherwise, we just need the list of components
-	// for querying the secure store for redfish credentials.
-	if len(query.ComponentIDs) != len(components) {
-		for _, comp := range components {
-			cepQuery.ComponentIDs = append(cepQuery.ComponentIDs, comp.ID)
+	// If there are too many ComponentIDs in the list, need to call State
+	// Manager in chunks due to limited URL length
+	for len(clist1) > 0 || len(components) == 0 {
+		if len(clist1) > MaxComponentQuery {
+			query.ComponentIDs = clist1[:MaxComponentQuery]
+			clist1 = clist1[MaxComponentQuery:]
+		} else {
+			query.ComponentIDs = clist1
+			// This sets the list to empty, breaking us out of the for loop
+			clist1 = clist1[len(clist1):]
 		}
-		restrict = getRestrictStr(cepQuery)
-	} else {
-		cepQuery = query
-	}
 
-	// Get requested ComponentEndpoinots from HSM
-	componentEndpoints, err = d.GetComponentEndpoints(restrict)
-	if err != nil {
-		log.Printf("Error requesting component endpoints\n")
-		return nil, err
-	}
+		// Form the query parameter string used for the HSM queries
+		restrict := getRestrictStr(query)
 
-	// Use the secure store.
-	// TODO: Consider doing the Vault call in parallel with GetComponentEndpoints()
-	credentials, err = d.ccs.GetCompCreds(cepQuery.ComponentIDs)
-	if err != nil {
-		log.Printf("Error requesting credentials")
-		return nil, err
-	}
+		// Get requested Components from HSM
+		newComponents, err := d.GetComponents(restrict)
+		if err != nil {
+			log.Printf("Error requesting components\n")
+			return nil, err
+		}
+		// No components found. Bail
+		if len(newComponents) == 0 && len(components) == 0 {
+			log.Printf("No components returned\n")
+			return []*NodeInfo{}, nil
+		}
 
-	// NOTE All of the logic below would be better provided via direct
-	// HSM API call. It isn't clear that will ever happen but if it does
-	// most of this code can be removed.
-	// - join Components and ComponentEndpoints by ID/ID
-	// - join ComponentEndpoints and RedfishEndpoints by RedfishEndpointID/ID
+		// Add most recent components to main list
+		components = append(components, newComponents...)
+
+		// We'll use the list of components that we got back from our component
+		// query for this next query only when components requested equals
+		// components returned. Otherwise, we just need the list of components
+		// for querying the secure store for redfish credentials.
+		if len(query.ComponentIDs) != len(newComponents) {
+			for _, comp := range newComponents {
+				cepQuery.ComponentIDs = append(cepQuery.ComponentIDs, comp.ID)
+			}
+		} else {
+			cepQuery = query
+		}
+
+		clist2 := cepQuery.ComponentIDs
+
+		// We may have a new list that is larger than the chunk size depending
+		// on the initial query parameters.
+		for len(clist2) > 0 || len(componentEndpoints) == 0 {
+			if len(clist2) > MaxComponentQuery {
+				cepQuery.ComponentIDs = clist2[:MaxComponentQuery]
+				clist2 = clist2[MaxComponentQuery:]
+			} else {
+				cepQuery.ComponentIDs = clist2
+				// This sets the list to empty, breaking us out of the for loop
+				clist2 = clist2[len(clist2):]
+			}
+
+			restrict = getRestrictStr(cepQuery)
+
+			// Get requested ComponentEndpoinots from HSM
+			newComponentEndpoints, err := d.GetComponentEndpoints(restrict)
+			if err != nil {
+				log.Printf("Error requesting component endpoints\n")
+				return nil, err
+			}
+
+			// Add most recent components to main list
+			componentEndpoints = append(componentEndpoints,
+				newComponentEndpoints...)
+
+			// Use the secure store.
+			// TODO: Consider doing the Vault call in parallel with GetComponentEndpoints()
+			newCredentials, err := d.ccs.GetCompCreds(cepQuery.ComponentIDs)
+			if err != nil {
+				log.Printf("Error requesting credentials")
+				return nil, err
+			}
+
+			// Merge the new credential map with the main credential map
+			for key, val := range newCredentials {
+				credentials[key] = val
+			}
+		}
+	}
 
 	// Make an associative array of NodeInfo indexed by ID (xname)
 	nodeMap := make(map[string]*NodeInfo)
@@ -361,9 +386,8 @@ func (d *CapmcD) GetNodes(query HSMQuery) ([]*NodeInfo, error) {
 		nodeMap[component.ID] = ni
 	}
 
-	// Simulated table "join"
-	// add data from ComponentEndpoint by ID (join) and
-	// add data from RedfishEndpoint by RedfishEndpointID
+	// Add componentEndpoint and credential information to entries in the
+	// nodeMap
 	for _, componentEndpoint := range componentEndpoints {
 		var (
 			ok bool

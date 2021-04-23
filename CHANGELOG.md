@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.19.18] - 2021-04-22
+
+### Fixed
+
+- Chunked calls to HSM due to URL limits
+
 ## [1.19.17] - 2021-04-07
 
 ### Fixed
