@@ -1,4 +1,3 @@
-#
 # MIT License
 #
 # (C) Copyright [2019-2021] Hewlett Packard Enterprise Development LP
@@ -20,11 +19,11 @@
 # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-#
+
 # Dockerfile for building hms-capmc.
 
 # Build base just has the packages installed we need.
-FROM dtr.dev.cray.com/baseos/golang:1.14-alpine3.12 AS build-base
+FROM arti.dev.cray.com/baseos-docker-master-local/golang:1.14-alpine3.12 AS build-base
 
 RUN set -eux \
     && apk update \
@@ -65,7 +64,7 @@ RUN set -ex && go build -v -i -o /usr/local/bin/capmc-service stash.us.cray.com/
 
 ### Final Stage ###
 
-FROM dtr.dev.cray.com/baseos/alpine:3.12
+FROM arti.dev.cray.com/baseos-docker-master-local/alpine:3.12
 LABEL maintainer="Cray, Inc."
 EXPOSE 27777
 STOPSIGNAL SIGTERM

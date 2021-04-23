@@ -23,6 +23,13 @@ Removed - for now removed features
 Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
+
+## [1.23.4] - 2021-04-16
+
+### Changed
+
+- Updated Dockerfiles to pull base images from Artifactory instead of DTR.
+
 ## [1.23.3] - 2021-04-07
 
 ### Fixed
