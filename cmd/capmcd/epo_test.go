@@ -170,6 +170,106 @@ const testQueryMountainComponentState = `
   ]
 }
 `
+const testQueryMountainComponentStatec3c5 = `
+{
+  "Components": [
+    {
+      "ID": "x1000c3",
+      "Type": "Chassis",
+      "State": "On",
+      "Flag": "OK",
+      "Enabled": true,
+      "NetType": "Sling",
+      "Arch": "X86"
+    },
+    {
+      "ID": "x1000c5",
+      "Type": "Chassis",
+      "State": "On",
+      "Flag": "OK",
+      "Enabled": true,
+      "NetType": "Sling",
+      "Arch": "X86"
+    }
+  ]
+}
+`
+
+const testQueryMountainComponentStatec0c6 = `
+{
+  "Components": [
+    {
+      "ID": "x1000c0",
+      "Type": "Chassis",
+      "State": "On",
+      "Flag": "OK",
+      "Enabled": true,
+      "NetType": "Sling",
+      "Arch": "X86"
+    },
+    {
+      "ID": "x1000c6",
+      "Type": "Chassis",
+      "State": "On",
+      "Flag": "OK",
+      "Enabled": true,
+      "NetType": "Sling",
+      "Arch": "X86"
+    }
+  ]
+}
+`
+
+const testQueryMountainComponentStatec1c4 = `
+{
+  "Components": [
+    {
+      "ID": "x1000c1",
+      "Type": "Chassis",
+      "State": "On",
+      "Flag": "OK",
+      "Enabled": true,
+      "NetType": "Sling",
+      "Arch": "X86"
+    },
+    {
+      "ID": "x1000c4",
+      "Type": "Chassis",
+      "State": "On",
+      "Flag": "OK",
+      "Enabled": true,
+      "NetType": "Sling",
+      "Arch": "X86"
+    }
+  ]
+}
+`
+
+const testQueryMountainComponentStatec7c2 = `
+{
+  "Components": [
+    {
+      "ID": "x1000c7",
+      "Type": "Chassis",
+      "State": "On",
+      "Flag": "OK",
+      "Enabled": true,
+      "NetType": "Sling",
+      "Arch": "X86"
+    },
+    {
+      "ID": "x1000c2",
+      "Type": "Chassis",
+      "State": "On",
+      "Flag": "OK",
+      "Enabled": true,
+      "NetType": "Sling",
+      "Arch": "X86"
+    }
+  ]
+}
+`
+
 const testQueryMountainComponentEndpoints = `
 {
   "ComponentEndpoints": [
@@ -449,6 +549,306 @@ const testQueryMountainComponentEndpoints = `
 }
 `
 
+const testQueryMountainComponentEndpointsc3c5 = `
+{
+  "ComponentEndpoints": [
+    {
+      "ID": "x1000c3",
+      "Type": "Chassis",
+      "RedfishType": "Chassis",
+      "RedfishSubtype": "Enclosure",
+      "OdataID": "/redfish/v1/Chassis/Enclosure",
+      "RedfishEndpointID": "x1000c3b0",
+      "RedfishEndpointFQDN": "x1000c3b0",
+      "RedfishURL": "x1000c3b0/redfish/v1/Chassis/Enclosure",
+      "ComponentEndpointType": "ComponentEndpointChassis",
+      "RedfishChassisInfo": {
+        "Name": "Enclosure",
+        "Actions": {
+          "#Chassis.Reset": {
+            "ResetType@Redfish.AllowableValues": [
+              "ForceOff",
+              "On",
+              "Off"
+            ],
+            "@Redfish.ActionInfo": "",
+            "target": "/redfish/v1/Chassis/Enclosure/Actions/Chassis.Reset"
+		  },
+		  "Oem": {
+			"#Chassis.EmergencyPower": {
+			  "ResetType@Redfish.AllowableValues": [
+				"ForceOff"
+			  ],
+			  "target": "/redfish/v1/Chassis/Enclosure/Actions/Oem/Chassis.EmergencyPower",
+			  "@Redfish.ActionInfo": ""
+			}
+		  }
+        }
+      }
+    },
+    {
+      "ID": "x1000c5",
+      "Type": "Chassis",
+      "RedfishType": "Chassis",
+      "RedfishSubtype": "Enclosure",
+      "OdataID": "/redfish/v1/Chassis/Enclosure",
+      "RedfishEndpointID": "x1000c5b0",
+      "RedfishEndpointFQDN": "x1000c5b0",
+      "RedfishURL": "x1000c5b0/redfish/v1/Chassis/Enclosure",
+      "ComponentEndpointType": "ComponentEndpointChassis",
+      "RedfishChassisInfo": {
+        "Name": "Enclosure",
+        "Actions": {
+          "#Chassis.Reset": {
+            "ResetType@Redfish.AllowableValues": [
+              "On",
+              "ForceOff",
+              "Off"
+            ],
+            "@Redfish.ActionInfo": "",
+            "target": "/redfish/v1/Chassis/Enclosure/Actions/Chassis.Reset"
+		  },
+		  "Oem": {
+			"#Chassis.EmergencyPower": {
+			  "ResetType@Redfish.AllowableValues": [
+				"ForceOff"
+			  ],
+			  "target": "/redfish/v1/Chassis/Enclosure/Actions/Oem/Chassis.EmergencyPower",
+			  "@Redfish.ActionInfo": ""
+			}
+		  }
+        }
+      }
+    }
+  ]
+}
+`
+
+const testQueryMountainComponentEndpointsc0c6 = `
+{
+  "ComponentEndpoints": [
+    {
+      "ID": "x1000c0",
+      "Type": "Chassis",
+      "RedfishType": "Chassis",
+      "RedfishSubtype": "Enclosure",
+      "OdataID": "/redfish/v1/Chassis/Enclosure",
+      "RedfishEndpointID": "x1000c0b0",
+      "RedfishEndpointFQDN": "x1000c0b0",
+      "RedfishURL": "x1000c0b0/redfish/v1/Chassis/Enclosure",
+      "ComponentEndpointType": "ComponentEndpointChassis",
+      "RedfishChassisInfo": {
+        "Name": "Enclosure",
+        "Actions": {
+          "#Chassis.Reset": {
+            "ResetType@Redfish.AllowableValues": [
+              "ForceOff",
+              "On",
+              "Off"
+            ],
+            "@Redfish.ActionInfo": "",
+            "target": "/redfish/v1/Chassis/Enclosure/Actions/Chassis.Reset"
+		  },
+		  "Oem": {
+			"#Chassis.EmergencyPower": {
+			  "ResetType@Redfish.AllowableValues": [
+				"ForceOff"
+			  ],
+			  "target": "/redfish/v1/Chassis/Enclosure/Actions/Oem/Chassis.EmergencyPower",
+			  "@Redfish.ActionInfo": ""
+			}
+		  }
+        }
+      }
+    },
+    {
+      "ID": "x1000c6",
+      "Type": "Chassis",
+      "RedfishType": "Chassis",
+      "RedfishSubtype": "Enclosure",
+      "OdataID": "/redfish/v1/Chassis/Enclosure",
+      "RedfishEndpointID": "x1000c6b0",
+      "RedfishEndpointFQDN": "x1000c6b0",
+      "RedfishURL": "x1000c6b0/redfish/v1/Chassis/Enclosure",
+      "ComponentEndpointType": "ComponentEndpointChassis",
+      "RedfishChassisInfo": {
+        "Name": "Enclosure",
+        "Actions": {
+          "#Chassis.Reset": {
+            "ResetType@Redfish.AllowableValues": [
+              "On",
+              "ForceOff",
+              "Off"
+            ],
+            "@Redfish.ActionInfo": "",
+            "target": "/redfish/v1/Chassis/Enclosure/Actions/Chassis.Reset"
+		  },
+		  "Oem": {
+			"#Chassis.EmergencyPower": {
+			  "ResetType@Redfish.AllowableValues": [
+				"ForceOff"
+			  ],
+			  "target": "/redfish/v1/Chassis/Enclosure/Actions/Oem/Chassis.EmergencyPower",
+			  "@Redfish.ActionInfo": ""
+			}
+		  }
+        }
+      }
+    }
+  ]
+}
+`
+
+const testQueryMountainComponentEndpointsc1c4 = `
+{
+  "ComponentEndpoints": [
+    {
+      "ID": "x1000c1",
+      "Type": "Chassis",
+      "RedfishType": "Chassis",
+      "RedfishSubtype": "Enclosure",
+      "OdataID": "/redfish/v1/Chassis/Enclosure",
+      "RedfishEndpointID": "x1000c1b0",
+      "RedfishEndpointFQDN": "x1000c1b0",
+      "RedfishURL": "x1000c1b0/redfish/v1/Chassis/Enclosure",
+      "ComponentEndpointType": "ComponentEndpointChassis",
+      "RedfishChassisInfo": {
+        "Name": "Enclosure",
+        "Actions": {
+          "#Chassis.Reset": {
+            "ResetType@Redfish.AllowableValues": [
+              "ForceOff",
+              "On",
+              "Off"
+            ],
+            "@Redfish.ActionInfo": "",
+            "target": "/redfish/v1/Chassis/Enclosure/Actions/Chassis.Reset"
+		  },
+		  "Oem": {
+			"#Chassis.EmergencyPower": {
+			  "ResetType@Redfish.AllowableValues": [
+				"ForceOff"
+			  ],
+			  "target": "/redfish/v1/Chassis/Enclosure/Actions/Oem/Chassis.EmergencyPower",
+			  "@Redfish.ActionInfo": ""
+			}
+		  }
+        }
+      }
+    },
+    {
+      "ID": "x1000c4",
+      "Type": "Chassis",
+      "RedfishType": "Chassis",
+      "RedfishSubtype": "Enclosure",
+      "OdataID": "/redfish/v1/Chassis/Enclosure",
+      "RedfishEndpointID": "x1000c4b0",
+      "RedfishEndpointFQDN": "x1000c4b0",
+      "RedfishURL": "x1000c4b0/redfish/v1/Chassis/Enclosure",
+      "ComponentEndpointType": "ComponentEndpointChassis",
+      "RedfishChassisInfo": {
+        "Name": "Enclosure",
+        "Actions": {
+          "#Chassis.Reset": {
+            "ResetType@Redfish.AllowableValues": [
+              "On",
+              "ForceOff",
+              "Off"
+            ],
+            "@Redfish.ActionInfo": "",
+            "target": "/redfish/v1/Chassis/Enclosure/Actions/Chassis.Reset"
+		  },
+		  "Oem": {
+			"#Chassis.EmergencyPower": {
+			  "ResetType@Redfish.AllowableValues": [
+				"ForceOff"
+			  ],
+			  "target": "/redfish/v1/Chassis/Enclosure/Actions/Oem/Chassis.EmergencyPower",
+			  "@Redfish.ActionInfo": ""
+			}
+		  }
+        }
+      }
+    }
+  ]
+}
+`
+
+const testQueryMountainComponentEndpointsc7c2 = `
+{
+  "ComponentEndpoints": [
+    {
+      "ID": "x1000c7",
+      "Type": "Chassis",
+      "RedfishType": "Chassis",
+      "RedfishSubtype": "Enclosure",
+      "OdataID": "/redfish/v1/Chassis/Enclosure",
+      "RedfishEndpointID": "x1000c7b0",
+      "RedfishEndpointFQDN": "x1000c7b0",
+      "RedfishURL": "x1000c7b0/redfish/v1/Chassis/Enclosure",
+      "ComponentEndpointType": "ComponentEndpointChassis",
+      "RedfishChassisInfo": {
+        "Name": "Enclosure",
+        "Actions": {
+          "#Chassis.Reset": {
+            "ResetType@Redfish.AllowableValues": [
+              "ForceOff",
+              "On",
+              "Off"
+            ],
+            "@Redfish.ActionInfo": "",
+            "target": "/redfish/v1/Chassis/Enclosure/Actions/Chassis.Reset"
+		  },
+		  "Oem": {
+			"#Chassis.EmergencyPower": {
+			  "ResetType@Redfish.AllowableValues": [
+				"ForceOff"
+			  ],
+			  "target": "/redfish/v1/Chassis/Enclosure/Actions/Oem/Chassis.EmergencyPower",
+			  "@Redfish.ActionInfo": ""
+			}
+		  }
+        }
+      }
+    },
+    {
+      "ID": "x1000c2",
+      "Type": "Chassis",
+      "RedfishType": "Chassis",
+      "RedfishSubtype": "Enclosure",
+      "OdataID": "/redfish/v1/Chassis/Enclosure",
+      "RedfishEndpointID": "x1000c2b0",
+      "RedfishEndpointFQDN": "x1000c2b0",
+      "RedfishURL": "x1000c2b0/redfish/v1/Chassis/Enclosure",
+      "ComponentEndpointType": "ComponentEndpointChassis",
+      "RedfishChassisInfo": {
+        "Name": "Enclosure",
+        "Actions": {
+          "#Chassis.Reset": {
+            "ResetType@Redfish.AllowableValues": [
+              "On",
+              "ForceOff",
+              "Off"
+            ],
+            "@Redfish.ActionInfo": "",
+            "target": "/redfish/v1/Chassis/Enclosure/Actions/Chassis.Reset"
+		  },
+		  "Oem": {
+			"#Chassis.EmergencyPower": {
+			  "ResetType@Redfish.AllowableValues": [
+				"ForceOff"
+			  ],
+			  "target": "/redfish/v1/Chassis/Enclosure/Actions/Oem/Chassis.EmergencyPower",
+			  "@Redfish.ActionInfo": ""
+			}
+		  }
+        }
+      }
+    }
+  ]
+}
+`
+
 const testQueryMountainRedfishEndpoints = `
 {
   "RedfishEndpoints": [
@@ -596,10 +996,58 @@ func EPORTTestFunc() RoundTripFunc {
 				Body:       ioutil.NopCloser(bytes.NewBufferString(testQueryMountainComponentState)),
 				Header:     make(http.Header),
 			}, nil
+		case "http://localhost:27779/State/Components?id=x1000c3&id=x1000c5":
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(testQueryMountainComponentStatec3c5)),
+				Header:     make(http.Header),
+			}, nil
+		case "http://localhost:27779/State/Components?id=x1000c0&id=x1000c6":
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(testQueryMountainComponentStatec0c6)),
+				Header:     make(http.Header),
+			}, nil
+		case "http://localhost:27779/State/Components?id=x1000c1&id=x1000c4":
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(testQueryMountainComponentStatec1c4)),
+				Header:     make(http.Header),
+			}, nil
+		case "http://localhost:27779/State/Components?id=x1000c7&id=x1000c2":
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(testQueryMountainComponentStatec7c2)),
+				Header:     make(http.Header),
+			}, nil
 		case "http://localhost:27779/Inventory/ComponentEndpoints?id=x1000c3&id=x1000c5&id=x1000c0&id=x1000c6&id=x1000c1&id=x1000c4&id=x1000c7&id=x1000c2":
 			return &http.Response{
 				StatusCode: 200,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(testQueryMountainComponentEndpoints)),
+				Header:     make(http.Header),
+			}, nil
+		case "http://localhost:27779/Inventory/ComponentEndpoints?id=x1000c3&id=x1000c5":
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(testQueryMountainComponentEndpointsc3c5)),
+				Header:     make(http.Header),
+			}, nil
+		case "http://localhost:27779/Inventory/ComponentEndpoints?id=x1000c0&id=x1000c6":
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(testQueryMountainComponentEndpointsc0c6)),
+				Header:     make(http.Header),
+			}, nil
+		case "http://localhost:27779/Inventory/ComponentEndpoints?id=x1000c1&id=x1000c4":
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(testQueryMountainComponentEndpointsc1c4)),
+				Header:     make(http.Header),
+			}, nil
+		case "http://localhost:27779/Inventory/ComponentEndpoints?id=x1000c7&id=x1000c2":
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(testQueryMountainComponentEndpointsc7c2)),
 				Header:     make(http.Header),
 			}, nil
 		case "http://localhost:27779/Inventory/RedfishEndpoints?id=x1000c3b0&id=x1000c5b0&id=x1000c7b0&id=x1000c2b0&id=x1000c0b0&id=x1000c6b0&id=x1000c1b0&id=x1000c4b0":
@@ -618,7 +1066,7 @@ func EPORTTestFunc() RoundTripFunc {
 			"https://x1000c7b0/redfish/v1/Chassis/Enclosure/Actions/Oem/Chassis.EmergencyPower":
 			return &http.Response{
 				StatusCode: 200,
-				Body:       ioutil.NopCloser(bytes.NewBufferString(testQueryMountainRedfishEndpoints)),
+				Body:       ioutil.NopCloser(bytes.NewBufferString("")),
 				Header:     make(http.Header),
 			}, nil
 		default:
@@ -764,6 +1212,123 @@ var ssData = []sstorage.MockLookup{
 func TestCapmcDdoEmergencyPowerOff(t *testing.T) {
 	var tSvc CapmcD
 	var err error
+	tSvc.hsmURL, err = url.Parse("http://localhost:27779")
+	if err != nil {
+		t.Fatal(err)
+	}
+	testClient := NewTestClient(EPORTTestFunc())
+	tSvc.rfClient = testClient
+	tSvc.smClient = testClient
+	tSvc.config = loadConfig("")
+	ss, adapter := sstorage.NewMockAdapter()
+	ccs := compcreds.NewCompCredStore("secret/hms-cred", ss)
+	tSvc.ss = ss
+	tSvc.ccs = ccs
+
+	handler := http.HandlerFunc(tSvc.doEmergencyPowerOff)
+
+	tests := []struct {
+		name     string
+		method   string
+		body     io.Reader
+		code     int
+		expected string
+	}{
+		{
+			"Get",
+			http.MethodGet,
+			nil,
+			http.StatusMethodNotAllowed,
+			GetNotAllowedJSON + "\n",
+		},
+		{
+			"Put",
+			http.MethodPut,
+			nil,
+			http.StatusMethodNotAllowed,
+			PutNotAllowedJSON + "\n",
+		},
+		{
+			"Delete",
+			http.MethodDelete,
+			nil,
+			http.StatusMethodNotAllowed,
+			DeleteNotAllowedJSON + "\n",
+		},
+		{
+			"Connect",
+			http.MethodConnect,
+			nil,
+			http.StatusMethodNotAllowed,
+			ConnectNotAllowedJSON + "\n",
+		},
+		{
+			"Post empty EOF",
+			http.MethodPost,
+			bytes.NewBufferString(""),
+			http.StatusBadRequest,
+			NoRequestJSON + "\n",
+		},
+		{
+			"Post empty body",
+			http.MethodPost,
+			bytes.NewBuffer(json.RawMessage(`{}`)),
+			http.StatusBadRequest,
+			MissingXnameJSON + "\n",
+		},
+		{
+			"Post unexpected end of body",
+			http.MethodPost,
+			bytes.NewBuffer(json.RawMessage(`{"xnames":["x0c0"]`)),
+			http.StatusBadRequest,
+			UnexpectedEOFJSON + "\n",
+		},
+		{
+			"Post missing start of body",
+			http.MethodPost,
+			bytes.NewBuffer(json.RawMessage(`"xnames":["x0c0"]}`)),
+			http.StatusBadRequest,
+			XnameControlUnmarshJSON + "\n",
+		},
+		{
+			"Post valid cabinet",
+			http.MethodPost,
+			bytes.NewBuffer(json.RawMessage(`{"xnames":["x1000"]}`)),
+			http.StatusOK,
+			SuccessJSON + "\n",
+		},
+	}
+	adapter.LookupData = ssData
+	for _, tt := range tests {
+		adapter.LookupNum = 0
+		t.Run(tt.name, func(t *testing.T) {
+			req, err := http.NewRequest(tt.method, capmc.EmergencyPowerOff, tt.body)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			rr := httptest.NewRecorder()
+			handler.ServeHTTP(rr, req)
+
+			if tt.code != rr.Code {
+				t.Errorf("handler returned wrong status code: want %v but got %v",
+					tt.code, rr.Code)
+			}
+
+			if tt.expected != rr.Body.String() {
+				t.Errorf("handler returned unexpected body: want '%v' but got '%v'",
+					tt.expected, rr.Body.String())
+			}
+		})
+	}
+}
+
+func TestCapmcDdoEmergencyPowerOffChunks(t *testing.T) {
+	var tSvc CapmcD
+	var err error
+	// This will cause CAPMC to make 4 HSM calls for the 8 chassis instead of
+	// a single call.
+	MaxComponentQuery = 2
 	tSvc.hsmURL, err = url.Parse("http://localhost:27779")
 	if err != nil {
 		t.Fatal(err)
