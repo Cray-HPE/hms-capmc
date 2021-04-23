@@ -101,6 +101,10 @@ const DefaultHysteresis = -15 * time.Second
 // type RedfishResetType string // should actually come from common source
 // type BmcCmdToActionResetType map[string][]RedfishResetType
 
+// MaxComponentQuery is the maximum number of components that we allow to be
+// used in a query parameter when talking to HSM.
+var MaxComponentQuery = 2048
+
 // BmcCmdToActionResetTypeMap maps internal CAPMC BMC commands to the
 // corresponding Redfish ResetType.
 type BmcCmdToActionResetTypeMap map[string][]string
