@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.23.6] - 2021-05-04
+
+### Changed
+
+- Updated docker-compose files to pull images from Artifactory instead of DTR.
+
 ## [1.23.5] - 2021-04-22
 
 ### Fixed
