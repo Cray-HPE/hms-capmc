@@ -1,12 +1,12 @@
 version: '3'
 services:
   hms-postgresql:
-    image: dtr.dev.cray.com:443/cray/hms-postgresql
+    image: arti.dev.cray.com/csm-docker-master-local/hms-postgresql:latest
     hostname: hms-postgresql
     ports:
       - "5432:5432"
   hms-pmdb-db-util:
-    image: dtr.dev.cray.com:443/cray/hms-postgresql-util
+    image: arti.dev.cray.com/sma-docker-master-local/hms-postgresql-util:latest
     hostname: hms-postgresql-util
     depends_on:
       - hms-postgresql
