@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.24.0] - 2021-06-07
+
+## Changed
+
+- Created release branch for CSM 1.1
+
 ## [1.23.6] - 2021-05-04
 
 ### Changed
