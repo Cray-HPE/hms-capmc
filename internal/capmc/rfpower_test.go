@@ -85,43 +85,173 @@ var (
 			LimitInWatts:   &threeHundred,
 		},
 	}
+	rfErrorComp = HpeError{
+		Code:    "iLO.0.10.ExtendedInfo",
+		Message: "See @Message.ExtendedInfo for more information.",
+		ExtendedInfo: []HpeMessageExtendedInfo{
+			{
+				MessageId: "iLO.2.14.LicenseKeyRequired",
+			},
+		},
+	}
+	rfHpeActualPowerComp = HpeActualPowerLimits{
+		PowerLimitInWatts: 3500,
+		ZoneNumber:        0,
+	}
+	rfHpePowerLimitRangeComp = HpePowerLimitRanges{
+		MaximumPowerLimit: 3750,
+		MinimumPowerLimit: 3250,
+		ZoneNumber:        0,
+	}
+	rfHpePowerLimitComp = HpePowerLimits{
+		PowerLimitInWatts: 3500,
+		ZoneNumber:        0,
+	}
+	rfHpeConfigurePowerLimitComp = HpeConfigurePowerLimit{
+		PowerLimits: []HpePowerLimits{
+			{
+				PowerLimitInWatts: 3500,
+				ZoneNumber:        0,
+			},
+		},
+	}
 )
 
+const HpeErrorData = `{"error":{"code":"iLO.0.10.ExtendedInfo","message":"See @Message.ExtendedInfo for more information.","@Message.ExtendedInfo":[{"MessageId":"iLO.2.14.LicenseKeyRequired"}]}}`
+const HpePowerLimitData = `{"ActualPowerLimits":[{"PowerLimitInWatts":3500,"ZoneNumber":0}],"PowerLimitRanges":[{"MaximumPowerLimit":3750,"MinimumPowerLimit":3250,"ZoneNumber":0}],"PowerLimits":[{"PowerLimitInWatts":3500,"ZoneNumber":0}]}`
+const HpeConfigurePowerLimitData = `{"PowerLimits":[{"PowerLimitInWatts":3500,"ZoneNumber":0}]}`
+
 func TestMarshalRFStruct(t *testing.T) {
-	var rfPower Power
+	t.Run("Cray Power Control", func(t *testing.T) {
+		var rfPower Power
+		rfPower.PowerCtl = append(rfPower.PowerCtl, rfPCNode)
+		rfPower.PowerCtl = append(rfPower.PowerCtl, rfPCAccel)
 
-	rfPower.PowerCtl = append(rfPower.PowerCtl, rfPCNode)
-	rfPower.PowerCtl = append(rfPower.PowerCtl, rfPCAccel)
+		body, err := json.Marshal(rfPower)
+		if err != nil {
+			t.Fatal("Failed to marshal Power structure")
+		}
 
-	body, err := json.Marshal(rfPower)
-	if err != nil {
-		t.Fatal("Nope")
-	}
+		if string(body) != powerData {
+			t.Errorf("Marshalled structure does not match:\ngot  %s\nwant %s",
+				string(body), powerData)
+		}
+	})
 
-	if string(body) != powerData {
-		t.Errorf("Marshalled structure does not match:\ngot  %s\nwant %s",
-			string(body), powerData)
-	}
+	t.Run("Hpe Power Control Error", func(t *testing.T) {
+		var rfHpePowerError Power
+		rfHpePowerError.Error = &rfErrorComp
+
+		body, err := json.Marshal(rfHpePowerError)
+		if err != nil {
+			t.Fatal("Failed to marshal Hpe Power Error structure")
+		}
+
+		if string(body) != HpeErrorData {
+			t.Errorf("Marshalled structure does not match:\ngot  %s\nwant %s",
+				string(body), HpeErrorData)
+		}
+	})
+
+	t.Run("Hpe Power Control", func(t *testing.T) {
+		var rfHpePower Power
+		rfHpePower.ActualPowerLimits = append(rfHpePower.ActualPowerLimits, rfHpeActualPowerComp)
+		rfHpePower.PowerLimitRanges = append(rfHpePower.PowerLimitRanges, rfHpePowerLimitRangeComp)
+		rfHpePower.PowerLimits = append(rfHpePower.PowerLimits, rfHpePowerLimitComp)
+
+		body, err := json.Marshal(rfHpePower)
+		if err != nil {
+			t.Fatal("Failed to marshal Hpe Power structure")
+		}
+
+		if string(body) != HpePowerLimitData {
+			t.Errorf("Marshalled structure does not match:\ngot  %s\nwant %s",
+				string(body), HpePowerLimitData)
+		}
+	})
+	t.Run("Hpe Configure Power Control", func(t *testing.T) {
+		var rfHpeConfigPowerLimit HpeConfigurePowerLimit
+		rfHpeConfigPowerLimit = rfHpeConfigurePowerLimitComp
+
+		body, err := json.Marshal(rfHpeConfigPowerLimit)
+		if err != nil {
+			t.Fatal("Failed to marshal Hpe Configure Power structure")
+		}
+
+		if string(body) != HpeConfigurePowerLimitData {
+			t.Errorf("Marshalled structure does not match:\ngot  %s\nwant %s",
+				string(body), HpeConfigurePowerLimitData)
+		}
+	})
 }
 
 func TestUnMarshalRFStruct(t *testing.T) {
-	var (
-		rfData  Power
-		rfPower Power
-	)
-
-	err := json.Unmarshal([]byte(powerData), &rfData)
-	if err != nil {
-		t.Fatal("Nope", err.Error())
-	}
-
-	rfPower.PowerCtl = append(rfPower.PowerCtl, rfPCNode)
-	rfPower.PowerCtl = append(rfPower.PowerCtl, rfPCAccel)
-
-	for idx, comp := range rfPower.PowerCtl {
-		if !reflect.DeepEqual(rfData.PowerCtl[idx], comp) {
-			t.Errorf("Unmarshalled structure does not match:\ngot  %v\nwant %v",
-				rfData, rfPower)
+	t.Run("Cray Power Control", func(t *testing.T) {
+		var rfData Power
+		var rfPower Power
+		err := json.Unmarshal([]byte(powerData), &rfData)
+		if err != nil {
+			t.Fatal("Failed to unmarshal PowerControl json", err.Error())
 		}
-	}
+
+		rfPower.PowerCtl = append(rfPower.PowerCtl, rfPCNode)
+		rfPower.PowerCtl = append(rfPower.PowerCtl, rfPCAccel)
+
+		for idx, comp := range rfPower.PowerCtl {
+			if !reflect.DeepEqual(rfData.PowerCtl[idx], comp) {
+				t.Errorf("Unmarshalled PowerControl does not match:\ngot  %v\nwant %v",
+					rfData, rfPower)
+			}
+		}
+	})
+
+	t.Run("Hpe Power Control Error", func(t *testing.T) {
+		var rfHpeErrorData Power
+		err := json.Unmarshal([]byte(HpeErrorData), &rfHpeErrorData)
+		if err != nil {
+			t.Fatal("Failed to unmarshal HpeError json", err.Error())
+		}
+
+		if rfHpeErrorData.Error == nil {
+			t.Errorf("Unmarshalled Error does not contain a valid error")
+		} else if !reflect.DeepEqual(*rfHpeErrorData.Error, rfErrorComp) {
+			t.Errorf("Unmarshalled Error does not match:\ngot  %v\nwant %v",
+				rfHpeErrorData.Error, rfErrorComp)
+		}
+	})
+
+	t.Run("Hpe Power Control", func(t *testing.T) {
+		var rfHpePowerLimitData Power
+		err := json.Unmarshal([]byte(HpePowerLimitData), &rfHpePowerLimitData)
+		if err != nil {
+			t.Fatal("Failed to unmarshal Hpe PowerLimit json", err.Error())
+		}
+
+		if !reflect.DeepEqual(rfHpePowerLimitData.ActualPowerLimits[0], rfHpeActualPowerComp) {
+			t.Errorf("Unmarshalled Hpe ActualPowerLimits does not match:\ngot  %v\nwant %v",
+				rfHpePowerLimitData.ActualPowerLimits[0], rfHpeActualPowerComp)
+		}
+		if !reflect.DeepEqual(rfHpePowerLimitData.PowerLimitRanges[0], rfHpePowerLimitRangeComp) {
+			t.Errorf("Unmarshalled Hpe PowerLimitRanges does not match:\ngot  %v\nwant %v",
+				rfHpePowerLimitData.PowerLimitRanges[0], rfHpePowerLimitRangeComp)
+		}
+		if !reflect.DeepEqual(rfHpePowerLimitData.PowerLimits[0], rfHpePowerLimitComp) {
+			t.Errorf("Unmarshalled Hpe PowerLimits does not match:\ngot  %v\nwant %v",
+				rfHpePowerLimitData.PowerLimits[0], rfHpePowerLimitComp)
+		}
+	})
+
+	t.Run("Hpe Configure Power Control", func(t *testing.T) {
+		var rfConfigPowerLimit HpeConfigurePowerLimit
+		err := json.Unmarshal([]byte(HpeConfigurePowerLimitData), &rfConfigPowerLimit)
+		if err != nil {
+			t.Fatal("Failed to unmarshal HpeConfigurePowerLimit json", err.Error())
+		}
+
+		if !reflect.DeepEqual(rfConfigPowerLimit, rfHpeConfigurePowerLimitComp) {
+			t.Errorf("Unmarshalled Configure Power Limit does not match:\ngot  %v\nwant %v",
+				rfConfigPowerLimit, rfHpeConfigurePowerLimitComp)
+		}
+	})
+
 }

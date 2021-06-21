@@ -367,8 +367,24 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 					rfPower.PowerCtlCnt)
 			}
 
-			if len(rfPower.PowerCtl) < 1 {
-				log.Printf("Notice: %s %s: No Redfish PowerControl data for NID %d (%s)",
+			if rfPower.Error != nil {
+				log.Printf("Notice: %s %s: Invalid license for power capping for NID %d (%s)",
+					result.ni.BmcType, result.ni.BmcFQDN,
+					result.ni.Nid, result.ni.Hostname)
+				data.Nids = append(data.Nids,
+					newPowerCapNidError(result.ni.Nid,
+						-1, "Invalid license"))
+				failed++
+				continue
+			}
+
+			pctlLen := len(rfPower.PowerCtl)
+			hpePctlLen := len(rfPower.ActualPowerLimits) +
+				len(rfPower.PowerLimitRanges) +
+				len(rfPower.PowerLimits)
+
+			if pctlLen < 1 || hpePctlLen < 1 {
+				log.Printf("Notice: %s %s: No Redfish power control data for NID %d (%s)",
 					result.ni.BmcType, result.ni.BmcFQDN,
 					result.ni.Nid, result.ni.Hostname)
 				data.Nids = append(data.Nids,
@@ -380,47 +396,56 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 			}
 
 			var controls []capmc.PowerCapControl
-			for _, pc := range rfPower.PowerCtl {
-				name, ok := defaultPowerCtlToCap[pc.Name]
-				if !ok {
-					// HPE Proliant iLO devices do not have a Name in their
-					// PowerControl field. Need to check the #odata.id to
-					// determine if the system is an HPE with iLO or not.
-					if strings.Contains(pc.Oid, "Chassis/1/Power") {
-						name = "node"
-					} else {
-						// skip unknown/unsupported controls
-						log.Printf("Notice: %s %s: Skipped unknown PowerControl: %s",
-							result.ni.BmcFQDN, result.ni.BmcType, pc.Name)
-						continue
+			if hpePctlLen > 0 {
+				// Handle Apollo 6500 AccPowerService power cap query
+				for _, pl := range rfPower.PowerLimits {
+					name = "node"
+
+				}
+			} else {
+				// Handle standard Redfish PowerControl power cap query
+				for _, pc := range rfPower.PowerCtl {
+					name, ok := defaultPowerCtlToCap[pc.Name]
+					if !ok {
+						// HPE Proliant iLO devices do not have a Name in their
+						// PowerControl field. Need to check the #odata.id to
+						// determine if the system is an HPE with iLO or not.
+						if strings.Contains(pc.Oid, "Chassis/1/Power") {
+							name = "node"
+						} else {
+							// skip unknown/unsupported controls
+							log.Printf("Notice: %s %s: Skipped unknown PowerControl: %s",
+								result.ni.BmcFQDN, result.ni.BmcType, pc.Name)
+							continue
+						}
 					}
+
+					var val *int
+					if pc.PowerLimit != nil {
+						val = pc.PowerLimit.LimitInWatts
+					} else {
+						var unconstrained int
+						// Per Cascade 0 is unconstrained.
+						// So if there isn't a control it
+						// must be by definition unconstrained.
+						val = &unconstrained
+					}
+					controls = append(controls,
+						capmc.PowerCapControl{Name: name, Val: val})
 				}
 
-				var val *int
-				if pc.PowerLimit != nil {
-					val = pc.PowerLimit.LimitInWatts
-				} else {
-					var unconstrained int
-					// Per Cascade 0 is unconstrained.
-					// So if there isn't a control it
-					// must be by definition unconstrained.
-					val = &unconstrained
+				// need to find at least one know power cap control
+				if len(controls) < 1 {
+					data.Nids = append(data.Nids,
+						newPowerCapNidError(result.ni.Nid,
+							66, // ENODATA (Linux)
+							"No Redfish power cap controls found for NID"))
+					failed++
+					continue
 				}
-				controls = append(controls,
-					capmc.PowerCapControl{Name: name, Val: val})
-			}
-
-			// need to find at least one know power cap control
-			if len(controls) < 1 {
 				data.Nids = append(data.Nids,
-					newPowerCapNidError(result.ni.Nid,
-						66, // ENODATA (Linux)
-						"No Redfish power cap controls found for NID"))
-				failed++
-				continue
+					capmc.PowerCapNid{Nid: result.ni.Nid, Controls: controls})
 			}
-			data.Nids = append(data.Nids,
-				capmc.PowerCapNid{Nid: result.ni.Nid, Controls: controls})
 		}
 
 		if failed > 0 {

@@ -25,21 +25,59 @@
 package capmc
 
 // Structures that enable marshalling and unmarshalling of the Power schema as
-// defined by the Redfish Power.v1_5_4.json
+// defined by the Redfish Power.v1_5_4.json and
+// HpeServerAccPowerLimit.v1_0_0.HpeServerAccPowerLimit
 
 // Power struct used to unmarshal the Redfish Power data that contains the power
 // metrics, consumption, and limiting information
 type Power struct {
-	OContext    string `json:"@odata.context,omitempty"`
-	Oetag       string `json:"@odata.etag,omitempty"`
-	Oid         string `json:"@odata.id,omitempty"`
-	Otype       string `json:"@odata.type,omitempty"`
-	Description string `json:"Description,omitempty"`
-	Id          string `json:"Id,omitempty"`
-	Name        string `json:"Name,omitempty"`
+	OContext string `json:"@odata.context,omitempty"`
+	Oetag    string `json:"@odata.etag,omitempty"`
+	Oid      string `json:"@odata.id,omitempty"`
+	Otype    string `json:"@odata.type,omitempty"`
+	Id       string `json:"Id,omitempty"`
+	Name     string `json:"Name,omitempty"`
 
+	// Redfish Power.v1_5_4.json
+	Description string         `json:"Description,omitempty"`
 	PowerCtl    []PowerControl `json:"PowerControl,omitempty"`
 	PowerCtlCnt int            `json:"PowerControl@odata.count,omitempty"`
+
+	// HpeServerAccPowerLimit.v1_0_0.HpeServerAccPowerLimit
+	Error             *HpeError              `json:"error,omitempty"`
+	ActualPowerLimits []HpeActualPowerLimits `json:"ActualPowerLimits,omitempty"`
+	PowerLimitRanges  []HpePowerLimitRanges  `json:"PowerLimitRanges,omitempty"`
+	PowerLimits       []HpePowerLimits       `json:"PowerLimits,omitempty"`
+}
+
+type HpeConfigurePowerLimit struct {
+	PowerLimits []HpePowerLimits `json:"PowerLimits"`
+}
+
+type HpeActualPowerLimits struct {
+	PowerLimitInWatts int `json:"PowerLimitInWatts"`
+	ZoneNumber        int `json:"ZoneNumber"`
+}
+
+type HpePowerLimitRanges struct {
+	MaximumPowerLimit int `json:"MaximumPowerLimit"`
+	MinimumPowerLimit int `json:"MinimumPowerLimit"`
+	ZoneNumber        int `json:"ZoneNumber"`
+}
+
+type HpePowerLimits struct {
+	PowerLimitInWatts int `json:"PowerLimitInWatts"`
+	ZoneNumber        int `json:"ZoneNumber"`
+}
+
+type HpeError struct {
+	Code         string                   `json:"code"`
+	Message      string                   `json:"message"`
+	ExtendedInfo []HpeMessageExtendedInfo `json:"@Message.ExtendedInfo"`
+}
+
+type HpeMessageExtendedInfo struct {
+	MessageId string `json:"MessageId"`
 }
 
 // PowerControl struct used to unmarshal the Redfish Power.v1_5_4 data
