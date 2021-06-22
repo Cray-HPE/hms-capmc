@@ -312,7 +312,7 @@ func StatusFunc() RoundTripFunc {
 				Body:       ioutil.NopCloser(bytes.NewBufferString(x1002c0s0b0n0CompEndpoint)),
 				Header:     make(http.Header),
 			}, nil
-		case "http://localhost:27779/State/Components?enabled=true&state=On&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
+		case "http://localhost:27779/State/Components?enabled=true&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
 			return &http.Response{
 				StatusCode: 200,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(compStatusEnabledOnOK)),
@@ -322,12 +322,6 @@ func StatusFunc() RoundTripFunc {
 			return &http.Response{
 				StatusCode: 200,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(x1002c0s0b0n1CompEndpoint)),
-				Header:     make(http.Header),
-			}, nil
-		case "http://localhost:27779/State/Components?enabled=true&state=Off&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
-			return &http.Response{
-				StatusCode: 200,
-				Body:       ioutil.NopCloser(bytes.NewBufferString(compStatusEnabledOffOK)),
 				Header:     make(http.Header),
 			}, nil
 		case "http://localhost:27779/Inventory/ComponentEndpoints?id=x1002c0s0b1n0":
@@ -360,7 +354,7 @@ func StatusFunc() RoundTripFunc {
 				Body:       ioutil.NopCloser(bytes.NewBufferString(x1002c0s1b0n0CompEndpoint)),
 				Header:     make(http.Header),
 			}, nil
-		case "http://localhost:27779/State/Components?enabled=false&state=On&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
+		case "http://localhost:27779/State/Components?enabled=false&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
 			return &http.Response{
 				StatusCode: 200,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(compStatusNotEnabledOnOK)),
@@ -370,12 +364,6 @@ func StatusFunc() RoundTripFunc {
 			return &http.Response{
 				StatusCode: 200,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(x1002c0s1b0n1CompEndpoint)),
-				Header:     make(http.Header),
-			}, nil
-		case "http://localhost:27779/State/Components?enabled=false&state=Off&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
-			return &http.Response{
-				StatusCode: 200,
-				Body:       ioutil.NopCloser(bytes.NewBufferString(compStatusNotEnabledOffOK)),
 				Header:     make(http.Header),
 			}, nil
 		case "http://localhost:27779/Inventory/ComponentEndpoints?id=x1002c0s1b1n0":
@@ -471,13 +459,6 @@ func TestDoXnameStatus(t *testing.T) {
 			"{\"e\":0,\"err_msg\":\"\",\"on\":[\"x1002c0s0b0n1\"]}\n",
 		},
 		{
-			"Enabled Off OK",
-			http.MethodPost,
-			bytes.NewBuffer(json.RawMessage(`{"filter":"show_off"}`)),
-			http.StatusOK,
-			"{\"e\":0,\"err_msg\":\"\",\"off\":[\"x1002c0s0b1n0\"]}\n",
-		},
-		{
 			"Enabled Standby OK",
 			http.MethodPost,
 			bytes.NewBuffer(json.RawMessage(`{"filter":"show_standby"}`)),
@@ -497,13 +478,6 @@ func TestDoXnameStatus(t *testing.T) {
 			bytes.NewBuffer(json.RawMessage(`{"filter":"show_on|show_disabled"}`)),
 			http.StatusOK,
 			"{\"e\":0,\"err_msg\":\"\",\"on\":[\"x1002c0s1b0n1\"]}\n",
-		},
-		{
-			"Not Enabled Off OK",
-			http.MethodPost,
-			bytes.NewBuffer(json.RawMessage(`{"filter":"show_off|show_disabled"}`)),
-			http.StatusOK,
-			"{\"e\":0,\"err_msg\":\"\",\"off\":[\"x1002c0s1b1n0\"]}\n",
 		},
 		{
 			"Not Enabled Standby OK",
