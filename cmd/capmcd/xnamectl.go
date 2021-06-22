@@ -349,10 +349,12 @@ func (d *CapmcD) doXnameStatus(w http.ResponseWriter, r *http.Request) {
 		if filter&capmc.FilterShowHaltBit != 0 {
 			query.States = append(query.States, "Halt")
 		}
-		if filter&capmc.FilterShowOffBit != 0 {
+		// When using Redfish we always want the actual power states, not the
+		// ones from HSM.
+		if filter&capmc.FilterShowOffBit != 0 && useHSM == true {
 			query.States = append(query.States, "Off")
 		}
-		if filter&capmc.FilterShowOnBit != 0 {
+		if filter&capmc.FilterShowOnBit != 0 && useHSM == true {
 			query.States = append(query.States, "On")
 		}
 		if filter&capmc.FilterShowReadyBit != 0 {
