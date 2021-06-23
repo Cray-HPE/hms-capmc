@@ -31,6 +31,12 @@ pipeline {
             }
         }
         
+        stage("Run Integration Tests") {
+            steps {
+                sh "make integration"
+            }
+        }
+        
         stage("Build") {
             steps {
                 sh "make image"
