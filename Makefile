@@ -12,6 +12,9 @@ unittest: buildbase
 coverage: buildbase
 		docker build -t cray/hms-capmc-coverage -f Dockerfile.coverage .
 
+integration: 
+		runIntegration.sh .
+
 buildbase: 
 		docker build -t cray/hms-capmc-build-base -f Dockerfile.build-base .
 		
