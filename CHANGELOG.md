@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.24.1] - 2021-07-01
+
+### Security
+
+- CASMHMS-4898 - Updated base container images for security updates.
+
 ## [1.24.0] - 2021-06-07
 
 ## Changed

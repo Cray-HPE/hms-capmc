@@ -1,4 +1,5 @@
 # github.com/BurntSushi/toml v0.3.1
+## explicit
 github.com/BurntSushi/toml
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
@@ -38,6 +39,7 @@ github.com/hashicorp/vault/sdk/helper/jsonutil
 github.com/hashicorp/vault/sdk/helper/parseutil
 github.com/hashicorp/vault/sdk/helper/strutil
 # github.com/lib/pq v1.9.0
+## explicit
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
@@ -53,8 +55,10 @@ github.com/pmezard/go-difflib/difflib
 # github.com/ryanuber/go-glob v1.0.0
 github.com/ryanuber/go-glob
 # github.com/sirupsen/logrus v1.7.0
+## explicit
 github.com/sirupsen/logrus
 # github.com/stretchr/testify v1.7.0
+## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
 github.com/stretchr/testify/suite
@@ -85,15 +89,20 @@ gopkg.in/square/go-jose.v2/json
 gopkg.in/square/go-jose.v2/jwt
 # gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 gopkg.in/yaml.v3
-# stash.us.cray.com/HMS/hms-base v1.12.0
+# stash.us.cray.com/HMS/hms-base v1.13.0
+## explicit
 stash.us.cray.com/HMS/hms-base
-# stash.us.cray.com/HMS/hms-certs v1.2.0
+# stash.us.cray.com/HMS/hms-certs v1.3.0
+## explicit
 stash.us.cray.com/HMS/hms-certs/pkg/hms_certs
-# stash.us.cray.com/HMS/hms-compcredentials v1.10.0
+# stash.us.cray.com/HMS/hms-compcredentials v1.11.0
+## explicit
 stash.us.cray.com/HMS/hms-compcredentials
-# stash.us.cray.com/HMS/hms-securestorage v1.11.0
+# stash.us.cray.com/HMS/hms-securestorage v1.12.0
+## explicit
 stash.us.cray.com/HMS/hms-securestorage
-# stash.us.cray.com/HMS/hms-smd v1.28.0
+# stash.us.cray.com/HMS/hms-smd v1.29.5
+## explicit
 stash.us.cray.com/HMS/hms-smd/pkg/redfish
 stash.us.cray.com/HMS/hms-smd/pkg/service-reservations
 stash.us.cray.com/HMS/hms-smd/pkg/sm
