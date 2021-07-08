@@ -24,6 +24,24 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.25.1] - 2021-06-21
+
+### Changes
+
+- Fixed filter response for On/Off when using Redfish
+
+## [1.25.0] - 2021-06-07
+
+### Changed
+
+- Created release branch for CSM 1.2
+
+## [1.24.0] - 2021-06-07
+
+### Changed
+
+- Created release branch for CSM 1.1
+
 ## [1.23.6] - 2021-05-04
 
 ### Changed
