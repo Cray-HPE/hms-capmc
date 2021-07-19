@@ -1,20 +1,26 @@
-NAME ?= hms-capmc 
+NAME ?= cray-capmc 
 VERSION ?= $(shell cat .version)
 
-all : image unittest coverage
+# Helm Chart
+CHART_PATH ?= kubernetes
+CHART_NAME ?= cray-hms-capmc
+CHART_VERSION ?= local
+
+all : image chart unittest coverage integration
 
 image:
 		docker build --pull ${DOCKER_ARGS} --tag '${NAME}:${VERSION}' .
 
-unittest: buildbase
-		docker build --no-cache -t cray/hms-capmc-testing -f Dockerfile.testing .
+chart:
+		helm dep up ${CHART_PATH}/${CHART_NAME}
+		helm package ${CHART_PATH}/${CHART_NAME} -d ${CHART_PATH}/.packaged --version ${CHART_VERSION}
 
-coverage: buildbase
-		docker build -t cray/hms-capmc-coverage -f Dockerfile.coverage .
+unittest:
+		./runUnitTest.sh
+
+coverage: 
+		./runCoverage.sh 
 
 integration: 
-		./runIntegration.sh .
-
-buildbase: 
-		docker build -t cray/hms-capmc-build-base -f Dockerfile.build-base .
+		./runIntegration.sh 
 		
