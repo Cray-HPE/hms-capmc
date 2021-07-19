@@ -39,13 +39,13 @@ pipeline {
             }
         }
         
-        stage("Build") {
+        stage("Build Image") {
             steps {
                 sh "make image"
             }
         }
 
-        stage("Chart") {
+        stage("Build Chart") {
             steps {
                 sh "make chart"
             }
