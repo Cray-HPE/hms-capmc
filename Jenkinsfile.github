@@ -26,19 +26,19 @@ pipeline {
                 sh "make unittest"
             }
         }
-        
+
         stage("Run Coverage Tests") {
             steps {
                 sh "make coverage"
             }
         }
-        
+
         stage("Run Integration Tests") {
             steps {
                 sh "make integration"
             }
         }
-        
+
         stage("Build Image") {
             steps {
                 sh "make image"

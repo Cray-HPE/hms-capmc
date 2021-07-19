@@ -1,4 +1,4 @@
-NAME ?= cray-capmc 
+NAME ?= cray-capmc
 VERSION ?= $(shell cat .version)
 
 # Helm Chart
@@ -18,9 +18,9 @@ chart:
 unittest:
 		./runUnitTest.sh
 
-coverage: 
-		./runCoverage.sh 
+coverage:
+		./runCoverage.sh
 
-integration: 
-		./runIntegration.sh 
-		
+integration:
+		./runIntegration.sh
+
