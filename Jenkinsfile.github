@@ -1,0 +1,63 @@
+@Library('csm-shared-library') _
+
+pipeline {
+    agent {
+        label "metal-gcp-builder"
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: "10"))
+        timestamps()
+    }
+
+    environment {
+        NAME = "hms-capmc"
+        DESCRIPTION = "Cray Advanced Platform Monitoring and Control (CAPMC) Service"
+        IS_STABLE = getBuildIsStable()
+        VERSION = getDockerBuildVersion(isStable: env.IS_STABLE)
+        DOCKER_ARGS = getDockerBuildArgs(name: env.NAME, description: env.DESCRIPTION)
+        CHART_NAME = "cray-hms-capmc"
+        CHART_VERSION = getChartVersion(version: env.VERSION)
+    }
+
+    stages {
+        stage("Run Unit Tests") {
+            steps {
+                sh "make unittest"
+            }
+        }
+
+        stage("Run Coverage Tests") {
+            steps {
+                sh "make coverage"
+            }
+        }
+
+        stage("Run Integration Tests") {
+            steps {
+                sh "make integration"
+            }
+        }
+
+        stage("Build Image") {
+            steps {
+                sh "make image"
+            }
+        }
+
+        stage("Build Chart") {
+            steps {
+                sh "make chart"
+            }
+        }
+
+        stage('Publish ') {
+            steps {
+                script {
+                    publishCsmDockerImage(image: env.NAME, tag: env.VERSION, isStable: env.IS_STABLE)
+                    publishCsmHelmCharts(component: env.CHART_NAME, chartsPath: "${WORKSPACE}/kubernetes/.packaged", isStable: env.IS_STABLE)
+                }
+            }
+        }
+    }
+}
