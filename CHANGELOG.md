@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.23.7] - 2021-07-19
+
+### Added
+
+- Convert to github
+
 ## [1.23.6] - 2021-05-04
 
 ### Changed
