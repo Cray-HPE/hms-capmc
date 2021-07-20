@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.23.8] - 2021-07-20
+
+### Added
+
+- Update image name and docker args for build
+
 ## [1.23.7] - 2021-07-19
 
 ### Added
