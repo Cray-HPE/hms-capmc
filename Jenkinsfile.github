@@ -11,11 +11,11 @@ pipeline {
     }
 
     environment {
-        NAME = "hms-capmc"
+        NAME = "cray-capmc"
         DESCRIPTION = "Cray Advanced Platform Monitoring and Control (CAPMC) Service"
         IS_STABLE = getBuildIsStable()
         VERSION = getDockerBuildVersion(isStable: env.IS_STABLE)
-        DOCKER_ARGS = getDockerBuildArgs(name: env.NAME, description: env.DESCRIPTION)
+        DOCKER_ARGS = getDockerBuildArgs(name: "hms-capmc", description: env.DESCRIPTION, version: env.VERSION)
         CHART_NAME = "cray-hms-capmc"
         CHART_VERSION = getChartVersion(version: env.VERSION)
     }
