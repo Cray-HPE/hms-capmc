@@ -30,7 +30,7 @@ import (
 	"log"
 	"net/http"
 
-	"stash.us.cray.com/HMS/hms-capmc/internal/tsdb"
+	"github.com/Cray-HPE/hms-capmc/internal/tsdb"
 )
 
 // HealthResponse - used to report service health stats

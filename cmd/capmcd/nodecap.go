@@ -33,9 +33,9 @@ import (
 	"net/http"
 	"strings"
 
-	base "stash.us.cray.com/HMS/hms-base"
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
-	"stash.us.cray.com/HMS/hms-smd/pkg/sm"
+	base "github.com/Cray-HPE/hms-base"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
+	"github.com/Cray-HPE/hms-smd/pkg/sm"
 )
 
 // List of seen PowerControl.Name values. This may not be the best long term.

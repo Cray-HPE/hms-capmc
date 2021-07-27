@@ -32,7 +32,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
 )
 
 const (

@@ -35,6 +35,6 @@ FROM build-base
 
 RUN go env -w GO111MODULE=auto
 
-COPY cmd $GOPATH/src/stash.us.cray.com/HMS/hms-capmc/cmd
-COPY vendor $GOPATH/src/stash.us.cray.com/HMS/hms-capmc/vendor
-COPY internal $GOPATH/src/stash.us.cray.com/HMS/hms-capmc/internal
+COPY cmd $GOPATH/src/github.com/Cray-HPE/hms-capmc/cmd
+COPY vendor $GOPATH/src/github.com/Cray-HPE/hms-capmc/vendor
+COPY internal $GOPATH/src/github.com/Cray-HPE/hms-capmc/internal

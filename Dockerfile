@@ -35,9 +35,9 @@ FROM build-base AS base
 RUN go env -w GO111MODULE=auto
 
 # Copy all the necessary files to the image.
-COPY cmd $GOPATH/src/stash.us.cray.com/HMS/hms-capmc/cmd
-COPY internal $GOPATH/src/stash.us.cray.com/HMS/hms-capmc/internal
-COPY vendor $GOPATH/src/stash.us.cray.com/HMS/hms-capmc/vendor
+COPY cmd $GOPATH/src/github.com/Cray-HPE/hms-capmc/cmd
+COPY internal $GOPATH/src/github.com/Cray-HPE/hms-capmc/internal
+COPY vendor $GOPATH/src/github.com/Cray-HPE/hms-capmc/vendor
 
 
 ### UNIT TEST Stage ###
@@ -62,7 +62,7 @@ CMD ["sh", "-c", "set -ex && go test -cover -v ./..."]
 
 FROM base AS builder
 
-RUN set -ex && go build -v -i -o /usr/local/bin/capmc-service stash.us.cray.com/HMS/hms-capmc/cmd/capmcd
+RUN set -ex && go build -v -i -o /usr/local/bin/capmc-service github.com/Cray-HPE/hms-capmc/cmd/capmcd
 
 ### Final Stage ###
 

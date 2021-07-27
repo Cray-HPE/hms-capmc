@@ -32,9 +32,9 @@ import (
 	"net/url"
 	"testing"
 
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
-	compcreds "stash.us.cray.com/HMS/hms-compcredentials"
-	sstorage "stash.us.cray.com/HMS/hms-securestorage"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
+	compcreds "github.com/Cray-HPE/hms-compcredentials"
+	sstorage "github.com/Cray-HPE/hms-securestorage"
 )
 
 func TestCapmcdLiveness(t *testing.T) {
