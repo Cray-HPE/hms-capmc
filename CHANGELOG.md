@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.24.4] - 2021-07-27
+
+### Changed
+
+- Changed Stash to GitHub
+
 ## [1.24.3] - 2021-07-20
 
 ### Added
