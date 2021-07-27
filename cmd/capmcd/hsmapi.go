@@ -34,11 +34,11 @@ import (
 	"strconv"
 	"strings"
 
-	base "stash.us.cray.com/HMS/hms-base"
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
-	compcreds "stash.us.cray.com/HMS/hms-compcredentials"
-	rf "stash.us.cray.com/HMS/hms-smd/pkg/redfish"
-	"stash.us.cray.com/HMS/hms-smd/pkg/sm"
+	base "github.com/Cray-HPE/hms-base"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
+	compcreds "github.com/Cray-HPE/hms-compcredentials"
+	rf "github.com/Cray-HPE/hms-smd/pkg/redfish"
+	"github.com/Cray-HPE/hms-smd/pkg/sm"
 )
 
 // HSMQuery is used for restricting HSM queries

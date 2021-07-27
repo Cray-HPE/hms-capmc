@@ -32,7 +32,7 @@ import (
 	"log"
 	"net/http"
 
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
 )
 
 // newNidMapError creates a new NodeInfo structure initialized as an error
