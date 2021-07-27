@@ -25,7 +25,7 @@
 package tsdb
 
 import (
-	base "stash.us.cray.com/HMS/hms-base"
+	base "github.com/Cray-HPE/hms-base"
 )
 
 var e = base.NewHMSError("tsdb", "GenericError")

@@ -39,10 +39,10 @@ import (
 	"strings"
 	"testing"
 
-	base "stash.us.cray.com/HMS/hms-base"
-	compcreds "stash.us.cray.com/HMS/hms-compcredentials"
-	sstorage "stash.us.cray.com/HMS/hms-securestorage"
-	"stash.us.cray.com/HMS/hms-certs/pkg/hms_certs"
+	base "github.com/Cray-HPE/hms-base"
+	"github.com/Cray-HPE/hms-certs/pkg/hms_certs"
+	compcreds "github.com/Cray-HPE/hms-compcredentials"
+	sstorage "github.com/Cray-HPE/hms-securestorage"
 )
 
 var replayList *[]testData
@@ -99,8 +99,8 @@ func replay(req *http.Request) (*http.Response, error) {
 // replayClient returns *http.Client with Transport replaced to replay responses
 // for given requests without an external connection.
 func replayClient() *hms_certs.HTTPClientPair {
-	rc,_ := makeClient(0,5)
-	rc.InsecureClient.HTTPClient = &http.Client{ Transport: RoundTripFunc(replay), }
+	rc, _ := makeClient(0, 5)
+	rc.InsecureClient.HTTPClient = &http.Client{Transport: RoundTripFunc(replay)}
 	rc.SecureClient = rc.InsecureClient
 	return rc
 }
