@@ -28,7 +28,7 @@ import (
 	"reflect"
 	"testing"
 
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
 )
 
 func TestCmdCompPowerSeq(t *testing.T) {

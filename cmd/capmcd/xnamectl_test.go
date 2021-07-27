@@ -38,10 +38,10 @@ import (
 	"sort"
 	"testing"
 
-	base "stash.us.cray.com/HMS/hms-base"
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
-	compcreds "stash.us.cray.com/HMS/hms-compcredentials"
-	sstorage "stash.us.cray.com/HMS/hms-securestorage"
+	base "github.com/Cray-HPE/hms-base"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
+	compcreds "github.com/Cray-HPE/hms-compcredentials"
+	sstorage "github.com/Cray-HPE/hms-securestorage"
 )
 
 func TestMakeXnameErrors(t *testing.T) {

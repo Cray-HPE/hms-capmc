@@ -29,8 +29,8 @@ package main
 import (
 	"testing"
 
-	compcreds "stash.us.cray.com/HMS/hms-compcredentials"
-	sstorage "stash.us.cray.com/HMS/hms-securestorage"
+	compcreds "github.com/Cray-HPE/hms-compcredentials"
+	sstorage "github.com/Cray-HPE/hms-securestorage"
 )
 
 var getNodeRulesPostHSM = "https://localhost:27779"

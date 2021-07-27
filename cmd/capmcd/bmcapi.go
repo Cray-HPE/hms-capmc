@@ -38,8 +38,8 @@ import (
 	"regexp"
 	"time"
 
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
-	rf "stash.us.cray.com/HMS/hms-smd/pkg/redfish"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
+	rf "github.com/Cray-HPE/hms-smd/pkg/redfish"
 )
 
 // warRedFishPowerOID takes a NodeInfo and constructs what the HSM normally
