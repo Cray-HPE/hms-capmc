@@ -37,11 +37,10 @@ import (
 	"reflect"
 	"testing"
 
-	compcreds "stash.us.cray.com/HMS/hms-compcredentials"
-	sstorage "stash.us.cray.com/HMS/hms-securestorage"
+	compcreds "github.com/Cray-HPE/hms-compcredentials"
+	sstorage "github.com/Cray-HPE/hms-securestorage"
 
-	"stash.us.cray.com/HMS/hms-certs/pkg/hms_certs"
-
+	"github.com/Cray-HPE/hms-certs/pkg/hms_certs"
 )
 
 // testEq tests for equality between two arrays/slices
@@ -175,8 +174,8 @@ func TestGetRestrictStr(t *testing.T) {
 
 func NewTestClient(f RoundTripFunc) *hms_certs.HTTPClientPair {
 	hms_certs.ConfigParams.LogInsecureFailover = false
-	rc,_ := makeClient(0,5)
-	rc.InsecureClient.HTTPClient = &http.Client{ Transport: RoundTripFunc(f), }
+	rc, _ := makeClient(0, 5)
+	rc.InsecureClient.HTTPClient = &http.Client{Transport: RoundTripFunc(f)}
 	rc.SecureClient = rc.InsecureClient
 	return rc
 }

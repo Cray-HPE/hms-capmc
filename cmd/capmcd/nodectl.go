@@ -32,8 +32,8 @@ import (
 	"sort"
 	"strings"
 
-	base "stash.us.cray.com/HMS/hms-base"
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
+	base "github.com/Cray-HPE/hms-base"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
 )
 
 const unlimited int = -1

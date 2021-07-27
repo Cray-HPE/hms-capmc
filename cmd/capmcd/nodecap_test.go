@@ -36,12 +36,12 @@ import (
 	"path"
 	"testing"
 
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
-	"stash.us.cray.com/HMS/hms-smd/pkg/sm"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
+	"github.com/Cray-HPE/hms-smd/pkg/sm"
 
-	base "stash.us.cray.com/HMS/hms-base"
-	compcreds "stash.us.cray.com/HMS/hms-compcredentials"
-	sstorage "stash.us.cray.com/HMS/hms-securestorage"
+	base "github.com/Cray-HPE/hms-base"
+	compcreds "github.com/Cray-HPE/hms-compcredentials"
+	sstorage "github.com/Cray-HPE/hms-securestorage"
 )
 
 var vaultData = []sstorage.MockLookup{
@@ -758,11 +758,11 @@ func TestDoPowerCapGet(t *testing.T) {
 			svc := CapmcD{
 				smClient: NewTestClient(hsmTestMock(test.hsmMock)),
 				rfClient: NewTestClient(hsmTestMock(test.hsmMock)),
-				config: loadConfig(""),
-				ss:     ss,
-				ccs:    ccs,
-				WPool:  base.NewWorkerPool(100, 100*10),
-				debug:  debug,
+				config:   loadConfig(""),
+				ss:       ss,
+				ccs:      ccs,
+				WPool:    base.NewWorkerPool(100, 100*10),
+				debug:    debug,
 			}
 			svc.WPool.Run()
 			svc.hsmURL, _ = url.Parse("http://localhost")
@@ -869,11 +869,11 @@ func TestDoPowerCapSet(t *testing.T) {
 			svc := CapmcD{
 				smClient: NewTestClient(hsmTestMock(test.hsmMock)),
 				rfClient: NewTestClient(hsmTestMock(test.hsmMock)),
-				config: loadConfig(""),
-				ss:     ss,
-				ccs:    ccs,
-				WPool:  base.NewWorkerPool(100, 100*10),
-				debug:  debug,
+				config:   loadConfig(""),
+				ss:       ss,
+				ccs:      ccs,
+				WPool:    base.NewWorkerPool(100, 100*10),
+				debug:    debug,
 			}
 			svc.WPool.Run()
 			svc.hsmURL, _ = url.Parse("http://localhost")

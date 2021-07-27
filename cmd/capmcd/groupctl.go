@@ -30,7 +30,7 @@ import (
 	"log"
 	"net/http"
 
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
 )
 
 // These are the HTTP handlers.

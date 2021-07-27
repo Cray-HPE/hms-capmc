@@ -33,9 +33,9 @@ import (
 	"testing"
 	"time"
 
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
-	"stash.us.cray.com/HMS/hms-capmc/internal/logger"
-	"stash.us.cray.com/HMS/hms-capmc/internal/tsdb"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
+	"github.com/Cray-HPE/hms-capmc/internal/logger"
+	"github.com/Cray-HPE/hms-capmc/internal/tsdb"
 )
 
 const (

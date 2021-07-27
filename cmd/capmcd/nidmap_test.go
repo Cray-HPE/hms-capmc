@@ -32,7 +32,7 @@ import (
 	"net/url"
 	"testing"
 
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
 )
 
 func TestDoNidMap(t *testing.T) {
@@ -66,15 +66,15 @@ func TestDoNidMap(t *testing.T) {
 			bodyOut: NoRequestJSON + "\n",
 		},
 		/*
-		   This currently won't work with out additional mocking
-		{
-			name:    "POST empty JSON",
-			method:  http.MethodPost,
-			path:    capmc.NodeIDMap,
-			bodyIn:  bytes.NewBuffer([]byte(`{}`)),
-			code:    http.StatusBadRequest,
-			bodyOut: NoRequestJSON + "\n",
-		},
+			   This currently won't work with out additional mocking
+			{
+				name:    "POST empty JSON",
+				method:  http.MethodPost,
+				path:    capmc.NodeIDMap,
+				bodyIn:  bytes.NewBuffer([]byte(`{}`)),
+				code:    http.StatusBadRequest,
+				bodyOut: NoRequestJSON + "\n",
+			},
 		*/
 		{
 			name:    "POST invalid JSON",

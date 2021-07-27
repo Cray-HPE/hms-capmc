@@ -28,8 +28,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Cray-HPE/hms-capmc/internal/logger"
 	"github.com/stretchr/testify/suite"
-	"stash.us.cray.com/HMS/hms-capmc/internal/logger"
 )
 
 type TSDB_Helpers_TS struct {
@@ -245,7 +245,6 @@ func (suite *TSDB_Helpers_TS) TestValidateTimeBoundNodeRequest_MissingTime() {
 	suite.Equal(false, isValid)
 	suite.True(err != nil)
 }
-
 
 func TestTSDBTimeHelpers(t *testing.T) {
 	logger.SetupLogging()

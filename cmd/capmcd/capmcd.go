@@ -37,21 +37,21 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strings"
 	"strconv"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
 
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
+	"github.com/Cray-HPE/hms-capmc/internal/logger"
+	"github.com/Cray-HPE/hms-capmc/internal/tsdb"
+	"github.com/Cray-HPE/hms-certs/pkg/hms_certs"
 	"github.com/sirupsen/logrus"
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
-	"stash.us.cray.com/HMS/hms-capmc/internal/logger"
-	"stash.us.cray.com/HMS/hms-capmc/internal/tsdb"
-	"stash.us.cray.com/HMS/hms-certs/pkg/hms_certs"
 
-	base "stash.us.cray.com/HMS/hms-base"
-	compcreds "stash.us.cray.com/HMS/hms-compcredentials"
-	sstorage "stash.us.cray.com/HMS/hms-securestorage"
+	base "github.com/Cray-HPE/hms-base"
+	compcreds "github.com/Cray-HPE/hms-compcredentials"
+	sstorage "github.com/Cray-HPE/hms-securestorage"
 )
 
 const clientTimeout = time.Duration(180) * time.Second
@@ -368,22 +368,22 @@ const (
 )
 
 // Construct an http client object.
-func makeClient(flags clientFlags, timeout time.Duration) (*hms_certs.HTTPClientPair,error) {
+func makeClient(flags clientFlags, timeout time.Duration) (*hms_certs.HTTPClientPair, error) {
 	var pair *hms_certs.HTTPClientPair
 	var err error
 
 	uri := hms_ca_uri
-	if ((flags & clientInsecure) != 0) {
+	if (flags & clientInsecure) != 0 {
 		uri = ""
 	}
 	toSec := int(timeout.Seconds())
-	pair,err = hms_certs.CreateHTTPClientPair(uri,toSec)
-	if (err != nil) {
-		log.Printf("ERROR: Can't set up cert-secured HTTP client: %v",err)
-		return nil,err
+	pair, err = hms_certs.CreateHTTPClientPair(uri, toSec)
+	if err != nil {
+		log.Printf("ERROR: Can't set up cert-secured HTTP client: %v", err)
+		return nil, err
 	}
 
-	return pair,nil
+	return pair, nil
 }
 
 // This will initialize the global CapmcD struct with default values upon startup
@@ -406,12 +406,12 @@ func caCB(caData string) {
 
 	//Update the the transports.
 
-	if (captureTag != "") {
+	if captureTag != "" {
 		svc.rfClient = captureClient(0, clientTimeout)
 	} else {
-		cl,err := makeClient(0, clientTimeout)
-		if (err != nil) {
-			log.Printf("ERROR: can't create Redfish HTTP client after CA roll: %v",err)
+		cl, err := makeClient(0, clientTimeout)
+		if err != nil {
+			log.Printf("ERROR: can't create Redfish HTTP client after CA roll: %v", err)
 			log.Printf("    Using previous HTTP client (CA bundle may not work.)")
 		} else {
 			svc.rfClient = cl
@@ -426,7 +426,7 @@ func caCB(caData string) {
 func setupRedfishHTTPClients(captureTag string) error {
 	var err error
 
-	if (hms_ca_uri != "") {
+	if hms_ca_uri != "" {
 		log.Printf("INFO: Creating Redfish HTTP transport using CA bundle '%s'",
 			hms_ca_uri)
 	} else {
@@ -436,19 +436,19 @@ func setupRedfishHTTPClients(captureTag string) error {
 	if captureTag != "" {
 		svc.rfClient = captureClient(0, clientTimeout)
 	} else {
-		svc.rfClient,err = makeClient(0, clientTimeout)
+		svc.rfClient, err = makeClient(0, clientTimeout)
 	}
-	if (err != nil) {
-		log.Printf("ERROR setting up Redfish HTTP transport: '%v'",err)
+	if err != nil {
+		log.Printf("ERROR setting up Redfish HTTP transport: '%v'", err)
 		return err
 	}
-	if (hms_ca_uri != "") {
-		err := hms_certs.CAUpdateRegister(hms_ca_uri,caCB)
-		if (err != nil) {
-			log.Printf("ERROR: can't register CA bundle watcher: %v",err)
+	if hms_ca_uri != "" {
+		err := hms_certs.CAUpdateRegister(hms_ca_uri, caCB)
+		if err != nil {
+			log.Printf("ERROR: can't register CA bundle watcher: %v", err)
 			log.Printf("   This means CA bundle updates will not update Redfish HTTP transports.")
 		} else {
-			log.Printf("INFO: CA bundle watcher registered for '%s'.",hms_ca_uri)
+			log.Printf("INFO: CA bundle watcher registered for '%s'.", hms_ca_uri)
 		}
 	} else {
 		log.Printf("INFO: CA bundle URI is empty, no CA bundle watcher registered.")
@@ -502,13 +502,13 @@ func main() {
 
 	log.SetFlags(log.Lshortfile | log.LstdFlags)
 
-	serviceName,err = base.GetServiceInstanceName()
-	if (err != nil) {
+	serviceName, err = base.GetServiceInstanceName()
+	if err != nil {
 		serviceName = "CAPMC"
 		log.Printf("WARNING: can't get service/instance name, using: '%s'",
 			serviceName)
 	}
-	log.Printf("Service name/instance: '%s'",serviceName)
+	log.Printf("Service name/instance: '%s'", serviceName)
 
 	svc.config = loadConfig(configFile)
 
@@ -560,30 +560,30 @@ func main() {
 	//CA/cert stuff
 
 	vurl := os.Getenv("CAPMC_VAULT_CA_URL")
-	if (vurl != "") {
-		log.Printf("Replacing default Vault CA URL with: '%s'",vurl)
+	if vurl != "" {
+		log.Printf("Replacing default Vault CA URL with: '%s'", vurl)
 		hms_certs.ConfigParams.VaultCAUrl = vurl
 	}
 	vurl = os.Getenv("CAPMC_VAULT_PKI_URL")
-	if (vurl != "") {
-		log.Printf("Replacing default Vault PKI URL with: '%s'",vurl)
+	if vurl != "" {
+		log.Printf("Replacing default Vault PKI URL with: '%s'", vurl)
 		hms_certs.ConfigParams.VaultPKIUrl = vurl
 	}
-	if (hms_ca_uri == "") {
+	if hms_ca_uri == "" {
 		vurl = os.Getenv("CAPMC_CA_URI")
-		if (vurl != "") {
-			log.Printf("Using CA URI: '%s'",vurl)
+		if vurl != "" {
+			log.Printf("Using CA URI: '%s'", vurl)
 			hms_ca_uri = vurl
 		}
 	}
 	vurl = os.Getenv("CAPMC_LOG_INSECURE_FAILOVER")
-	if (vurl != "") {
-		yn,_ := strconv.ParseBool(vurl)
-		if (yn == false) {
+	if vurl != "" {
+		yn, _ := strconv.ParseBool(vurl)
+		if yn == false {
 			hms_certs.ConfigParams.LogInsecureFailover = false
 		}
 	}
-	hms_certs.InitInstance(nil,serviceName)
+	hms_certs.InitInstance(nil, serviceName)
 
 	log.Printf("CAPMC serivce starting (debug=%v)\n", svc.debug)
 
@@ -595,7 +595,7 @@ func main() {
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 
 	//initialize the service-reservation pkg
-	svc.reservation.Init(svc.hsmURL.Scheme + "://" + svc.hsmURL.Host,"",3, nil)
+	svc.reservation.Init(svc.hsmURL.Scheme+"://"+svc.hsmURL.Host, "", 3, nil)
 	svc.reservationsEnabled = true
 
 	//Configure TSDB connection; MAY USE DUMMY
@@ -675,7 +675,7 @@ func main() {
 		captureInit(captureTag)
 		svc.smClient = captureClient(clientInsecure, clientTimeout)
 	} else {
-		svc.smClient,_ = makeClient(clientInsecure, clientTimeout)
+		svc.smClient, _ = makeClient(clientInsecure, clientTimeout)
 	}
 
 	//Set up secure HTTP clients for Redfish.  Keep trying in the background until success.
@@ -690,11 +690,11 @@ func main() {
 		for {
 			log.Printf("Info: Creating Redfish secure HTTP client transports...")
 			err := setupRedfishHTTPClients(captureTag)
-			if (err == nil) {
+			if err == nil {
 				log.Printf("Info: Success creating Redfish HTTP clients.")
 				break
 			} else {
-				log.Printf("Redfish HTTP client creation error: %v",err)
+				log.Printf("Redfish HTTP client creation error: %v", err)
 			}
 			if backoff < maxBackoff {
 				backoff += backoff
