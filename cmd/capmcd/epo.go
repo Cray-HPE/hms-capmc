@@ -32,8 +32,8 @@ import (
 	"log"
 	"net/http"
 
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
-	base "stash.us.cray.com/HMS/hms-base"
+	base "github.com/Cray-HPE/hms-base"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
 )
 
 func (d *CapmcD) validateXnamesForEPO(xnames []string) error {

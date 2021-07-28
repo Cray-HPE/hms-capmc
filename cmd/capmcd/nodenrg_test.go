@@ -27,16 +27,16 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/Cray-HPE/hms-capmc/internal/logger"
+	"github.com/Cray-HPE/hms-capmc/internal/tsdb"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"stash.us.cray.com/HMS/hms-capmc/internal/logger"
-	"stash.us.cray.com/HMS/hms-capmc/internal/tsdb"
 	"testing"
 
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
 )
 
 func TestValidateTimeBoundNidRequestiOptions(t *testing.T) {

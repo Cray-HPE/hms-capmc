@@ -34,8 +34,8 @@ import (
 	"net/url"
 	"strings"
 
-	base "stash.us.cray.com/HMS/hms-base"
-	"stash.us.cray.com/HMS/hms-capmc/internal/capmc"
+	base "github.com/Cray-HPE/hms-base"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
 )
 
 // getCabinetType determines if the xname provided exists in a Mountain, Hill,

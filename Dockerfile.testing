@@ -25,4 +25,4 @@ FROM cray/hms-capmc-build-base
 
 # Run unit tests...
 RUN set -ex \
-    && go test -v stash.us.cray.com/HMS/hms-capmc/cmd/capmcd
+    && go test -v github.com/Cray-HPE/hms-capmc/cmd/capmcd

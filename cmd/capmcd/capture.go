@@ -27,6 +27,8 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"github.com/Cray-HPE/hms-base"
+	"github.com/Cray-HPE/hms-certs/pkg/hms_certs"
 	"io"
 	"io/ioutil"
 	"log"
@@ -36,8 +38,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"stash.us.cray.com/HMS/hms-base"
-	"stash.us.cray.com/HMS/hms-certs/pkg/hms_certs"
 )
 
 type testData struct {
@@ -228,7 +228,7 @@ func capture(req *http.Request) (*http.Response, error) {
 	var td testData
 	td.SaveReq(req)
 
-	base.SetHTTPUserAgent(req,serviceName)
+	base.SetHTTPUserAgent(req, serviceName)
 	resp, err := realClient.Do(req)
 	captureMutex.Lock()
 	defer captureMutex.Unlock()
@@ -251,11 +251,11 @@ func capture(req *http.Request) (*http.Response, error) {
 // requests/responses through a the capture function.  The client to talk to
 // the real services is also constructed.
 func captureClient(flags clientFlags, timeout time.Duration) *hms_certs.HTTPClientPair {
-	realClient,_ = makeClient((flags|clientInsecure), timeout)
+	realClient, _ = makeClient((flags | clientInsecure), timeout)
 
 	realClient.InsecureClient.HTTPClient = &http.Client{
-        Transport: RoundTripFunc(capture),
-    }
+		Transport: RoundTripFunc(capture),
+	}
 	realClient.SecureClient = realClient.InsecureClient
 	return realClient
 }
