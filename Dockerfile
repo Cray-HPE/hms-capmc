@@ -23,7 +23,7 @@
 # Dockerfile for building hms-capmc.
 
 # Build base just has the packages installed we need.
-FROM arti.dev.cray.com/baseos-docker-master-local/golang:1.14-alpine3.12 AS build-base
+FROM arti.dev.cray.com/baseos-docker-master-local/golang:1.16-alpine3.13 AS build-base
 
 RUN set -eux \
     && apk update \
@@ -32,10 +32,12 @@ RUN set -eux \
 # Base copies in the files we need to test/build.
 FROM build-base AS base
 
+RUN go env -w GO111MODULE=auto
+
 # Copy all the necessary files to the image.
-COPY cmd $GOPATH/src/stash.us.cray.com/HMS/hms-capmc/cmd
-COPY internal $GOPATH/src/stash.us.cray.com/HMS/hms-capmc/internal
-COPY vendor $GOPATH/src/stash.us.cray.com/HMS/hms-capmc/vendor
+COPY cmd $GOPATH/src/github.com/Cray-HPE/hms-capmc/cmd
+COPY internal $GOPATH/src/github.com/Cray-HPE/hms-capmc/internal
+COPY vendor $GOPATH/src/github.com/Cray-HPE/hms-capmc/vendor
 
 
 ### UNIT TEST Stage ###
@@ -60,12 +62,12 @@ CMD ["sh", "-c", "set -ex && go test -cover -v ./..."]
 
 FROM base AS builder
 
-RUN set -ex && go build -v -i -o /usr/local/bin/capmc-service stash.us.cray.com/HMS/hms-capmc/cmd/capmcd
+RUN set -ex && go build -v -i -o /usr/local/bin/capmc-service github.com/Cray-HPE/hms-capmc/cmd/capmcd
 
 ### Final Stage ###
 
-FROM arti.dev.cray.com/baseos-docker-master-local/alpine:3.12
-LABEL maintainer="Cray, Inc."
+FROM arti.dev.cray.com/baseos-docker-master-local/alpine:3.13
+LABEL maintainer="Hewlett Packard Enterprise"
 EXPOSE 27777
 STOPSIGNAL SIGTERM
 

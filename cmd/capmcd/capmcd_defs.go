@@ -32,12 +32,12 @@ import (
 	"net/url"
 	"time"
 
-	base "stash.us.cray.com/HMS/hms-base"
-	"stash.us.cray.com/HMS/hms-capmc/internal/tsdb"
-	"stash.us.cray.com/HMS/hms-certs/pkg/hms_certs"
-	compcreds "stash.us.cray.com/HMS/hms-compcredentials"
-	sstorage "stash.us.cray.com/HMS/hms-securestorage"
-	reservation "stash.us.cray.com/HMS/hms-smd/pkg/service-reservations"
+	base "github.com/Cray-HPE/hms-base"
+	"github.com/Cray-HPE/hms-capmc/internal/tsdb"
+	"github.com/Cray-HPE/hms-certs/pkg/hms_certs"
+	compcreds "github.com/Cray-HPE/hms-compcredentials"
+	sstorage "github.com/Cray-HPE/hms-securestorage"
+	reservation "github.com/Cray-HPE/hms-smd/pkg/service-reservations"
 )
 
 // Internal BMC command actions

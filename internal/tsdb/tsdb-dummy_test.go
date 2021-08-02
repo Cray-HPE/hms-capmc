@@ -25,9 +25,9 @@
 package tsdb
 
 import (
+	"github.com/Cray-HPE/hms-capmc/internal/logger"
 	"github.com/stretchr/testify/suite"
 	"reflect"
-	"stash.us.cray.com/HMS/hms-capmc/internal/logger"
 	"testing"
 	"time"
 
@@ -71,7 +71,7 @@ func (suite *TSDB_TS) TestGetNodeEnergy_nilError() {
 	startTime, _ := time.Parse("2001-04-01 00:00:00", "2001-04-01 00:00:00")
 	endTime, _ := time.Parse("2001-04-01 00:00:00", "2001-04-01 12:00:00")
 	tbnr := TimeBoundNodeRequest{}
-	tbnr.EndTime= endTime
+	tbnr.EndTime = endTime
 	tbnr.StartTime = startTime
 
 	x, err := TSDBContext.GetNodeEnergy(tbnr)
@@ -85,7 +85,7 @@ func (suite *TSDB_TS) TestGetNodeEnergyStats_nilError() {
 	startTime, _ := time.Parse("2001-04-01 00:00:00", "2001-04-01 00:00:00")
 	endTime, _ := time.Parse("2001-04-01 00:00:00", "2001-04-01 12:00:00")
 	tbnr := TimeBoundNodeRequest{}
-	tbnr.EndTime= endTime
+	tbnr.EndTime = endTime
 	tbnr.StartTime = startTime
 
 	x, err := TSDBContext.GetNodeEnergyStats(tbnr)
@@ -98,14 +98,13 @@ func (suite *TSDB_TS) TestGetNodeEnergyCounter_nilError() {
 	startTime, _ := time.Parse("2001-04-01 00:00:00", "2001-04-01 00:00:00")
 	endTime, _ := time.Parse("2001-04-01 00:00:00", "2001-04-01 12:00:00")
 	tbnr := TimeBoundNodeRequest{}
-	tbnr.EndTime= endTime
+	tbnr.EndTime = endTime
 	tbnr.StartTime = startTime
 
 	x, err := TSDBContext.GetNodeEnergyCounter(tbnr)
 	suite.Equal(nil, err)
 	suite.True(reflect.TypeOf(x) == reflect.TypeOf(&NodeEnergyCounters{}))
 }
-
 
 func TestTSDBDummySuite(t *testing.T) {
 	logger.SetupLogging()
