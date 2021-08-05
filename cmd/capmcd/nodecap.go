@@ -52,6 +52,7 @@ const (
 	// Intel BMC Node PowerControl.Name
 	IntelNodePCName = "Server Power Control"
 	HPENodePCName   = "HPE Power Control"
+	HPEApolloPCName = "PowerLimit Resource for AccPowerService"
 )
 
 // defaultPowerCapCtl is a mapping of the valid power cap set control "name"
@@ -76,6 +77,7 @@ var defaultPowerCtlToCap = map[string]string{
 	GigaByteNodePCName: "node",
 	IntelNodePCName:    "node",
 	HPENodePCName:      "node",
+	HPEApolloPCName:    "node",
 }
 
 // newPowerCapNidError creates a new PowerCapNid structure initialized as
@@ -395,12 +397,28 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
+			var val *int
 			var controls []capmc.PowerCapControl
 			if hpePctlLen > 0 {
 				// Handle Apollo 6500 AccPowerService power cap query
 				for _, pl := range rfPower.PowerLimits {
-					name = "node"
-
+					name, ok := defaultPowerCtlToCap[rfPower.Name]
+					if !ok {
+						log.Printf("Notice: %s %s: Skipped unknown PowerControl: %s",
+							result.ni.BmcFQDN, result.ni.BmcType, rfPower.Name)
+						continue
+					}
+					if pl.PowerLimitInWatts != nil {
+						val = pl.PowerLimitInWatts
+					} else {
+						var unconstrained int
+						// Per Cascade 0 is unconstrained.
+						// So if there isn't a control it
+						// must be by definition unconstrained.
+						val = &unconstrained
+					}
+					controls = append(controls,
+						capmc.PowerCapControl{Name: name, Val: val})
 				}
 			} else {
 				// Handle standard Redfish PowerControl power cap query
@@ -420,7 +438,6 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 						}
 					}
 
-					var val *int
 					if pc.PowerLimit != nil {
 						val = pc.PowerLimit.LimitInWatts
 					} else {
@@ -570,6 +587,7 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 		var (
 			powerCtl    []capmc.PowerControl
 			powerCtlCnt int
+			powerLimit  capmc.HpeConfigurePowerLimit
 		)
 
 		// Create PowerControl array that matches size of Redfish
@@ -636,18 +654,42 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 					break
 				}
 
-				powerCtl[pc.PwrCtlIndex] =
-					capmc.PowerControl{
-						PowerLimit: &capmc.PowerLimit{
-							LimitInWatts: control.Val,
+				if isHpeApollo6500(node) {
+					zero := 0
+					powerLimit = capmc.HpeConfigurePowerLimit{
+						PowerLimits: []capmc.HpePowerLimits{
+							{
+								PowerLimitInWatts: control.Val,
+								ZoneNumber:        &zero,
+							},
 						},
 					}
+				} else {
+					powerCtl[pc.PwrCtlIndex] =
+						capmc.PowerControl{
+							PowerLimit: &capmc.PowerLimit{
+								LimitInWatts: control.Val,
+							},
+						}
+				}
 				powerCtlCnt++
 			} else {
-				powerCtl[pc.PwrCtlIndex] = capmc.PowerControl{
-					PowerLimit: &capmc.PowerLimit{
-						LimitInWatts: nil,
-					},
+				if isHpeApollo6500(node) {
+					zero := 0
+					powerLimit = capmc.HpeConfigurePowerLimit{
+						PowerLimits: []capmc.HpePowerLimits{
+							{
+								PowerLimitInWatts: nil,
+								ZoneNumber:        &zero,
+							},
+						},
+					}
+				} else {
+					powerCtl[pc.PwrCtlIndex] = capmc.PowerControl{
+						PowerLimit: &capmc.PowerLimit{
+							LimitInWatts: nil,
+						},
+					}
 				}
 				powerCtlCnt++
 			}
@@ -660,8 +702,8 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		var power = capmc.Power{PowerCtl: powerCtl}
-		payload, err := json.Marshal(power)
+		payload, err := generatePayload(node, powerCtl, powerLimit)
+
 		if err != nil {
 			log.Printf("Error: %s", err)
 			continue
@@ -719,6 +761,36 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Error encoding JSON response: %s\n", err)
 	}
+}
+
+// generatePayload - take a standard Redfish power cap structure or the
+// specialized HPE Apollo power cap structure and generate the []byte payload
+// needed for the BMC command.
+func generatePayload(node *NodeInfo, powerCtl []capmc.PowerControl, powerLimit capmc.HpeConfigurePowerLimit) ([]byte, error) {
+	var payload []byte
+	var err error
+	var power interface{} = nil
+
+	fmt.Printf("pCtl: %+v\n", powerCtl)
+	fmt.Printf("pLim: %+v\n", powerLimit)
+
+	if isHpeApollo6500(node) {
+		if len(powerLimit.PowerLimits) == 0 {
+			return nil, errors.New("missing power limit information")
+		}
+		// HPE Apollo 6500 power capping structure
+		power = capmc.HpeConfigurePowerLimit{PowerLimits: powerLimit.PowerLimits}
+	} else {
+		if len(powerCtl) == 0 {
+			return nil, errors.New("missing power control information")
+		}
+		// Standard Redfish power capping structure
+		power = capmc.Power{PowerCtl: powerCtl}
+	}
+
+	payload, err = json.Marshal(power)
+
+	return payload, err
 }
 
 //buildPowerCapCapabilitiesGroup - build a PowerCapGroup

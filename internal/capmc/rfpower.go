@@ -50,24 +50,26 @@ type Power struct {
 	PowerLimits       []HpePowerLimits       `json:"PowerLimits,omitempty"`
 }
 
+// Structs used to [un]marshal HPE Redfish
+// HpeServerAccPowerLimit.v1_0_0.HpeServerAccPowerLimit data
 type HpeConfigurePowerLimit struct {
 	PowerLimits []HpePowerLimits `json:"PowerLimits"`
 }
 
 type HpeActualPowerLimits struct {
-	PowerLimitInWatts int `json:"PowerLimitInWatts"`
-	ZoneNumber        int `json:"ZoneNumber"`
+	PowerLimitInWatts *int `json:"PowerLimitInWatts"`
+	ZoneNumber        *int `json:"ZoneNumber"`
 }
 
 type HpePowerLimitRanges struct {
-	MaximumPowerLimit int `json:"MaximumPowerLimit"`
-	MinimumPowerLimit int `json:"MinimumPowerLimit"`
-	ZoneNumber        int `json:"ZoneNumber"`
+	MaximumPowerLimit *int `json:"MaximumPowerLimit"`
+	MinimumPowerLimit *int `json:"MinimumPowerLimit"`
+	ZoneNumber        *int `json:"ZoneNumber"`
 }
 
 type HpePowerLimits struct {
-	PowerLimitInWatts int `json:"PowerLimitInWatts"`
-	ZoneNumber        int `json:"ZoneNumber"`
+	PowerLimitInWatts *int `json:"PowerLimitInWatts"`
+	ZoneNumber        *int `json:"ZoneNumber"`
 }
 
 type HpeError struct {

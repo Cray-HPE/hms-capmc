@@ -42,6 +42,10 @@ var (
 	eightHundredFifty = 850
 	nineHundred       = 900
 	sixThousand       = 6000
+	zero              = 0
+	thirtyTwoFifty    = 3250
+	thirtyFiveHundred = 3500
+	thirtySevenFifty  = 3750
 
 	onePtZero    = float32(1.0)
 	onePtZeroTwo = float32(1.02)
@@ -95,23 +99,23 @@ var (
 		},
 	}
 	rfHpeActualPowerComp = HpeActualPowerLimits{
-		PowerLimitInWatts: 3500,
-		ZoneNumber:        0,
+		PowerLimitInWatts: &thirtyFiveHundred,
+		ZoneNumber:        &zero,
 	}
 	rfHpePowerLimitRangeComp = HpePowerLimitRanges{
-		MaximumPowerLimit: 3750,
-		MinimumPowerLimit: 3250,
-		ZoneNumber:        0,
+		MaximumPowerLimit: &thirtySevenFifty,
+		MinimumPowerLimit: &thirtyTwoFifty,
+		ZoneNumber:        &zero,
 	}
 	rfHpePowerLimitComp = HpePowerLimits{
-		PowerLimitInWatts: 3500,
-		ZoneNumber:        0,
+		PowerLimitInWatts: &thirtyFiveHundred,
+		ZoneNumber:        &zero,
 	}
 	rfHpeConfigurePowerLimitComp = HpeConfigurePowerLimit{
 		PowerLimits: []HpePowerLimits{
 			{
-				PowerLimitInWatts: 3500,
-				ZoneNumber:        0,
+				PowerLimitInWatts: &thirtyFiveHundred,
+				ZoneNumber:        &zero,
 			},
 		},
 	}
