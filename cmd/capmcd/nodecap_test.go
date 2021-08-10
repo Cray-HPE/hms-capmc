@@ -37,11 +37,12 @@ import (
 	"reflect"
 	"testing"
 
-	base "github.com/Cray-HPE/hms-base"
 	"github.com/Cray-HPE/hms-capmc/internal/capmc"
+	"github.com/Cray-HPE/hms-smd/pkg/sm"
+
+	base "github.com/Cray-HPE/hms-base"
 	compcreds "github.com/Cray-HPE/hms-compcredentials"
 	sstorage "github.com/Cray-HPE/hms-securestorage"
-	"github.com/Cray-HPE/hms-smd/pkg/sm"
 )
 
 var vaultData = []sstorage.MockLookup{
