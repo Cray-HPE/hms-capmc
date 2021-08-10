@@ -223,7 +223,7 @@ func convertPowerCtlsToPowerCaps(ni *NodeInfo, pwrCtlInfo rf.PowerCtlInfo) map[s
 				min = pwrCtl.OEM.Cray.PowerLimit.Min
 				max = pwrCtl.OEM.Cray.PowerLimit.Max
 			} else if pwrCtl.OEM.HPE != nil {
-				min = pwrCtl.OEM.HPE.PowerLimit.Max
+				min = pwrCtl.OEM.HPE.PowerLimit.Min
 				max = pwrCtl.OEM.HPE.PowerLimit.Max
 			}
 		}
@@ -418,11 +418,19 @@ func (d *CapmcD) GetNodes(query HSMQuery) ([]*NodeInfo, error) {
 			componentEndpoint.RedfishSystemInfo.Actions != nil {
 			ni.RfActionURI = componentEndpoint.RedfishSystemInfo.Actions.ComputerSystemReset.Target
 			ni.RfResetTypes = componentEndpoint.RedfishSystemInfo.Actions.ComputerSystemReset.AllowableValues
-			// Make sure there is no leading hostname. HSM was
-			// adding the RfEndpointFQDN for a time.
-			ni.RfPowerURL = strings.TrimPrefix(componentEndpoint.RedfishSystemInfo.PowerURL, componentEndpoint.RfEndpointFQDN)
+			ni.RfPowerURL = componentEndpoint.RedfishSystemInfo.PowerURL
 			ni.RfPwrCtlCnt = len(componentEndpoint.RedfishSystemInfo.PowerCtlInfo.PowerCtl)
-			ni.PowerCaps = convertPowerCtlsToPowerCaps(ni, componentEndpoint.RedfishSystemInfo.PowerCtlInfo)
+			if ni.RfPwrCtlCnt > 0 {
+				pwrCtl := componentEndpoint.RedfishSystemInfo.PowerCtlInfo.PowerCtl[0]
+				if pwrCtl.OEM != nil {
+					if pwrCtl.OEM.HPE != nil {
+						if len(pwrCtl.OEM.HPE.Target) > 0 {
+							ni.RfPowerTarget = pwrCtl.OEM.HPE.Target
+						}
+					}
+				}
+				ni.PowerCaps = convertPowerCtlsToPowerCaps(ni, componentEndpoint.RedfishSystemInfo.PowerCtlInfo)
+			}
 		}
 		if componentEndpoint.RedfishManagerInfo != nil &&
 			componentEndpoint.RedfishManagerInfo.Actions != nil {

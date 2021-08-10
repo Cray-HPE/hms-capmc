@@ -503,7 +503,6 @@ func (d *CapmcD) doBmcPatchCall(call bmcCall) bmcPowerRc {
 	if err != nil {
 		res.msg = fmt.Sprintf("%s unable to unmarshal status request",
 			call.bmcCmd)
-		fmt.Printf("unmarshal error: %s", err)
 		log.Printf(res.msg)
 		return res
 	}
@@ -548,7 +547,7 @@ func (d *CapmcD) doBmcPatchCall(call bmcCall) bmcPowerRc {
 	return res
 }
 
-func (d *CapmcD) doBmcPostCall(call bmcCall) bmcPowerRc {
+func (d *CapmcD) doBmcPostCall(call bmcCall, path string) bmcPowerRc {
 	ni := call.ni
 	var res = bmcPowerRc{ni: ni, rc: -1, state: "Unknown"}
 	// NOTE The res.state isn't that important at this point. It is
@@ -556,7 +555,7 @@ func (d *CapmcD) doBmcPostCall(call bmcCall) bmcPowerRc {
 	//      PowerState isn't a good idea so if it is needed then querying
 	//      for it makes more sense.
 
-	actionPath := "https://" + ni.BmcFQDN + ni.RfPowerURL
+	actionPath := "https://" + ni.BmcFQDN + path
 
 	// check for simulation only
 	if d.simulationOnly {
@@ -635,7 +634,7 @@ func (d *CapmcD) doBmcCall(call bmcCall) {
 		res = d.doBmcGetCall(call)
 	case bmcCmdSetPowerCap:
 		if isHpeApollo6500(call.ni) {
-			res = d.doBmcPostCall(call)
+			res = d.doBmcPostCall(call, ni.RfPowerTarget)
 		} else {
 			res = d.doBmcPatchCall(call)
 		}

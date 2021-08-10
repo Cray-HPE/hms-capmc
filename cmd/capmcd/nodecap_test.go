@@ -446,7 +446,7 @@ func DoPowerCapCapabilitiesTestFunc(t *testing.T) RoundTripFunc {
 				Header:     make(http.Header),
 				Request:    req,
 			}, nil
-		case "http://localhost:27779/Inventory/ComponentEndpoints?nid=1&nid=2&nid=3&nid=4&nid=1002&nid=1003&nid=1004&nid=1005":
+		case "http://localhost:27779/Inventory/ComponentEndpoints?nid=1&nid=2&nid=3&nid=4&nid=9&nid=1002&nid=1003&nid=1004&nid=1005":
 			testNodeComponentEndpoints := loadTestDataBytes(t, "componentendpoints-nodes-full-system.input")
 			return &http.Response{
 				Status: fmt.Sprintf("%d %s",
@@ -468,7 +468,7 @@ func DoPowerCapCapabilitiesTestFunc(t *testing.T) RoundTripFunc {
 				Header:     make(http.Header),
 				Request:    req,
 			}, nil
-		case "http://localhost:27779/State/Components?nid=1&nid=2&nid=3&nid=4&nid=1002&nid=1003&nid=1004&nid=1005":
+		case "http://localhost:27779/State/Components?nid=1&nid=2&nid=3&nid=4&nid=9&nid=1002&nid=1003&nid=1004&nid=1005":
 			testNodeComponents := loadTestDataBytes(t, "components-nodes-full-system.input")
 			return &http.Response{
 				Status: fmt.Sprintf("%d %s",
@@ -585,7 +585,7 @@ func TestDoPowerCapCapabilities(t *testing.T) {
 			bytes.NewBuffer(json.RawMessage(loadTestDataBytes(t, "power_cap_cap_case3.input"))),
 		}, {
 			"Post w/nids", http.MethodPost, capmc.PowerCapCapabilities,
-			bytes.NewBuffer(json.RawMessage(`{"nids":[1,2,3,4,1002,1003,1004,1005]}`)),
+			bytes.NewBuffer(json.RawMessage(`{"nids":[1,2,3,4,9,1002,1003,1004,1005]}`)),
 			http.StatusOK,
 			bytes.NewBuffer(json.RawMessage(loadTestDataBytes(t, "power_cap_cap_case4.input"))),
 		}, {
@@ -932,7 +932,7 @@ func TestBuildPowerCapCapabilitiesGroup(t *testing.T) {
 func TestConvertSystemHWInventoryToUniqueMonikerGroups(t *testing.T) {
 	var testHWInventory sm.SystemHWInventory
 
-	expectedUniqueMonikerGroupCount := 5
+	expectedUniqueMonikerGroupCount := 6
 	testSystemHWInventoryAll := loadTestDataBytes(t, "system-hw-inventory-all.input")
 	err := json.Unmarshal(testSystemHWInventoryAll, &testHWInventory)
 	if err != nil {

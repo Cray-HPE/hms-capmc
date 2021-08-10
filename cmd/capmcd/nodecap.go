@@ -385,7 +385,7 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 				len(rfPower.PowerLimitRanges) +
 				len(rfPower.PowerLimits)
 
-			if pctlLen < 1 || hpePctlLen < 1 {
+			if pctlLen < 1 && hpePctlLen < 1 {
 				log.Printf("Notice: %s %s: No Redfish power control data for NID %d (%s)",
 					result.ni.BmcType, result.ni.BmcFQDN,
 					result.ni.Nid, result.ni.Hostname)
@@ -450,19 +450,19 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 					controls = append(controls,
 						capmc.PowerCapControl{Name: name, Val: val})
 				}
-
-				// need to find at least one know power cap control
-				if len(controls) < 1 {
-					data.Nids = append(data.Nids,
-						newPowerCapNidError(result.ni.Nid,
-							66, // ENODATA (Linux)
-							"No Redfish power cap controls found for NID"))
-					failed++
-					continue
-				}
-				data.Nids = append(data.Nids,
-					capmc.PowerCapNid{Nid: result.ni.Nid, Controls: controls})
 			}
+
+			// need to find at least one known power cap control
+			if len(controls) < 1 {
+				data.Nids = append(data.Nids,
+					newPowerCapNidError(result.ni.Nid,
+						66, // ENODATA (Linux)
+						"No Redfish power cap controls found for NID"))
+				failed++
+				continue
+			}
+			data.Nids = append(data.Nids,
+				capmc.PowerCapNid{Nid: result.ni.Nid, Controls: controls})
 		}
 
 		if failed > 0 {
@@ -640,7 +640,7 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 						newPowerCapNidError(node.Nid, 22,
 							fmt.Sprintf("Control (%s) value (%d) is less than minimum (%d)",
 								control.Name,
-								control.Val,
+								*control.Val,
 								min)))
 					break
 				}
@@ -649,7 +649,7 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 						newPowerCapNidError(node.Nid, 22,
 							fmt.Sprintf("Control (%s) value (%d) is greater than maximum (%d)",
 								control.Name,
-								control.Val,
+								*control.Val,
 								max)))
 					break
 				}
@@ -771,9 +771,6 @@ func generatePayload(node *NodeInfo, powerCtl []capmc.PowerControl, powerLimit c
 	var err error
 	var power interface{} = nil
 
-	fmt.Printf("pCtl: %+v\n", powerCtl)
-	fmt.Printf("pLim: %+v\n", powerLimit)
-
 	if isHpeApollo6500(node) {
 		if len(powerLimit.PowerLimits) == 0 {
 			return nil, errors.New("missing power limit information")
@@ -825,6 +822,12 @@ func buildPowerCapCapabilitiesGroup(monikerGroup PowerCapCapabilityMonikerGroup,
 							group.HostLimitMin = int(powerLimit.Min) //PowerControl.OEM.Cray.PowerLimit.Min
 						}
 					}
+					hpe := oem.HPE
+					if hpe != nil {
+						powerLimit := hpe.PowerLimit
+						group.HostLimitMax = int(powerLimit.Max) //PowerControl.OEM.HPE.PowerLimit.Max
+						group.HostLimitMin = int(powerLimit.Min) //PowerControl.OEM.HPE.PowerLimit.Min
+					}
 				}
 			}
 			//TODO: this value requires completion of CASMHMS-2297, so this will need to be defered for now
@@ -842,6 +845,12 @@ func buildPowerCapCapabilitiesGroup(monikerGroup PowerCapCapabilityMonikerGroup,
 							pccControl.Max = int(powerLimit.Max) //PowerControl.OEM.Cray.PowerLimit.Max
 							pccControl.Min = int(powerLimit.Min) //PowerControl.OEM.Cray.PowerLimit.Min
 						}
+					}
+					hpe := oem.HPE
+					if hpe != nil {
+						powerLimit := hpe.PowerLimit
+						pccControl.Max = int(powerLimit.Max) //PowerControl.OEM.HPE.PowerLimit.Max
+						pccControl.Min = int(powerLimit.Min) //PowerControl.OEM.HPE.PowerLimit.Min
 					}
 				}
 				controls = append(controls, pccControl)

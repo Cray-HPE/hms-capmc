@@ -43,4 +43,11 @@
     "xnames": [
         "x2014c0s29b3n0"
     ]
+},
+{
+    "name": "3_AdvancedMicroDevices,Inc._64c_256GiB_3200MHz_NodeAccel.NVIDIA.1334520060098",
+    "desc": "3_AdvancedMicroDevices,Inc._64c_256GiB_3200MHz_NodeAccel.NVIDIA.1334520060098",
+    "xnames": [
+        "x3000c0s24b0n0"
+    ]
 }]

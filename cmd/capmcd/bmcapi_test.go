@@ -205,7 +205,8 @@ func BmcTestFunc() RoundTripFunc {
 			switch req.URL.String() {
 			case "https://x5000c0s0b0/redfish/v1/Chassis/Node0/Power",
 				"https://x3000c0s0b0/redfish/v1/Chassis/Node0/Power",
-				"https://x3000c0s30b0/redfish/v1/Chassis/1/Power":
+				"https://x3000c0s30b0/redfish/v1/Chassis/1/Power",
+				"https://x3000c0s30b0/redfish/v1/Chassis/1/Power/AccPowerService/PowerLimit/Actions/HpeServerAccPowerLimit.ConfigurePowerLimit":
 				return &http.Response{
 					Status: fmt.Sprintf("%d %s",
 						http.StatusCreated,
@@ -389,39 +390,43 @@ func TestDoBmcPostCall(t *testing.T) {
 		RfPowerURL: "/redfish/v1/Chassis/Node0/Power",
 	}
 	comp3 := &NodeInfo{
-		Hostname:   "x3000c0s30b0n0",
-		BmcFQDN:    "x3000c0s30b0",
-		RfPowerURL: "/redfish/v1/Chassis/1/Power",
+		Hostname:      "x3000c0s30b0n0",
+		BmcFQDN:       "x3000c0s30b0",
+		RfPowerTarget: "/redfish/v1/Chassis/1/Power/AccPowerService/PowerLimit/Actions/HpeServerAccPowerLimit.ConfigurePowerLimit",
 	}
 
 	tests := []struct {
 		name    string
 		ni      *NodeInfo
 		command string
+		path    string
 		want    bmcPowerRc
 	}{
 		{
 			"bad URL",
 			comp1,
 			bmcCmdSetPowerCap,
+			comp1.RfPowerURL,
 			bmcPowerRc{comp1, http.StatusNotFound, testBmcMissingURI, "Unknown"},
 		},
 		{
 			"good MTN request",
 			comp2,
 			bmcCmdSetPowerCap,
+			comp2.RfPowerURL,
 			bmcPowerRc{comp2, 0, "", "Unknown"},
 		},
 		{
-			"good RVR request",
+			"good HPE request",
 			comp3,
 			bmcCmdSetPowerCap,
+			comp3.RfPowerTarget,
 			bmcPowerRc{comp3, 0, "", "Unknown"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tSvc.doBmcPostCall(bmcCall{ni: tt.ni, bmcCmd: bmcCmd{cmd: tt.command}}); !reflect.DeepEqual(got, tt.want) {
+			if got := tSvc.doBmcPostCall(bmcCall{ni: tt.ni, bmcCmd: bmcCmd{cmd: tt.command}}, tt.path); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("CapmcD.doBmcPostCall() = %+v, want %+v", got, tt.want)
 			}
 		})
