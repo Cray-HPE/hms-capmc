@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.25.7] - 2021-08-11
+
+### Added
+
+- Ability to control emulation of reinit when hardware does not support restart
+
 ## [1.25.6] - 2021-08-09
 
 ### Changed

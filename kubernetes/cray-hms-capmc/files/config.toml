@@ -167,3 +167,16 @@ PowerBandMin = 0
 # Administratively defined maximum allowable system power consumption,
 # specified in watts
 PowerBandMax = 0
+
+[CapmcConfiguration]
+
+# Number of workers that are available to execute in parallel for Redfish calls
+# ActionMaxWorkers = 1000
+
+# CAPMC behavior for a power action that target hardware does not support
+# Valid options: simulate, ignore, error
+#   simulate - For components that do not support GracefulRestart or
+#              ForceRestart, simulate will turn the node Off then On again
+#   ignore - Skip the component but notify the user it was ignored (default)
+#   error - Halt the power operation and notify the user
+# OnUnsupportedAction = simulate
