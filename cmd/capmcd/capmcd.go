@@ -388,9 +388,6 @@ func makeClient(flags clientFlags, timeout time.Duration) (*hms_certs.HTTPClient
 
 // This will initialize the global CapmcD struct with default values upon startup
 func init() {
-	svc.ActionMaxWorkers = defaultActionMaxWorkers
-	svc.OnUnsupportedAction = defaultOnUnsupportedAction
-	svc.ReinitActionSeq = defaultReinitActionSeq
 }
 
 // Called when CA cert bundle is rolled.
@@ -511,6 +508,10 @@ func main() {
 	log.Printf("Service name/instance: '%s'", serviceName)
 
 	svc.config = loadConfig(configFile)
+
+	svc.ActionMaxWorkers = svc.config.CapmcConf.ActionMaxWorkers
+	svc.OnUnsupportedAction = svc.config.CapmcConf.OnUnsupportedAction
+	svc.ReinitActionSeq = svc.config.CapmcConf.ReinitActionSeq
 
 	// log the hostname of this instance - mostly useful for pod name in
 	// multi-replica k8s envinronment

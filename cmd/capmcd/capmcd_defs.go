@@ -185,6 +185,11 @@ var (
 		PowerBandMin:   0,
 		PowerBandMax:   0,
 	}
+	defaultCapmcConfiguration = CapmcConfiguration{
+		ActionMaxWorkers:    defaultActionMaxWorkers,
+		OnUnsupportedAction: defaultOnUnsupportedAction,
+		ReinitActionSeq:     defaultReinitActionSeq,
+	}
 )
 
 // TODO - figure out what is ideal (This struct is probably not ideal...)
@@ -337,6 +342,14 @@ type SystemParameters struct {
 	// Administratively defined maximum allowable system power consumption,
 	// specified in watts
 	PowerBandMax int
+}
+
+// CapmcConfiguration defines the internal knobs that can be modified inside
+// of CAPMC to alter how certain portions of the code work.
+type CapmcConfiguration struct {
+	ActionMaxWorkers    int
+	OnUnsupportedAction string
+	ReinitActionSeq     []string
 }
 
 //PowerCapCapabilityMonikerType is consistent with the V3 XC moniker schema
