@@ -347,13 +347,9 @@ type SystemParameters struct {
 // CapmcConfiguration defines the internal knobs that can be modified inside
 // of CAPMC to alter how certain portions of the code work.
 type CapmcConfiguration struct {
-	// Number of workers that are available to execute in parallel for Redfish
-	// calls
-	ActionMaxWorkers int
-	// CAPMC behavior for a power action that target hardware does not support
+	ActionMaxWorkers    int
 	OnUnsupportedAction string
-	// CAPMC order of operation when
-	ReinitActionSeq []string
+	ReinitActionSeq     []string
 }
 
 //PowerCapCapabilityMonikerType is consistent with the V3 XC moniker schema
