@@ -513,6 +513,9 @@ func main() {
 	svc.OnUnsupportedAction = svc.config.CapmcConf.OnUnsupportedAction
 	svc.ReinitActionSeq = svc.config.CapmcConf.ReinitActionSeq
 
+	log.Printf("Configuration loaded:\n\tMax workers: %d\n\tUnsupported action: %s\n\tReinit seq: %v\n",
+		svc.ActionMaxWorkers, svc.OnUnsupportedAction, svc.ReinitActionSeq)
+
 	// log the hostname of this instance - mostly useful for pod name in
 	// multi-replica k8s envinronment
 	hostname, hostErr := os.Hostname()
