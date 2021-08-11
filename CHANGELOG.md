@@ -26,7 +26,7 @@ Security - in case of vulnerabilities
 
 ## [1.24.6] - 2021-08-11
 
-## Added
+### Added
 
 - Ability to control emulation of reinit when hardware does not support restart
 
