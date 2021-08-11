@@ -179,4 +179,4 @@ PowerBandMax = 0
 #              ForceRestart, simulate will turn the node Off then On again
 #   ignore - Skip the component but notify the user it was ignored (default)
 #   error - Halt the power operation and notify the user
-# OnUnsupportedAction = simulate
+OnUnsupportedAction = "simulate"
