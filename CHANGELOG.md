@@ -24,6 +24,13 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.25.7] - 2021-08-11
+
+### Changed
+
+- Changed helm repository @cray-internal to @cray-algol60
+- Changed cray-service version to ~2.8.0
+
 ## [1.25.6] - 2021-08-09
 
 ### Changed
