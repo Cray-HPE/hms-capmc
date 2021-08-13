@@ -248,30 +248,31 @@ type CapmcD struct {
 
 // NodeInfo encapsulates information about a node
 type NodeInfo struct {
-	Location     string
-	Hostname     string
-	Domain       string
-	FQDN         string
-	Nid          int
-	Role         string
-	State        string
-	Enabled      bool
-	BmcFQDN      string
-	BmcPath      string
-	RfActionURI  string
-	RfResetTypes []string
-	RfEpoURI     string
-	RfPowerURL   string
-	RfPwrCtlCnt  int
-	PowerCaps    map[string]PowerCap
-	PowerETag    string
-	Type         string
-	RfType       string
-	RfSubtype    string
-	BmcUser      string
-	BmcPass      string
-	BmcProtocol  string
-	BmcType      string
+	Location      string
+	Hostname      string
+	Domain        string
+	FQDN          string
+	Nid           int
+	Role          string
+	State         string
+	Enabled       bool
+	BmcFQDN       string
+	BmcPath       string
+	RfActionURI   string
+	RfResetTypes  []string
+	RfEpoURI      string
+	RfPowerURL    string
+	RfPowerTarget string
+	RfPwrCtlCnt   int
+	PowerCaps     map[string]PowerCap
+	PowerETag     string
+	Type          string
+	RfType        string
+	RfSubtype     string
+	BmcUser       string
+	BmcPass       string
+	BmcProtocol   string
+	BmcType       string
 }
 
 // PowerCap defines the values used for CAPMC power capping to Redfish

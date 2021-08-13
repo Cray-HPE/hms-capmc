@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.25.8] - 2021-08-10
+
+### Added
+
+- Power capping support for HPE Apollo 6500
+
 ## [1.25.7] - 2021-08-11
 
 ### Changed
