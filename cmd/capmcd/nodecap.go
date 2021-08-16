@@ -52,6 +52,7 @@ const (
 	// Intel BMC Node PowerControl.Name
 	IntelNodePCName = "Server Power Control"
 	HPENodePCName   = "HPE Power Control"
+	HPEApolloPCName = "PowerLimit Resource for AccPowerService"
 )
 
 // defaultPowerCapCtl is a mapping of the valid power cap set control "name"
@@ -76,6 +77,7 @@ var defaultPowerCtlToCap = map[string]string{
 	GigaByteNodePCName: "node",
 	IntelNodePCName:    "node",
 	HPENodePCName:      "node",
+	HPEApolloPCName:    "node",
 }
 
 // newPowerCapNidError creates a new PowerCapNid structure initialized as
@@ -367,8 +369,24 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 					rfPower.PowerCtlCnt)
 			}
 
-			if len(rfPower.PowerCtl) < 1 {
-				log.Printf("Notice: %s %s: No Redfish PowerControl data for NID %d (%s)",
+			if rfPower.Error != nil {
+				log.Printf("Notice: %s %s: Invalid license for power capping for NID %d (%s)",
+					result.ni.BmcType, result.ni.BmcFQDN,
+					result.ni.Nid, result.ni.Hostname)
+				data.Nids = append(data.Nids,
+					newPowerCapNidError(result.ni.Nid,
+						-1, "Invalid license"))
+				failed++
+				continue
+			}
+
+			pctlLen := len(rfPower.PowerCtl)
+			hpePctlLen := len(rfPower.ActualPowerLimits) +
+				len(rfPower.PowerLimitRanges) +
+				len(rfPower.PowerLimits)
+
+			if pctlLen < 1 && hpePctlLen < 1 {
+				log.Printf("Notice: %s %s: No Redfish power control data for NID %d (%s)",
 					result.ni.BmcType, result.ni.BmcFQDN,
 					result.ni.Nid, result.ni.Hostname)
 				data.Nids = append(data.Nids,
@@ -379,38 +397,62 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
+			var val *int
 			var controls []capmc.PowerCapControl
-			for _, pc := range rfPower.PowerCtl {
-				name, ok := defaultPowerCtlToCap[pc.Name]
-				if !ok {
-					// HPE Proliant iLO devices do not have a Name in their
-					// PowerControl field. Need to check the #odata.id to
-					// determine if the system is an HPE with iLO or not.
-					if strings.Contains(pc.Oid, "Chassis/1/Power") {
-						name = "node"
-					} else {
-						// skip unknown/unsupported controls
+			if hpePctlLen > 0 {
+				// Handle Apollo 6500 AccPowerService power cap query
+				for _, pl := range rfPower.PowerLimits {
+					name, ok := defaultPowerCtlToCap[rfPower.Name]
+					if !ok {
 						log.Printf("Notice: %s %s: Skipped unknown PowerControl: %s",
-							result.ni.BmcFQDN, result.ni.BmcType, pc.Name)
+							result.ni.BmcFQDN, result.ni.BmcType, rfPower.Name)
 						continue
 					}
+					if pl.PowerLimitInWatts != nil {
+						val = pl.PowerLimitInWatts
+					} else {
+						var unconstrained int
+						// Per Cascade 0 is unconstrained.
+						// So if there isn't a control it
+						// must be by definition unconstrained.
+						val = &unconstrained
+					}
+					controls = append(controls,
+						capmc.PowerCapControl{Name: name, Val: val})
 				}
+			} else {
+				// Handle standard Redfish PowerControl power cap query
+				for _, pc := range rfPower.PowerCtl {
+					name, ok := defaultPowerCtlToCap[pc.Name]
+					if !ok {
+						// HPE Proliant iLO devices do not have a Name in their
+						// PowerControl field. Need to check the #odata.id to
+						// determine if the system is an HPE with iLO or not.
+						if strings.Contains(pc.Oid, "Chassis/1/Power") {
+							name = "node"
+						} else {
+							// skip unknown/unsupported controls
+							log.Printf("Notice: %s %s: Skipped unknown PowerControl: %s",
+								result.ni.BmcFQDN, result.ni.BmcType, pc.Name)
+							continue
+						}
+					}
 
-				var val *int
-				if pc.PowerLimit != nil {
-					val = pc.PowerLimit.LimitInWatts
-				} else {
-					var unconstrained int
-					// Per Cascade 0 is unconstrained.
-					// So if there isn't a control it
-					// must be by definition unconstrained.
-					val = &unconstrained
+					if pc.PowerLimit != nil {
+						val = pc.PowerLimit.LimitInWatts
+					} else {
+						var unconstrained int
+						// Per Cascade 0 is unconstrained.
+						// So if there isn't a control it
+						// must be by definition unconstrained.
+						val = &unconstrained
+					}
+					controls = append(controls,
+						capmc.PowerCapControl{Name: name, Val: val})
 				}
-				controls = append(controls,
-					capmc.PowerCapControl{Name: name, Val: val})
 			}
 
-			// need to find at least one know power cap control
+			// need to find at least one known power cap control
 			if len(controls) < 1 {
 				data.Nids = append(data.Nids,
 					newPowerCapNidError(result.ni.Nid,
@@ -545,6 +587,7 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 		var (
 			powerCtl    []capmc.PowerControl
 			powerCtlCnt int
+			powerLimit  capmc.HpeConfigurePowerLimit
 		)
 
 		// Create PowerControl array that matches size of Redfish
@@ -597,7 +640,7 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 						newPowerCapNidError(node.Nid, 22,
 							fmt.Sprintf("Control (%s) value (%d) is less than minimum (%d)",
 								control.Name,
-								control.Val,
+								*control.Val,
 								min)))
 					break
 				}
@@ -606,23 +649,47 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 						newPowerCapNidError(node.Nid, 22,
 							fmt.Sprintf("Control (%s) value (%d) is greater than maximum (%d)",
 								control.Name,
-								control.Val,
+								*control.Val,
 								max)))
 					break
 				}
 
-				powerCtl[pc.PwrCtlIndex] =
-					capmc.PowerControl{
-						PowerLimit: &capmc.PowerLimit{
-							LimitInWatts: control.Val,
+				if isHpeApollo6500(node) {
+					zero := 0
+					powerLimit = capmc.HpeConfigurePowerLimit{
+						PowerLimits: []capmc.HpePowerLimits{
+							{
+								PowerLimitInWatts: control.Val,
+								ZoneNumber:        &zero,
+							},
 						},
 					}
+				} else {
+					powerCtl[pc.PwrCtlIndex] =
+						capmc.PowerControl{
+							PowerLimit: &capmc.PowerLimit{
+								LimitInWatts: control.Val,
+							},
+						}
+				}
 				powerCtlCnt++
 			} else {
-				powerCtl[pc.PwrCtlIndex] = capmc.PowerControl{
-					PowerLimit: &capmc.PowerLimit{
-						LimitInWatts: nil,
-					},
+				if isHpeApollo6500(node) {
+					zero := 0
+					powerLimit = capmc.HpeConfigurePowerLimit{
+						PowerLimits: []capmc.HpePowerLimits{
+							{
+								PowerLimitInWatts: nil,
+								ZoneNumber:        &zero,
+							},
+						},
+					}
+				} else {
+					powerCtl[pc.PwrCtlIndex] = capmc.PowerControl{
+						PowerLimit: &capmc.PowerLimit{
+							LimitInWatts: nil,
+						},
+					}
 				}
 				powerCtlCnt++
 			}
@@ -635,8 +702,8 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		var power = capmc.Power{PowerCtl: powerCtl}
-		payload, err := json.Marshal(power)
+		payload, err := generatePayload(node, powerCtl, powerLimit)
+
 		if err != nil {
 			log.Printf("Error: %s", err)
 			continue
@@ -696,6 +763,33 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// generatePayload - take a standard Redfish power cap structure or the
+// specialized HPE Apollo power cap structure and generate the []byte payload
+// needed for the BMC command.
+func generatePayload(node *NodeInfo, powerCtl []capmc.PowerControl, powerLimit capmc.HpeConfigurePowerLimit) ([]byte, error) {
+	var payload []byte
+	var err error
+	var power interface{} = nil
+
+	if isHpeApollo6500(node) {
+		if len(powerLimit.PowerLimits) == 0 {
+			return nil, errors.New("missing power limit information")
+		}
+		// HPE Apollo 6500 power capping structure
+		power = capmc.HpeConfigurePowerLimit{PowerLimits: powerLimit.PowerLimits}
+	} else {
+		if len(powerCtl) == 0 {
+			return nil, errors.New("missing power control information")
+		}
+		// Standard Redfish power capping structure
+		power = capmc.Power{PowerCtl: powerCtl}
+	}
+
+	payload, err = json.Marshal(power)
+
+	return payload, err
+}
+
 //buildPowerCapCapabilitiesGroup - build a PowerCapGroup
 func buildPowerCapCapabilitiesGroup(monikerGroup PowerCapCapabilityMonikerGroup, xnameComponentLookup map[string]*sm.ComponentEndpoint) (group capmc.PowerCapGroup, err error) {
 	if monikerGroup.Xnames == nil {
@@ -728,6 +822,12 @@ func buildPowerCapCapabilitiesGroup(monikerGroup PowerCapCapabilityMonikerGroup,
 							group.HostLimitMin = int(powerLimit.Min) //PowerControl.OEM.Cray.PowerLimit.Min
 						}
 					}
+					hpe := oem.HPE
+					if hpe != nil {
+						powerLimit := hpe.PowerLimit
+						group.HostLimitMax = int(powerLimit.Max) //PowerControl.OEM.HPE.PowerLimit.Max
+						group.HostLimitMin = int(powerLimit.Min) //PowerControl.OEM.HPE.PowerLimit.Min
+					}
 				}
 			}
 			//TODO: this value requires completion of CASMHMS-2297, so this will need to be defered for now
@@ -745,6 +845,12 @@ func buildPowerCapCapabilitiesGroup(monikerGroup PowerCapCapabilityMonikerGroup,
 							pccControl.Max = int(powerLimit.Max) //PowerControl.OEM.Cray.PowerLimit.Max
 							pccControl.Min = int(powerLimit.Min) //PowerControl.OEM.Cray.PowerLimit.Min
 						}
+					}
+					hpe := oem.HPE
+					if hpe != nil {
+						powerLimit := hpe.PowerLimit
+						pccControl.Max = int(powerLimit.Max) //PowerControl.OEM.HPE.PowerLimit.Max
+						pccControl.Min = int(powerLimit.Min) //PowerControl.OEM.HPE.PowerLimit.Min
 					}
 				}
 				controls = append(controls, pccControl)

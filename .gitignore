@@ -3,4 +3,5 @@ go/pkg
 go_build_stash_us_cray_com_HMS_hms_capmc_cmd_capmcd
 .DS_Store
 capmc-service
+kubernetes/.packaged/
 

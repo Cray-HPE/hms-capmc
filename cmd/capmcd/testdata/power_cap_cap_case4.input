@@ -84,6 +84,26 @@
 					"min": 200
 				}
 			]
+		},
+		{
+			"name": "3_AdvancedMicroDevices,Inc._64c_256GiB_3200MHz_NodeAccel.NVIDIA.1334520060098",
+			"desc": "3_AdvancedMicroDevices,Inc._64c_256GiB_3200MHz_NodeAccel.NVIDIA.1334520060098",
+			"host_limit_max": 11221,
+			"host_limit_min": 5036,
+			"static": 0,
+			"supply": 12000,
+			"powerup": 0,
+			"nids": [
+				9
+			],
+			"controls": [
+				{
+					"name": "",
+					"desc": "",
+					"max": 11221,
+					"min": 5036
+				}
+			]
 		}
 	]
 }

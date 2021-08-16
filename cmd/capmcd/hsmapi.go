@@ -194,7 +194,7 @@ func getRestrictStr(query HSMQuery) string {
 // convertPowerCtlToPowerCaps converts HSM PowerCtlInfo into a CAPMC
 // PowerCap adding to the mapping of CAPMC power capping controls to Redfish
 // PowerControls.
-func convertPowerCtlsToPowerCaps(pwrCtlInfo rf.PowerCtlInfo) map[string]PowerCap {
+func convertPowerCtlsToPowerCaps(ni *NodeInfo, pwrCtlInfo rf.PowerCtlInfo) map[string]PowerCap {
 	pwrCaps := make(map[string]PowerCap)
 	for i, pwrCtl := range pwrCtlInfo.PowerCtl {
 		var min, max int
@@ -203,10 +203,12 @@ func convertPowerCtlsToPowerCaps(pwrCtlInfo rf.PowerCtlInfo) map[string]PowerCap
 		min, max = -1, -1
 		ctlName, ok := defaultPowerCtlToCap[pwrCtl.Name]
 		if !ok {
-			// HPE Proliant iLO devices do not have a Name in their PowerControl
-			// field. Need to check the #odata.id to determine if the system is
-			// an HPE with iLO or not.
-			if strings.Contains(pwrCtl.Oid, "Chassis/1/Power") {
+			// HPE devices may not have a name in their power control/limit
+			// structurres. Make sure they are populated correctly here.
+			if isHpeApollo6500(ni) {
+				pwrCtl.Name = "PowerLimit Resource for AccPowerService"
+				ctlName = "node"
+			} else if isHpeServer(ni) {
 				pwrCtl.Name = "HPE Power Control"
 				ctlName = "node"
 			} else {
@@ -220,6 +222,9 @@ func convertPowerCtlsToPowerCaps(pwrCtlInfo rf.PowerCtlInfo) map[string]PowerCap
 			if pwrCtl.OEM.Cray != nil {
 				min = pwrCtl.OEM.Cray.PowerLimit.Min
 				max = pwrCtl.OEM.Cray.PowerLimit.Max
+			} else if pwrCtl.OEM.HPE != nil {
+				min = pwrCtl.OEM.HPE.PowerLimit.Min
+				max = pwrCtl.OEM.HPE.PowerLimit.Max
 			}
 		}
 
@@ -413,11 +418,19 @@ func (d *CapmcD) GetNodes(query HSMQuery) ([]*NodeInfo, error) {
 			componentEndpoint.RedfishSystemInfo.Actions != nil {
 			ni.RfActionURI = componentEndpoint.RedfishSystemInfo.Actions.ComputerSystemReset.Target
 			ni.RfResetTypes = componentEndpoint.RedfishSystemInfo.Actions.ComputerSystemReset.AllowableValues
-			// Make sure there is no leading hostname. HSM was
-			// adding the RfEndpointFQDN for a time.
-			ni.RfPowerURL = strings.TrimPrefix(componentEndpoint.RedfishSystemInfo.PowerURL, componentEndpoint.RfEndpointFQDN)
+			ni.RfPowerURL = componentEndpoint.RedfishSystemInfo.PowerURL
 			ni.RfPwrCtlCnt = len(componentEndpoint.RedfishSystemInfo.PowerCtlInfo.PowerCtl)
-			ni.PowerCaps = convertPowerCtlsToPowerCaps(componentEndpoint.RedfishSystemInfo.PowerCtlInfo)
+			if ni.RfPwrCtlCnt > 0 {
+				pwrCtl := componentEndpoint.RedfishSystemInfo.PowerCtlInfo.PowerCtl[0]
+				if pwrCtl.OEM != nil {
+					if pwrCtl.OEM.HPE != nil {
+						if len(pwrCtl.OEM.HPE.Target) > 0 {
+							ni.RfPowerTarget = pwrCtl.OEM.HPE.Target
+						}
+					}
+				}
+				ni.PowerCaps = convertPowerCtlsToPowerCaps(ni, componentEndpoint.RedfishSystemInfo.PowerCtlInfo)
+			}
 		}
 		if componentEndpoint.RedfishManagerInfo != nil &&
 			componentEndpoint.RedfishManagerInfo.Actions != nil {
