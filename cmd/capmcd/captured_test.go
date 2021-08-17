@@ -1024,7 +1024,7 @@ func TestXnameStatusError1(t *testing.T) {
 		"400 Bad Request", 400,
 		"HTTP/1.1", 1, 1,
 		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":400,"err_msg":"xnames not found: [x0c0s0b0n0]"}
+		`{"e":400,"err_msg":"disabled or not found: [x0c0s0b0n0]"}
 `}
 	runTest(t, xnameStatusError1HSM, &testReq, &xnameStatusError1ReplayData, xnameStatusError1SSData)
 }

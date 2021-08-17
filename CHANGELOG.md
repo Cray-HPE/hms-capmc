@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.25.9] - 2021-08-17
+
+### Fixed
+
+- Allows skipping of disabled components when continue is used
+
 ## [1.25.8] - 2021-08-10
 
 ### Added
