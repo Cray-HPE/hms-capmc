@@ -576,7 +576,6 @@ func (d *CapmcD) doXnameOnOffCtrl(w http.ResponseWriter, r *http.Request, comman
 		}
 
 		if err != nil {
-			log.Printf("DEBUG: handleErr called")
 			continueCmd := handleErr(err)
 			if !continueCmd {
 				return
@@ -584,18 +583,22 @@ func (d *CapmcD) doXnameOnOffCtrl(w http.ResponseWriter, r *http.Request, comman
 		}
 	}
 
+	if args.Continue {
+		query.Enabled = []bool{true}
+		query.States = append(query.States, "!Empty")
+	}
+
 	var nl []*NodeInfo
 	nl, err = d.GetNodesByXname(query)
 	if err != nil {
-		log.Printf("DEBUG: handleErr called")
 		continueCmd := handleErr(err)
 		if !continueCmd {
 			return
 		}
 	}
 
-	if nl == nil {
-		sendJsonError(w, http.StatusNotFound, "No nodes in machine")
+	if nl == nil || len(nl) == 0 {
+		sendJsonError(w, http.StatusNotFound, "No nodes found to operate on")
 		return
 	}
 

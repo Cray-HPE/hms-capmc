@@ -24,7 +24,10 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // stringInSlice checks the slice a contains the string s
 // TODO - not a core CAPMC function, move
@@ -128,4 +131,20 @@ func compIdsToNids(cids []string, cidToNid map[string]int) ([]int, error) {
 	}
 
 	return nids, err
+}
+
+func isHpeServer(ni *NodeInfo) bool {
+	if strings.Contains(ni.RfPowerURL, "Chassis/1/Power") {
+		return true
+	}
+
+	return false
+}
+
+func isHpeApollo6500(ni *NodeInfo) bool {
+	if strings.Contains(ni.RfPowerURL, "AccPowerService/PowerLimit") {
+		return true
+	}
+
+	return false
 }
