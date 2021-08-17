@@ -72,8 +72,8 @@ ENV DATA_IMPLEMENTATION="POSTGRES"
 ENV VAULT_ADDR="http://cray-vault.vault:8200"
 ENV VAULT_SKIP_VERIFY="true"
 
-USER nobody
-
+#nobody 65534:65534
+USER 65534:65534
 
 # Start the service.
 CMD ["sh", "-c", "capmc-service -config=$CAPMC_CONFIG -hsm=$HSM_URL "]
