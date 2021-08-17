@@ -23,13 +23,13 @@ pipeline {
     stages {
         stage("Run Unit Tests") {
             steps {
-                sh "make unittest"
+                sh "export NO_CACHE=--no-cache; make unittest"
             }
         }
 
         stage("Run Coverage Tests") {
             steps {
-                sh "make coverage"
+                sh "export NO_CACHE=--no-cache; make coverage"
             }
         }
 
@@ -41,7 +41,7 @@ pipeline {
 
         stage("Build Image") {
             steps {
-                sh "make image"
+                sh "export NO_CACHE=--no-cache; make image"
             }
         }
 
