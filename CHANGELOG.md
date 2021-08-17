@@ -24,11 +24,24 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
-## [1.25.7] - 2021-08-11
+## [1.25.10] - 2021-08-11
 
 ### Added
 
 - Ability to control emulation of reinit when hardware does not support restart
+
+## [1.25.8] - 2021-08-10
+
+### Added
+
+- Power capping support for HPE Apollo 6500
+
+## [1.25.7] - 2021-08-11
+
+### Changed
+
+- Changed helm repository @cray-internal to @cray-algol60
+- Changed cray-service version to ~2.8.0
 
 ## [1.25.6] - 2021-08-09
 

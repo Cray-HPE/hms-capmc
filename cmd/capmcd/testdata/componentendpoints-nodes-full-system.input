@@ -1025,6 +1025,72 @@
          },
          "UUID" : "cd210000-3b17-11ea-8000-b42e993b6f24",
          "RedfishEndpointFQDN" : "10.4.0.12"
+      },
+      {
+         "ID": "x3000c0s24b0n0",
+         "Type": "Node",
+         "RedfishType": "ComputerSystem",
+         "RedfishSubtype": "Physical",
+         "UUID": "38334C44-4735-534A-3035-4E5031303732",
+         "OdataID": "/redfish/v1/Systems/1",
+         "RedfishEndpointID": "x3000c0s24b0",
+         "Enabled": true,
+         "RedfishEndpointFQDN": "x3000c0s24b0",
+         "RedfishURL": "x3000c0s24b0/redfish/v1/Systems/1",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "RedfishSystemInfo": {
+            "Name": "Computer System",
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "ResetType@Redfish.AllowableValues": [
+                     "On",
+                     "ForceOff",
+                     "GracefulShutdown",
+                     "ForceRestart",
+                     "Nmi",
+                     "PushPowerButton"
+                  ],
+                  "@Redfish.ActionInfo": "",
+                  "target": "/redfish/v1/Systems/1/Actions/ComputerSystem.Reset"
+               }
+            },
+            "EthernetNICInfo": [
+               {
+                  "RedfishId": "1",
+                  "@odata.id": "/redfish/v1/Systems/1/EthernetInterfaces/1",
+                  "MACAddress": "b4:7a:f1:12:fb:70"
+               },
+               {
+                  "RedfishId": "2",
+                  "@odata.id": "/redfish/v1/Systems/1/EthernetInterfaces/2",
+                  "MACAddress": "b4:7a:f1:12:fb:71"
+               },
+               {
+                  "RedfishId": "3",
+                  "@odata.id": "/redfish/v1/Systems/1/EthernetInterfaces/3",
+                  "MACAddress": "98:03:9b:1e:d4:18"
+               }
+            ],
+            "PowerURL": "/redfish/v1/Chassis/1/Power/AccPowerService/PowerLimit",
+            "PowerControl": [
+               {
+                  "@odata.id": "/redfish/v1/Chassis/1/Power#PowerControl/0",
+                  "MemberId": "0",
+                  "PowerCapacityWatts": 12000,
+                  "OEM": {
+                     "HPE": {
+                        "PowerLimit": {
+                           "Min": 5036,
+                           "Max": 11221
+                        },
+                        "PowerRegulationEnabled": true,
+                        "Status": "OK",
+                        "Target": "/redfish/v1/Chassis/1/Power/AccPowerService/PowerLimit/Actions/HpeServerAccPowerLimit.ConfigurePowerLimit"
+                     }
+                  }
+               }
+            ]
+         }
       }
    ]
 }

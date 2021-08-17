@@ -503,7 +503,6 @@ func (d *CapmcD) doBmcPatchCall(call bmcCall) bmcPowerRc {
 	if err != nil {
 		res.msg = fmt.Sprintf("%s unable to unmarshal status request",
 			call.bmcCmd)
-		fmt.Printf("unmarshal error: %s", err)
 		log.Printf(res.msg)
 		return res
 	}
@@ -548,6 +547,61 @@ func (d *CapmcD) doBmcPatchCall(call bmcCall) bmcPowerRc {
 	return res
 }
 
+func (d *CapmcD) doBmcPostCall(call bmcCall, path string) bmcPowerRc {
+	ni := call.ni
+	var res = bmcPowerRc{ni: ni, rc: -1, state: "Unknown"}
+	// NOTE The res.state isn't that important at this point. It is
+	//      only used with the "status" command.  Guessing about Redfish
+	//      PowerState isn't a good idea so if it is needed then querying
+	//      for it makes more sense.
+
+	actionPath := "https://" + ni.BmcFQDN + path
+
+	// check for simulation only
+	if d.simulationOnly {
+		log.Printf("SIMULATION_ONLY: doBmcPostCall with: POST %s, Data: %s", actionPath, call.payload)
+		res.state = "Simulation only - request not sent to hardware"
+		return res
+	}
+
+	// create the request
+	// create the request
+	req, err := http.NewRequest("POST", actionPath, bytes.NewBuffer(call.payload))
+	req.SetBasicAuth(ni.BmcUser, ni.BmcPass)
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Content-Type", "application/json")
+
+	// execute the request
+	rfClientLock.RLock()
+	rsp, err := d.rfClient.Do(req)
+	rfClientLock.RUnlock()
+	if err != nil {
+		log.Printf("POST %s\n Body           --> %s\n %s Network Error: %s",
+			actionPath, call.payload, ni.BmcType, err)
+		res.msg = fmt.Sprintf("%s Communication Error", ni.BmcType)
+		return res
+	}
+
+	defer rsp.Body.Close()
+
+	cmdBody, err := ioutil.ReadAll(rsp.Body)
+	if err != nil {
+		log.Printf("Error: reading response body: %s\n", err)
+		res.msg = "Internal Server Error"
+		return res
+	}
+
+	if rsp.StatusCode >= http.StatusBadRequest {
+		rsp.Body = ioutil.NopCloser(bytes.NewBuffer(cmdBody))
+		res.msg = d.decodeBmcResponse(ni, rsp)
+		res.rc = rsp.StatusCode
+		return res
+	}
+
+	res.rc = 0
+	return res
+}
+
 // This is intended to be started as a goroutine and handles calls down to the
 // BMC that check power state status and control power on / off. This should
 // probably be generalized for fanning out other types of requests to the BMCs.
@@ -579,7 +633,11 @@ func (d *CapmcD) doBmcCall(call bmcCall) {
 	case bmcCmdGetPowerCap:
 		res = d.doBmcGetCall(call)
 	case bmcCmdSetPowerCap:
-		res = d.doBmcPatchCall(call)
+		if isHpeApollo6500(call.ni) {
+			res = d.doBmcPostCall(call, ni.RfPowerTarget)
+		} else {
+			res = d.doBmcPatchCall(call)
+		}
 	default:
 		res = d.doBmcPowerCall(call)
 	}

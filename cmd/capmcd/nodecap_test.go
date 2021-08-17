@@ -34,6 +34,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"path"
+	"reflect"
 	"testing"
 
 	"github.com/Cray-HPE/hms-capmc/internal/capmc"
@@ -446,7 +447,7 @@ func DoPowerCapCapabilitiesTestFunc(t *testing.T) RoundTripFunc {
 				Header:     make(http.Header),
 				Request:    req,
 			}, nil
-		case "http://localhost:27779/Inventory/ComponentEndpoints?nid=1&nid=2&nid=3&nid=4&nid=1002&nid=1003&nid=1004&nid=1005":
+		case "http://localhost:27779/Inventory/ComponentEndpoints?nid=1&nid=2&nid=3&nid=4&nid=9&nid=1002&nid=1003&nid=1004&nid=1005":
 			testNodeComponentEndpoints := loadTestDataBytes(t, "componentendpoints-nodes-full-system.input")
 			return &http.Response{
 				Status: fmt.Sprintf("%d %s",
@@ -468,7 +469,7 @@ func DoPowerCapCapabilitiesTestFunc(t *testing.T) RoundTripFunc {
 				Header:     make(http.Header),
 				Request:    req,
 			}, nil
-		case "http://localhost:27779/State/Components?nid=1&nid=2&nid=3&nid=4&nid=1002&nid=1003&nid=1004&nid=1005":
+		case "http://localhost:27779/State/Components?nid=1&nid=2&nid=3&nid=4&nid=9&nid=1002&nid=1003&nid=1004&nid=1005":
 			testNodeComponents := loadTestDataBytes(t, "components-nodes-full-system.input")
 			return &http.Response{
 				Status: fmt.Sprintf("%d %s",
@@ -585,7 +586,7 @@ func TestDoPowerCapCapabilities(t *testing.T) {
 			bytes.NewBuffer(json.RawMessage(loadTestDataBytes(t, "power_cap_cap_case3.input"))),
 		}, {
 			"Post w/nids", http.MethodPost, capmc.PowerCapCapabilities,
-			bytes.NewBuffer(json.RawMessage(`{"nids":[1,2,3,4,1002,1003,1004,1005]}`)),
+			bytes.NewBuffer(json.RawMessage(`{"nids":[1,2,3,4,9,1002,1003,1004,1005]}`)),
 			http.StatusOK,
 			bytes.NewBuffer(json.RawMessage(loadTestDataBytes(t, "power_cap_cap_case4.input"))),
 		}, {
@@ -932,7 +933,7 @@ func TestBuildPowerCapCapabilitiesGroup(t *testing.T) {
 func TestConvertSystemHWInventoryToUniqueMonikerGroups(t *testing.T) {
 	var testHWInventory sm.SystemHWInventory
 
-	expectedUniqueMonikerGroupCount := 5
+	expectedUniqueMonikerGroupCount := 6
 	testSystemHWInventoryAll := loadTestDataBytes(t, "system-hw-inventory-all.input")
 	err := json.Unmarshal(testSystemHWInventoryAll, &testHWInventory)
 	if err != nil {
@@ -941,5 +942,138 @@ func TestConvertSystemHWInventoryToUniqueMonikerGroups(t *testing.T) {
 	uniqueMonikerGroups := convertSystemHWInventoryToUniqueMonikerGroups(testHWInventory)
 	if expectedUniqueMonikerGroupCount != len(uniqueMonikerGroups) {
 		t.Errorf("expected %d uniqueMonikerGroups, got %d", expectedUniqueMonikerGroupCount, len(uniqueMonikerGroups))
+	}
+}
+
+func TestGeneratePayload(t *testing.T) {
+	var (
+		pCtl    []capmc.PowerControl
+		pLimit  capmc.HpeConfigurePowerLimit
+		goodCtl []capmc.PowerControl
+		goodLim capmc.HpeConfigurePowerLimit
+	)
+
+	var fiveHundred int = 500
+	var oneThousand int = 1000
+
+	goodCtl = []capmc.PowerControl{
+		{
+			PowerLimit: &capmc.PowerLimit{
+				LimitInWatts: &oneThousand,
+			},
+		},
+		{
+			PowerLimit: &capmc.PowerLimit{
+				LimitInWatts: &fiveHundred,
+			},
+		},
+	}
+
+	var zero int = 0
+
+	goodLim = capmc.HpeConfigurePowerLimit{
+		PowerLimits: []capmc.HpePowerLimits{
+			{
+				PowerLimitInWatts: &oneThousand,
+				ZoneNumber:        &zero,
+			},
+		},
+	}
+
+	type args struct {
+		node       *NodeInfo
+		powerCtl   []capmc.PowerControl
+		powerLimit capmc.HpeConfigurePowerLimit
+	}
+
+	mtnNode := NodeInfo{
+		RfPowerURL: "/redfish/v1/Chassis/Node0/Power",
+	}
+	stdNode := NodeInfo{
+		RfPowerURL: "/redfish/v1/Chassis/Self/Power",
+	}
+	A6500Node := NodeInfo{
+		RfPowerURL: "/redfish/v1/Chassis/1/Power/AccPowerService/PowerLimit",
+	}
+
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name: "bad mtnNode",
+			args: args{
+				node:       &mtnNode,
+				powerCtl:   pCtl,
+				powerLimit: pLimit,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "bad stdNode",
+			args: args{
+				node:       &stdNode,
+				powerCtl:   pCtl,
+				powerLimit: pLimit,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "bad A6500Node",
+			args: args{
+				node:       &A6500Node,
+				powerCtl:   pCtl,
+				powerLimit: pLimit,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "good mtnNode",
+			args: args{
+				node:       &mtnNode,
+				powerCtl:   goodCtl,
+				powerLimit: pLimit,
+			},
+			want:    json.RawMessage(`{"PowerControl":[{"PowerLimit":{"LimitInWatts":1000}},{"PowerLimit":{"LimitInWatts":500}}]}`),
+			wantErr: false,
+		},
+		{
+			name: "good stdNode",
+			args: args{
+				node:       &stdNode,
+				powerCtl:   goodCtl,
+				powerLimit: pLimit,
+			},
+			want:    json.RawMessage(`{"PowerControl":[{"PowerLimit":{"LimitInWatts":1000}},{"PowerLimit":{"LimitInWatts":500}}]}`),
+			wantErr: false,
+		},
+		{
+			name: "good A6500Node",
+			args: args{
+				node:       &A6500Node,
+				powerCtl:   pCtl,
+				powerLimit: goodLim,
+			},
+			want:    json.RawMessage(`{"PowerLimits":[{"PowerLimitInWatts":1000,"ZoneNumber":0}]}`),
+			wantErr: false,
+		},
+		//want:    json.RawMessage(`{"PowerLimits":null}`),
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := generatePayload(tt.args.node, tt.args.powerCtl, tt.args.powerLimit)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("generatePayload() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("generatePayload() = %s, want %s", got, tt.want)
+			}
+		})
 	}
 }
