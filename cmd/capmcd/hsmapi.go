@@ -613,7 +613,7 @@ func (d *CapmcD) GetNodesByXname(query HSMQuery) ([]*NodeInfo, error) {
 			var errmsg string
 
 			if blk == 0 {
-				errmsg = "xnames not found"
+				errmsg = "xnames are disabled or not found"
 			} else {
 				if len(bad) == blk {
 					errmsg = "xnames role blocked"

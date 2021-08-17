@@ -597,8 +597,8 @@ func (d *CapmcD) doXnameOnOffCtrl(w http.ResponseWriter, r *http.Request, comman
 		}
 	}
 
-	if nl == nil {
-		sendJsonError(w, http.StatusNotFound, "No nodes in machine")
+	if nl == nil || len(nl) == 0 {
+		sendJsonError(w, http.StatusNotFound, "No nodes found to operate on")
 		return
 	}
 
