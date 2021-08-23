@@ -24,6 +24,15 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.24.7] - 2021-08-23
+
+### Security
+
+- Non root container work:
+- Changed cray-service version to ~2.8.1
+- Converted how dockerfiles are utilized and set the USER to run as 65534 
+
+
 ## [1.24.6] - 2021-08-11
 
 ### Changed
