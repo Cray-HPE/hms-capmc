@@ -2,6 +2,50 @@ swagger: '2.0'
 info:
   title: Cray Advanced Platform Monitoring and Control (CAPMC)
   description: >-
+
+    ## Deprecation Notice: CAPMC v1 is being partially deprecated
+    
+    #### Effective CSM 1.0 -> removed as part of CSM 1.3
+    
+    Further development of the Cray Advanced Platform Management and Control (CAPMC) service, command line, and telemetry APIs has stopped.
+    CAPMC is being replaced with a Power Control Service (PCS) in a future release. CAPMC has entered end-of-life but will still be available.
+    More information about PCS will be published as it become available. The current API and CLI portfolio for CAPMC is being shrunk to better align 
+    with the future direction of PCS.  
+    
+    
+    The API endpoints that remain un-deprecated will remain supported until their 'phased transition' into PCS 
+    (e.g. Power Capping is not 'deprecated' and will be supported in PCS; As PCS is developed, CAPMC's Powercapping and PCS's Powercapping will both function,
+    eventually callers of the CAPMC power capping will need to replace calls to PCS - the API will be different.)
+
+
+    Here is a list of deprecated API (CLI) endpoints:
+
+    * node control  
+      * `/get_node_rules`
+      * `/get_node_status`
+      * `/node_on`
+      * `/node_off`
+      * `/node_reinit`
+    * group control
+      * `/group_reinit`
+      * `/get_group_status`
+      * `/group_on`
+      * `/group_off`
+    * node energy
+      * `/get_node_energy`
+      * `/get_node_energy_stats`
+      * `/get_node_energy_counter`
+    * system monitor
+      * `/get_system_parameters`
+      * `/get_system_power`
+      * `/get_system_power_details`
+    * EPO
+      * `/emergency_power_off`  
+    * utilities
+      * `/get_nid_map`
+
+    ## Introduction
+
     The Cray Advanced Platform Monitoring and Control (CAPMC) API provides
     remote power monitoring and control to agents running externally to the Cray
     System Management Services.
@@ -31,7 +75,7 @@ info:
       controls enable external software to more intelligently manage systemwide
       power consumption or configuration parameters.
 
-    ### node control
+    ### node control (deprecated CSM 1.0 - removed CSM 1.3)
 
       CAPMC node power controls implement a simple interface for powering on
       or off nodes, querying node state information, and querying site-specific
@@ -43,7 +87,7 @@ info:
       provided as a means for third party software to implement power management
       strategies as simple or complex as the site-level requirements demand.
 
-    ### group control
+    ### group control (deprecated CSM 1.0 - removed CSM 1.3)
 
       CAPMC group power controls implement a simple interface for querying
       component state and controlling the power of components that are part of a
@@ -61,7 +105,7 @@ info:
       consume. The power capping API calls are provided as a means for third
       party software to implement advanced power management strategies.
 
-    ### utilities
+    ### utilities (partially deprecated CSM 1.0 - removed CSM 1.3)
 
       CAPMC also contains utility functions used to query information such as
       component name mapping, system partition membership, or a node\'s role
@@ -71,7 +115,7 @@ info:
       maximum flexibility while allowing the client to utilize capmc\'s built in
       authorization mechanism.
 
-    ### node energy
+    ### node energy (deprecated CSM 1.0 - removed CSM 1.3)
 
       CAPMC energy reporting controls implement a simple interface for querying
       node energy consumption in various ways. The client may query statistics
@@ -95,7 +139,7 @@ info:
       are resource intensive. Depending on system size and input parameters,
       those API calls may require several minutes to complete.
 
-    ### system monitor
+    ### system monitor (deprecated CSM 1.0 - removed CSM 1.3)
 
       CAPMC system level monitoring controls implement a simple interface for
       monitoring near real time system level power consumption. Current or
@@ -116,7 +160,7 @@ info:
       These constraints ensure high data quality and minimize the impact of
       hysteresis on API calls.
 
-    ### EPO
+    ### EPO (deprecated CSM 1.0 - removed CSM 1.3)
 
       CAPMC EPO controls implement a simple interface for issuing a software
       driven emergency power off. This causes a hard power off for all
@@ -173,13 +217,13 @@ produces:
 
 tags:
   - name: component control
-  - name: node control
-  - name: group control
+  - name: node control - DEPRECATED
+  - name: group control - DEPRECATED
   - name: power capping
-  - name: utilities
-  - name: node energy
-  - name: system monitor
-  - name: EPO
+  - name: utilities - DEPRECATED
+  - name: node energy - DEPRECATED
+  - name: system monitor - DEPRECATED
+  - name: EPO - DEPRECATED
 # XXX currently unimplemented
 # - name: in_band
 
@@ -662,7 +706,7 @@ paths:
   /get_node_rules:
     get:
       tags:
-        - node control
+        - node control - DEPRECATED
       summary: Admin defined node rules
       description: >-
         The `get_node_rules` API returns hardware (and perhaps site-specific)
@@ -779,7 +823,7 @@ paths:
 
     post:
       tags:
-        - node control
+        - node control - DEPRECATED
       summary: Return admin defined node rules
       description: >-
         `get_node_rules` informs third party software about hardware (and
@@ -900,7 +944,7 @@ paths:
   /get_node_status:
     post:
       tags:
-        - node control
+        - node control - DEPRECATED
       summary: Return node status
       description: >-
         The `get_node_status` API returns component state for all nodes or a
@@ -1109,7 +1153,7 @@ paths:
   /node_on:
     post:
       tags:
-        - node control
+        - node control - DEPRECATED
       summary: Power on nodes
       description: >-
         The `node_on` API will power **on** a selected list of nodes by NID.
@@ -1227,7 +1271,7 @@ paths:
   /node_off:
     post:
       tags:
-        - node control
+        - node control - DEPRECATED
       summary: Power off nodes
       description: >-
         The `node_off` API will shutdown and power **off** a selected list of
@@ -1344,7 +1388,7 @@ paths:
   /node_reinit:
     post:
       tags:
-        - node control
+        - node control - DEPRECATED
       summary: Restart nodes
       description: >-
         The `node_reinit` API issues a **restart** or **off-on** sequence to a
@@ -1460,7 +1504,7 @@ paths:
   /get_node_energy:
     post:
       tags:
-        - node energy
+        - node energy - DEPRECATED
       summary: Return accumulated energy values
       description: >-
         The `get_node_energy` API will return accumulated energy values for a
@@ -1594,7 +1638,7 @@ paths:
   /get_node_energy_stats:
     post:
       tags:
-        - node energy
+        - node energy - DEPRECATED
       summary: Return node energy statistics
       description: >-
         The `get_node_energy_stats` API returns the energy statistics for a set
@@ -1736,7 +1780,7 @@ paths:
   /get_node_energy_counter:
     post:
       tags:
-        - node energy
+        - node energy - DEPRECATED
       summary: Return node energy counters
       description: >-
         The `get_node_energy_counter` API returns energy counters for a set of
@@ -2453,7 +2497,7 @@ paths:
   /group_reinit:
     post:
       tags:
-        - group control
+        - group control - DEPRECATED
       summary: Restart group
       description: >-
         The `group_reinit` API issues a **restart** or **off-on** sequence to a
@@ -2575,7 +2619,7 @@ paths:
   /get_group_status:
     post:
       tags:
-        - group control
+        - group control - DEPRECATED
       summary: Return component status by group
       description: >-
         The `get_group_status` API returns component state specified by a group
@@ -2727,7 +2771,7 @@ paths:
   /group_on:
     post:
       tags:
-        - group control
+        - group control - DEPRECATED
       summary: Power components on by group
       description: >-
         The `group_on` API powers **on** a component list by group. Power **on**
@@ -2842,7 +2886,7 @@ paths:
   /group_off:
     post:
       tags:
-        - group control
+        - group control - DEPRECATED
       summary: Power components off by group
       description: >-
         The `group_off` API powers **off** a component list by group. Power
@@ -3687,7 +3731,7 @@ paths:
   /get_system_parameters:
     get:
       tags:
-        - system monitor
+        - system monitor - DEPRECATED
       summary: Read-only system parameters
       description: >-
         The `get_system_parameters` API returns read-only parameters such as
@@ -3707,7 +3751,7 @@ paths:
             $ref: '#/definitions/httpError500_InternalServerError'
     post:
       tags:
-        - system monitor
+        - system monitor - DEPRECATED
       summary: Return read-only system parameters
       description: >-
         The `get_system_parameters` API returns read-only parameters such as
@@ -3733,7 +3777,7 @@ paths:
   /get_system_power:
     get:
       tags:
-        - system monitor
+        - system monitor - DEPRECATED
       summary: System level power information
       description: >-
         The `get_system_power` API returns system level power information
@@ -3776,7 +3820,7 @@ paths:
 
     post:
       tags:
-        - system monitor
+        - system monitor - DEPRECATED
       summary: Return system level power information
       description: >-
         The `get_system_power` API returns system level power information
@@ -3831,7 +3875,7 @@ paths:
   /get_system_power_details:
     get:
       tags:
-        - system monitor
+        - system monitor - DEPRECATED
       summary: Per cabinet power information
       description: >-
         The `get_system_power_details` API returns per cabinet power
@@ -3874,7 +3918,7 @@ paths:
 
     post:
       tags:
-        - system monitor
+        - system monitor - DEPRECATED
       summary: Return per cabinet power information
       description: >-
         The `get_system_power_details` API returns per cabinet power
@@ -3926,7 +3970,7 @@ paths:
   /get_nid_map:
     post:
       tags:
-        - utilities
+        - utilities - DEPRECATED
       summary: Return NID to component name mapping
       description: >-
         The `get_nid_map` API returns a list of objects where each element
@@ -4215,7 +4259,7 @@ paths:
   /emergency_power_off:
     post:
       tags:
-        - EPO
+        - EPO - DEPRECATED
       summary: Send Emergency Power Off
       description: >-
         The `emergency_power_off` API performs a software driven Emergency Power
