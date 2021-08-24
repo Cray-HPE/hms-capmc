@@ -40,24 +40,6 @@ COPY internal $GOPATH/src/github.com/Cray-HPE/hms-capmc/internal
 COPY vendor $GOPATH/src/github.com/Cray-HPE/hms-capmc/vendor
 
 
-### UNIT TEST Stage ###
-
-FROM base AS testing
-ENV LOG_LEVEL="TRACE"
-ENV DATA_IMPLEMENTATION="DUMMY"
-
-# Run unit tests...
-CMD ["sh", "-c", "set -ex && go test -v ./..."]
-
-
-### COVERAGE Stage ###
-
-FROM base AS coverage
-
-# Run test coverage...
-CMD ["sh", "-c", "set -ex && go test -cover -v ./..."]
-
-
 ### Build Stage ###
 
 FROM base AS builder
@@ -89,6 +71,9 @@ ENV DATA_IMPLEMENTATION="POSTGRES"
 # Used by the HMS secure storage pkg
 ENV VAULT_ADDR="http://cray-vault.vault:8200"
 ENV VAULT_SKIP_VERIFY="true"
+
+#nobody 65534:65534
+USER 65534:65534
 
 # Start the service.
 CMD ["sh", "-c", "capmc-service -config=$CAPMC_CONFIG -hsm=$HSM_URL "]

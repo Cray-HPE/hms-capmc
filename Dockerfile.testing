@@ -21,8 +21,25 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 #
-FROM cray/hms-capmc-build-base
+# Build base has the packages installed that we need.
+FROM arti.dev.cray.com/baseos-docker-master-local/golang:1.16-alpine3.13 AS build-base
+
+RUN set -ex \
+    && apk -U upgrade \
+    && apk add build-base
+
+# Copy the files in for the next stages to use.
+FROM build-base as builder
+
+RUN go env -w GO111MODULE=auto
+
+COPY cmd $GOPATH/src/github.com/Cray-HPE/hms-capmc/cmd
+COPY vendor $GOPATH/src/github.com/Cray-HPE/hms-capmc/vendor
+COPY internal $GOPATH/src/github.com/Cray-HPE/hms-capmc/internal
+
+FROM builder as testing
 
 # Run unit tests...
 RUN set -ex \
+    && go clean -testcache \
     && go test -v github.com/Cray-HPE/hms-capmc/cmd/capmcd
