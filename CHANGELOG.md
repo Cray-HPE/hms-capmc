@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.23.9] - 2021-09-03
+
+### Changed
+
+- CASMINST-2989 - Pin cray-service base chart to `~2.4.0`
+
 ## [1.23.8] - 2021-07-20
 
 ### Added
