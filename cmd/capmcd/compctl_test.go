@@ -25,10 +25,16 @@
 package main
 
 import (
+	"bytes"
+	"io/ioutil"
+	"net/http"
+	"net/url"
 	"reflect"
 	"testing"
 
+	base "github.com/Cray-HPE/hms-base"
 	"github.com/Cray-HPE/hms-capmc/internal/capmc"
+	rf "github.com/Cray-HPE/hms-smd/pkg/redfish"
 )
 
 func TestCmdCompPowerSeq(t *testing.T) {
@@ -345,5 +351,86 @@ func TestDoSortActionMap(t *testing.T) {
 		if test.badOut != bad {
 			t.Errorf("TestDoSortActionMap Test Case %d: bad count FAIL: Expected %v but got %v", n, test.badOut, bad)
 		}
+	}
+}
+
+const testx1000c0s0b0n0Off = `{ "PowerState": "Off" }`
+const testx1000c0s0b0n1On = `{ "PowerState": "On" }`
+
+func WaitForOffRTTTestFunc() RoundTripFunc {
+	return func(req *http.Request) (*http.Response, error) {
+		//fmt.Printf("URL %s\n", req.URL.String())
+		switch req.URL.String() {
+		case "https://x1000c0s0b0/redfish/v1/Systems/Node0":
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(testx1000c0s0b0n0Off)),
+				Header:     make(http.Header),
+			}, nil
+		case "https://x1000c0s0b0/redfish/v1/Systems/Node1":
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(testx1000c0s0b0n1On)),
+				Header:     make(http.Header),
+			}, nil
+		default:
+			return &http.Response{
+				StatusCode: 404,
+				Body:       ioutil.NopCloser(bytes.NewBufferString("")),
+				Header:     make(http.Header),
+				Request:    req,
+			}, nil
+		}
+	}
+}
+
+func TestWaitForOff(t *testing.T) {
+	var tSvc CapmcD
+	var err error
+
+	tSvc.hsmURL, err = url.Parse("http://localhost:27779")
+	if err != nil {
+		t.Fatal(err)
+	}
+	testClient := NewTestClient(WaitForOffRTTTestFunc())
+	tSvc.rfClient = testClient
+	tSvc.smClient = testClient
+	tSvc.config = loadConfig("")
+	tSvc.ActionMaxWorkers = tSvc.config.CapmcConf.ActionMaxWorkers
+	tSvc.OnUnsupportedAction = tSvc.config.CapmcConf.OnUnsupportedAction
+	tSvc.ReinitActionSeq = tSvc.config.CapmcConf.ReinitActionSeq
+	tSvc.config.CapmcConf.waitForOffRetries = 1
+	tSvc.config.CapmcConf.waitForOffSleep = 0
+	tSvc.WPool = base.NewWorkerPool(1, 10)
+	tSvc.WPool.Run()
+
+	comp1 := &NodeInfo{
+		Hostname: "x1000c0s0b0n0",
+		BmcFQDN:  "x1000c0s0b0",
+		BmcPath:  "/redfish/v1/Systems/Node0",
+		RfType:   rf.ComputerSystemType,
+	}
+
+	comp2 := &NodeInfo{
+		Hostname: "x1000c0s0b0n1",
+		BmcFQDN:  "x1000c0s0b0",
+		BmcPath:  "/redfish/v1/Systems/Node1",
+		RfType:   rf.ComputerSystemType,
+	}
+
+	tests := []struct {
+		name string
+		ni   *NodeInfo
+		want bmcPowerRc
+	}{
+		{"off", comp1, bmcPowerRc{ni: comp1, rc: 0, msg: "", state: "Off"}},
+		{"on", comp2, bmcPowerRc{ni: comp2, rc: -1, msg: "exceeded retries waiting for component to be Off", state: "Unknown"}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tSvc.waitForOff(tt.ni); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("CapmcD.waitForOff() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

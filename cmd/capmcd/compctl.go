@@ -165,6 +165,41 @@ func (d *CapmcD) doSortActionMap(
 	return totalWait, failures
 }
 
+func (d *CapmcD) waitForOff(ni *NodeInfo) bmcPowerRc {
+	var res = bmcPowerRc{ni: ni, rc: -1, state: "Unknown"}
+	var nl []*NodeInfo
+	var retries int
+
+	nl = append(nl, ni)
+
+	offRetries := d.config.CapmcConf.waitForOffRetries
+	offSleep := d.config.CapmcConf.waitForOffSleep
+
+	for retries = 0; retries < offRetries; retries++ {
+		rsp := d.doCompStatus(nl, bmcCmdPowerStatus, capmc.FilterShowOffBit)
+		if len(rsp.Off) > 0 {
+			res.rc = 0
+			res.state = "Off"
+			break
+		} else {
+			time.Sleep(time.Duration(offSleep) * time.Second)
+		}
+	}
+
+	// One last attempt to get the power state after the last sleep
+	if retries == offRetries {
+		rsp := d.doCompStatus(nl, bmcCmdPowerStatus, capmc.FilterShowOffBit)
+		if len(rsp.Off) > 0 {
+			res.rc = 0
+			res.state = "Off"
+		} else {
+			res.msg = "exceeded retries waiting for component to be Off"
+		}
+	}
+
+	return res
+}
+
 func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameControlResponse {
 	var data capmc.XnameControlResponse
 	data.Xnames = make([]*capmc.XnameControlErr, 0, 1)
@@ -187,7 +222,7 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 	if failures > 0 {
 		// Fail the operation before doBmcCall()
 		data.ErrResponse.E = -1
-		data.ErrResponse.ErrMsg = fmt.Sprintf("Errors encountered with %d Xnames for %s",
+		data.ErrResponse.ErrMsg = fmt.Sprintf("Errors encountered with %d components for %s",
 			failures, command)
 
 		return data
@@ -204,8 +239,7 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 	defer d.releaseComponents(targetedXname)
 
 	if err != nil {
-
-		errstr := fmt.Sprintf("Error: Failed to reserve nodes while performing a %s.", command)
+		errstr := fmt.Sprintf("Error: Failed to reserve components while performing a %s.", command)
 		log.Printf(errstr)
 		data.ErrResponse.E = 37 // ENOLCK
 		data.ErrResponse.ErrMsg = errstr
@@ -229,6 +263,7 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 			continue
 		}
 
+		var extraWait bool
 		for _, t := range compPowerSeq {
 			if list, ok := cmap[cmd][t]; ok {
 				waitNum, waitCh := d.queueBmcCmd(bmcCmd{cmd: cmd}, list)
@@ -247,6 +282,25 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 						// try 'On'
 						doRemoveComp(cmap, t, result.ni.Hostname, d.ReinitActionSeq[actionNum+1:])
 					}
+
+					if (cmd == bmcCmdPowerOff || cmd == bmcCmdPowerForceOff) &&
+						result.rc == 0 {
+						offResult := d.waitForOff(result.ni)
+						if offResult.rc != 0 {
+							failures++
+							xnameErr := capmc.MakeXnameError(offResult.ni.Hostname, offResult.rc, offResult.msg)
+							data.Xnames = append(data.Xnames, xnameErr)
+							// Check any future actions for the same xname and remove it.
+							doRemoveComp(cmap, t, result.ni.Hostname, d.ReinitActionSeq[actionNum+1:])
+						}
+
+						// command is the power action requested by the client
+						if (command == bmcCmdPowerForceRestart ||
+							command == bmcCmdPowerRestart) &&
+							isGigabyte(result.ni) {
+							extraWait = true
+						}
+					}
 				}
 
 				// Do a simple wait to allow time for the components to be powered
@@ -263,17 +317,12 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 						time.Sleep(time.Duration(5+len(cmap[cmd]["Node"])) * time.Second)
 					default:
 					}
-				case bmcCmdPowerOff, bmcCmdPowerForceOff:
-					// Just a simple brief pause to allow components to power off
-					switch t {
-					case "HSNBoard":
-						// It has been observed that it can take more than 30
-						// seconds for the HSNBoard to show as Off at the
-						// Redfish endpoint
-						time.Sleep(40 * time.Second)
-					default:
-						time.Sleep(10 * time.Second)
-					}
+				}
+
+				if extraWait {
+					waitForGigabyte := d.config.CapmcConf.waitForGigabyte
+					time.Sleep(time.Duration(waitForGigabyte) * time.Second)
+					extraWait = false
 				}
 			}
 		}

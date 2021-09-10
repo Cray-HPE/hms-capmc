@@ -162,50 +162,27 @@ func (d *CapmcD) doNodeOnOffCtrl(w http.ResponseWriter, r *http.Request, command
 	var data capmc.NodePowerResponse
 	data.Nids = make([]*capmc.NodePowerNidErr, 0, 1)
 
-	var targetedXname []string
-	for _, v := range nl {
-		targetedXname = append(targetedXname, v.Hostname)
-	}
-
-	// Since the target is only nodes, we won't need a new target list
-	_, err = d.reserveComponents(targetedXname, command)
-	defer d.releaseComponents(targetedXname)
-
-	if err != nil {
-		errstr := fmt.Sprintf("Error: Failed to reserve nodes while performing a %s.", command)
-		log.Printf(errstr)
-		data.ErrResponse.E = 37 // ENOLCK
-		data.ErrResponse.ErrMsg = errstr
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(data)
-		return
-	}
-
-	waitNum, waitChan := d.queueBmcCmd(bmcCmd{cmd: command}, nl)
-
 	var failures int
-	for i := 0; i < waitNum; i++ {
-		// Wait for each task to complete.
-		result := <-waitChan
-		// If any BMC/Node op fails then record overall error code for
-		// the call. The HTTP code returned will still be 200.
-		if result.rc != 0 {
-			failures++
-			// TODO Look at using the stack instead of heap????
-			// The original API doesn't include a nid list
-			// identifying failed operations this does.
-			nidErr := new(capmc.NodePowerNidErr)
-			nidErr.Nid = result.ni.Nid
-			nidErr.ErrResponse.E = result.rc
-			nidErr.ErrResponse.ErrMsg = result.msg
-			data.Nids = append(data.Nids, nidErr)
+	// Call general component control routine and convert xname based errors
+	// to nid based errors.
+	xdata := d.doCompOnOffCtrl(nl, command)
+	for _, x := range xdata.Xnames {
+		for _, ni := range nl {
+			if x.Xname == ni.Hostname {
+				failures++
+				nidErr := new(capmc.NodePowerNidErr)
+				nidErr.Nid = ni.Nid
+				nidErr.ErrResponse.E = x.E
+				nidErr.ErrResponse.ErrMsg = x.ErrMsg
+				data.Nids = append(data.Nids, nidErr)
+			}
 		}
 	}
 
 	if failures > 0 {
 		data.ErrResponse.E = -1
 		data.ErrResponse.ErrMsg = fmt.Sprintf("Errors encountered with %d/%d NIDs",
-			failures, waitNum)
+			failures, len(nl))
 	}
 
 	w.Header().Set("Content-Type", "application/json")

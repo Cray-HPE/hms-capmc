@@ -113,8 +113,11 @@ type BmcCmdToActionResetTypeMap map[string][]string
 // These values are used when there is no configuration file.
 var (
 	defaultActionMaxWorkers    = 1000
-	defaultOnUnsupportedAction = actionIgnore
+	defaultOnUnsupportedAction = actionSimulate
 	defaultReinitActionSeq     = []string{bmcCmdPowerOff, bmcCmdPowerForceOff, bmcCmdPowerRestart, bmcCmdPowerForceRestart, bmcCmdPowerOn, bmcCmdPowerForceOn, bmcCmdNMI}
+	defaultWaitForOffRetries   = 4
+	defaultWaitForOffSleep     = 15
+	defaultWaitForGigabyte     = 40
 	// CompSeq:
 	// The power sequencing list based on comments in CASMHMS-836
 	// consists only of the following components:
@@ -189,6 +192,9 @@ var (
 		ActionMaxWorkers:    defaultActionMaxWorkers,
 		OnUnsupportedAction: defaultOnUnsupportedAction,
 		ReinitActionSeq:     defaultReinitActionSeq,
+		waitForOffRetries:   defaultWaitForOffRetries,
+		waitForOffSleep:     defaultWaitForOffSleep,
+		waitForGigabyte:     defaultWaitForGigabyte,
 	}
 )
 
@@ -351,6 +357,9 @@ type CapmcConfiguration struct {
 	ActionMaxWorkers    int
 	OnUnsupportedAction string
 	ReinitActionSeq     []string
+	waitForOffRetries   int
+	waitForOffSleep     int
+	waitForGigabyte     int
 }
 
 //PowerCapCapabilityMonikerType is consistent with the V3 XC moniker schema
