@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.23.10] - 2021-09-20
+
+### Changed
+
+- Updated dst-pip-mirror to arti-pip-mirror
+
 ## [1.23.9] - 2021-09-03
 
 ### Changed
