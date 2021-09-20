@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.24.8] - 2021-09-13
+
+### Changed
+
+- Updated dst-pip-mirror to arti-pip-mirror
+
 ## [1.24.7] - 2021-08-23
 
 ### Security
@@ -31,7 +37,6 @@ Security - in case of vulnerabilities
 - Non root container work:
 - Changed cray-service version to ~2.8.1
 - Converted how dockerfiles are utilized and set the USER to run as 65534 
-
 
 ## [1.24.6] - 2021-08-11
 
