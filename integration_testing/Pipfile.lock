@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "1f3410abb4af4fa08536c377a486b9648e99786656af234028f0d48b50274b87"
+            "sha256": "e4b19a6a27c28a022ebcd637c3d696b079071ade0dddc815f7591d0076a1b1e2"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -9,9 +9,9 @@
         },
         "sources": [
             {
-                "name": "dst-pip-mirror",
-                "url": "http://dst.us.cray.com/dstpiprepo/simple/",
-                "verify_ssl": true
+                "name": "arti-pip-mirror",
+                "url": "https://arti.dev.cray.com:443/artifactory/api/pypi/pypi-remote/simple/",
+                "verify_ssl": false
             }
         ]
     },
