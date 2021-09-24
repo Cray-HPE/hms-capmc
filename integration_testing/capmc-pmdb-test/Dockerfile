@@ -33,6 +33,7 @@ RUN set -ex \
         pip \
     && pip3 install -r /requirements.txt
 
+USER 65534:65534
 COPY . /app
 WORKDIR /app
 ENTRYPOINT ["python3"]
