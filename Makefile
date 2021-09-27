@@ -6,10 +6,10 @@ CHART_PATH ?= kubernetes
 CHART_NAME ?= cray-hms-capmc
 CHART_VERSION ?= $(shell cat .version)
 
-all : image chart unittest coverage integration
+all : image chart unittest integration
 
 image:
-	docker build --pull ${DOCKER_ARGS} --tag '${NAME}:${VERSION}' .
+	docker build ${NO_CACHE} --pull ${DOCKER_ARGS} --tag '${NAME}:${VERSION}' .
 
 chart:
 	helm repo add cray-algol60 https://artifactory.algol60.net/artifactory/csm-helm-charts
@@ -18,9 +18,6 @@ chart:
 
 unittest:
 	./runUnitTest.sh
-
-coverage:
-	./runCoverage.sh
 
 integration:
 	./runIntegration.sh
