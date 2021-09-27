@@ -25,7 +25,13 @@
 #
 
 
-# Build the build base image
-docker build --no-cache -t cray/hms-capmc-build-base -f Dockerfile.build-base .
+set -x
+GITSHA=$(git rev-parse HEAD)
+TIMESTAMP=$(date +"%Y-%m-%dT%H-%M-%SZ")
+IMAGE="cray/hms-capmc-coverage"
+#image names must be lower case
+UNIQUE_TAG=$(echo ${IMAGE}_${GITSHA}_${TIMESTAMP} | tr '[:upper:]' '[:lower:]')
+#export NO_CACHE==--no-cache #this will cause docker build to run with no cache; off by default for local builds, enabled in jenkinsfile
+DOCKER_BUILDKIT=0 docker build $NO_CACHE -t $UNIQUE_TAG -f Dockerfile.testing .
+docker image rm $UNIQUE_TAG --force
 
-docker build --no-cache -t cray/hms-capmc-testing -f Dockerfile.testing .
