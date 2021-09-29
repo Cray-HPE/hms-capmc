@@ -24,11 +24,23 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
-## [1.25.10] - 2021-09-10
+## [1.25.12] - 2021-09-22
 
-### Added
+### Changed
 
-- Power capping support for new Redfish power controls (Bard Peak)
+- Changed the docker image to run as the user nobody
+
+## [1.25.11] - 2021-09-21
+
+### Changed
+
+- Changed cray-service version to ~6.0.0
+
+## [1.25.10] - 2021-09-13
+
+### Changed
+
+- Updated dst-pip-mirror to arti-pip-mirror
 
 ## [1.25.9] - 2021-08-17
 
