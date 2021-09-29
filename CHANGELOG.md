@@ -24,7 +24,7 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
-## [1.25.13] - 2021-09-29
+## [1.26.0] - 2021-09-29
 
 ### Added
 
