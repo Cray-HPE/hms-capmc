@@ -37,10 +37,10 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/Cray-HPE/hms-certs/pkg/hms_certs"
 	compcreds "github.com/Cray-HPE/hms-compcredentials"
 	sstorage "github.com/Cray-HPE/hms-securestorage"
-
-	"github.com/Cray-HPE/hms-certs/pkg/hms_certs"
+	rf "github.com/Cray-HPE/hms-smd/pkg/redfish"
 )
 
 // testEq tests for equality between two arrays/slices
@@ -851,6 +851,184 @@ func TestCheckForDisabledComponents(t *testing.T) {
 
 			if (err == nil) && "" != tt.e {
 				t.Errorf("checkForDisabledComponents() error = %v, wantErr %v", err, tt.e)
+			}
+		})
+	}
+}
+
+func TestConvertControlsToPowerCaps(t *testing.T) {
+	var emptyCtl []*rf.Control
+	nodeOnlyWant := make(map[string]PowerCap)
+	nodeOnlyWant["Node Power Limit"] = PowerCap{
+		Name:        "Node Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
+		Min:         200,
+		Max:         1000,
+		PwrCtlIndex: 0,
+	}
+	nodesAccelsWant := make(map[string]PowerCap)
+	nodesAccelsWant["Node Power Limit"] = PowerCap{
+		Name:        "Node Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
+		Min:         200,
+		Max:         1000,
+		PwrCtlIndex: 0,
+	}
+	nodesAccelsWant["GPU0 Power Limit"] = PowerCap{
+		Name:        "GPU0 Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU0PowerLimit",
+		Min:         200,
+		Max:         400,
+		PwrCtlIndex: 1,
+	}
+	nodesAccelsWant["GPU1 Power Limit"] = PowerCap{
+		Name:        "GPU1 Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU1PowerLimit",
+		Min:         200,
+		Max:         400,
+		PwrCtlIndex: 2,
+	}
+	nodesAccelsWant["GPU2 Power Limit"] = PowerCap{
+		Name:        "GPU2 Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU2PowerLimit",
+		Min:         200,
+		Max:         400,
+		PwrCtlIndex: 3,
+	}
+	nodesAccelsWant["GPU3 Power Limit"] = PowerCap{
+		Name:        "GPU3 Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU3PowerLimit",
+		Min:         200,
+		Max:         400,
+		PwrCtlIndex: 4,
+	}
+
+	var nodeOnlyCtl []*rf.Control
+	nodeOnlyCtl = append(nodeOnlyCtl, &rf.Control{
+		URL: "/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
+		Control: rf.RFControl{
+			ControlDelaySeconds: 6,
+			ControlMode:         "Automatic",
+			ControlType:         "Power",
+			Id:                  "NodePowerLimit",
+			Name:                "Node Power Limit",
+			PhysicalContext:     "Chassis",
+			SetPoint:            1000,
+			SetPointUnits:       "W",
+			SettingRangeMax:     1000,
+			SettingRangeMin:     200,
+			Status: rf.StatusRF{
+				Health: "OK",
+				State:  "",
+			},
+		},
+	})
+	nodesAccelsCtl := nodeOnlyCtl
+	nodesAccelsCtl = append(nodesAccelsCtl, &rf.Control{
+		URL: "/redfish/v1/Chassis/Node0/Controls/GPU0PowerLimit",
+		Control: rf.RFControl{
+			ControlDelaySeconds: 6,
+			ControlMode:         "Automatic",
+			ControlType:         "Power",
+			Id:                  "GPU0PowerLimit",
+			Name:                "GPU0 Power Limit",
+			PhysicalContext:     "GPU",
+			SetPoint:            400,
+			SetPointUnits:       "W",
+			SettingRangeMax:     400,
+			SettingRangeMin:     200,
+			Status: rf.StatusRF{
+				Health: "OK",
+				State:  "",
+			},
+		},
+	})
+	nodesAccelsCtl = append(nodesAccelsCtl, &rf.Control{
+		URL: "/redfish/v1/Chassis/Node0/Controls/GPU1PowerLimit",
+		Control: rf.RFControl{
+			ControlDelaySeconds: 6,
+			ControlMode:         "Automatic",
+			ControlType:         "Power",
+			Id:                  "GPU1PowerLimit",
+			Name:                "GPU1 Power Limit",
+			PhysicalContext:     "GPU",
+			SetPoint:            400,
+			SetPointUnits:       "W",
+			SettingRangeMax:     400,
+			SettingRangeMin:     200,
+			Status: rf.StatusRF{
+				Health: "OK",
+				State:  "",
+			},
+		},
+	})
+	nodesAccelsCtl = append(nodesAccelsCtl, &rf.Control{
+		URL: "/redfish/v1/Chassis/Node0/Controls/GPU2PowerLimit",
+		Control: rf.RFControl{
+			ControlDelaySeconds: 6,
+			ControlMode:         "Automatic",
+			ControlType:         "Power",
+			Id:                  "GPU2PowerLimit",
+			Name:                "GPU2 Power Limit",
+			PhysicalContext:     "GPU",
+			SetPoint:            400,
+			SetPointUnits:       "W",
+			SettingRangeMax:     400,
+			SettingRangeMin:     200,
+			Status: rf.StatusRF{
+				Health: "OK",
+				State:  "",
+			},
+		},
+	})
+	nodesAccelsCtl = append(nodesAccelsCtl, &rf.Control{
+		URL: "/redfish/v1/Chassis/Node0/Controls/GPU3PowerLimit",
+		Control: rf.RFControl{
+			ControlDelaySeconds: 6,
+			ControlMode:         "Automatic",
+			ControlType:         "Power",
+			Id:                  "GPU3PowerLimit",
+			Name:                "GPU3 Power Limit",
+			PhysicalContext:     "GPU",
+			SetPoint:            400,
+			SetPointUnits:       "W",
+			SettingRangeMax:     400,
+			SettingRangeMin:     200,
+			Status: rf.StatusRF{
+				Health: "OK",
+				State:  "",
+			},
+		},
+	})
+	tests := []struct {
+		name     string
+		ni       *NodeInfo
+		controls []*rf.Control
+		want     map[string]PowerCap
+	}{
+		{
+			"empty caps",
+			&NodeInfo{},
+			emptyCtl,
+			nil,
+		},
+		{
+			"node only",
+			&NodeInfo{},
+			nodeOnlyCtl,
+			nodeOnlyWant,
+		},
+		{
+			"nodes and accels",
+			&NodeInfo{},
+			nodesAccelsCtl,
+			nodesAccelsWant,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := convertControlsToPowerCaps(tt.ni, tt.controls); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("convertControlsToPowerCaps() = %v, want %v", got, tt.want)
 			}
 		})
 	}

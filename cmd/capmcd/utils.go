@@ -148,3 +148,11 @@ func isHpeApollo6500(ni *NodeInfo) bool {
 
 	return false
 }
+
+func isControlPoint(ni *NodeInfo) bool {
+	if strings.Contains(ni.RfPowerURL, "Controls") {
+		return true
+	}
+
+	return false
+}

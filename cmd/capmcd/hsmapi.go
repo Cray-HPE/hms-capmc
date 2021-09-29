@@ -191,6 +191,27 @@ func getRestrictStr(query HSMQuery) string {
 	return params.Encode()
 }
 
+func convertControlsToPowerCaps(ni *NodeInfo, controls []*rf.Control) map[string]PowerCap {
+	pwrCaps := make(map[string]PowerCap)
+
+	for i, ctl := range controls {
+		pwrCaps[ctl.Control.Name] = PowerCap{
+			Name:        ctl.Control.Name,
+			Path:        ctl.URL,
+			Min:         ctl.Control.SettingRangeMin,
+			Max:         ctl.Control.SettingRangeMax,
+			PwrCtlIndex: i,
+		}
+	}
+
+	// an empty map and a nil map aren't the same thing
+	if len(pwrCaps) > 0 {
+		return pwrCaps
+	} else {
+		return nil
+	}
+}
+
 // convertPowerCtlToPowerCaps converts HSM PowerCtlInfo into a CAPMC
 // PowerCap adding to the mapping of CAPMC power capping controls to Redfish
 // PowerControls.
@@ -201,21 +222,12 @@ func convertPowerCtlsToPowerCaps(ni *NodeInfo, pwrCtlInfo rf.PowerCtlInfo) map[s
 
 		// no range check; buyer beware (default)
 		min, max = -1, -1
-		ctlName, ok := defaultPowerCtlToCap[pwrCtl.Name]
-		if !ok {
-			// HPE devices may not have a name in their power control/limit
-			// structurres. Make sure they are populated correctly here.
-			if isHpeApollo6500(ni) {
-				pwrCtl.Name = "PowerLimit Resource for AccPowerService"
-				ctlName = "node"
-			} else if isHpeServer(ni) {
-				pwrCtl.Name = "HPE Power Control"
-				ctlName = "node"
-			} else {
-				log.Printf("Notice: Skipped unknown PowerControl: %s",
-					pwrCtl.Name)
-				continue
-			}
+		// HPE devices may not have a name in their power control/limit
+		// structurres. Make sure they are populated correctly here.
+		if isHpeApollo6500(ni) {
+			pwrCtl.Name = "Node Power Control"
+		} else if isHpeServer(ni) {
+			pwrCtl.Name = "Node Power Control"
 		}
 
 		if pwrCtl.OEM != nil {
@@ -242,7 +254,7 @@ func convertPowerCtlsToPowerCaps(ni *NodeInfo, pwrCtlInfo rf.PowerCtlInfo) map[s
 			path = pwrCtlInfo.PowerURL
 		}
 
-		pwrCaps[ctlName] = PowerCap{
+		pwrCaps[pwrCtl.Name] = PowerCap{
 			Name:        pwrCtl.Name,
 			Path:        path,
 			Min:         min,
@@ -431,13 +443,19 @@ func (d *CapmcD) GetNodes(query HSMQuery) ([]*NodeInfo, error) {
 				}
 				ni.PowerCaps = convertPowerCtlsToPowerCaps(ni, componentEndpoint.RedfishSystemInfo.PowerCtlInfo)
 			}
+			ni.RfControlsCnt = len(componentEndpoint.RedfishSystemInfo.Controls)
+			if ni.RfControlsCnt > 0 {
+				ni.PowerCaps = convertControlsToPowerCaps(ni, componentEndpoint.RedfishSystemInfo.Controls)
+			}
 		}
+
 		if componentEndpoint.RedfishManagerInfo != nil &&
 			componentEndpoint.RedfishManagerInfo.Actions != nil {
 			ni.RfActionURI = componentEndpoint.RedfishManagerInfo.Actions.ManagerReset.Target
 			ni.RfResetTypes = componentEndpoint.RedfishManagerInfo.Actions.ManagerReset.AllowableValues
 			// TODO: Does something need to be done with OEM actions if they are available?
 		}
+
 		if componentEndpoint.RedfishOutletInfo != nil &&
 			componentEndpoint.RedfishOutletInfo.Actions != nil {
 			ni.RfActionURI = componentEndpoint.RedfishOutletInfo.Actions.PowerControl.Target
