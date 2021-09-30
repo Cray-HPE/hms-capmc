@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.23.11] - 2021-09-29
+
+### Changed
+
+- Updated Helm repository to cray-algol60.
+
 ## [1.23.10] - 2021-09-20
 
 ### Changed
