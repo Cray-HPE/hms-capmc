@@ -44,7 +44,7 @@
 #    -s SUFFIX will use the input instead of a large randomly generated
 #         string appended to the end of the image/container names.  This
 #         helps if leaving services running.
-#    -d will leave the services running and images in podman.  They are in
+#    -d will leave the services running and images in docker.  They are in
 #         a state that capmc may be used.
 #    -t will tear down and remove the services / images.  As of right now
 #         you must supply the correct suffix for the container names.
@@ -55,17 +55,17 @@
 do_teardown () {
   SUFFIX=$1
   echo "Tearing down and cleaning up... Suffix: ${SUFFIX}"
-  podman stop hms-capmc_${SUFFIX}
-  podman stop synthetic_hsm_${SUFFIX}
-  podman stop hms-postgresql-pmdb_${SUFFIX}
-  podman rm capmc-pmdb-tests_${RANDY}
-  podman image rm capmc_pmdb_test/capmc_${SUFFIX}
-  podman image rm capmc_pmdb_test/synthetic_hsm_${SUFFIX}
-  podman image rm cray/hms/hms-postgresql_${SUFFIX}
-  podman image rm capmc_pmdb_test/pmdb_loader_${SUFFIX}
-  podman image rm cray/hms/hms-postgresql-util_${SUFFIX}
-  podman image rm capmc_pmdb_test/capmc_pmdb_script_${SUFFIX}
-  podman network rm ${SUFFIX}
+  docker stop hms-capmc_${SUFFIX}
+  docker stop synthetic_hsm_${SUFFIX}
+  docker stop hms-postgresql-pmdb_${SUFFIX}
+  docker rm capmc-pmdb-tests_${RANDY}
+  docker image rm capmc_pmdb_test/capmc_${SUFFIX}
+  docker image rm capmc_pmdb_test/synthetic_hsm_${SUFFIX}
+  docker image rm cray/hms/hms-postgresql_${SUFFIX}
+  docker image rm capmc_pmdb_test/pmdb_loader_${SUFFIX}
+  docker image rm cray/hms/hms-postgresql-util_${SUFFIX}
+  docker image rm capmc_pmdb_test/capmc_pmdb_script_${SUFFIX}
+  docker network rm ${SUFFIX}
 }
 
 # create a unique hash to use for things created in this process
@@ -115,9 +115,9 @@ if [ ${DO_REBUILD} -eq 1 ]
 then
   CAPMC_LOCAL_PORT="-p 27777:27777"
   cd ${CURWD}/..
-  podman stop hms-capmc_${RANDY}
-  podman build -t capmc_pmdb_test/capmc_${RANDY} .
-  podman run -d --rm --name hms-capmc_${RANDY} -e DB_HOSTNAME=hms-postgresql-pmdb_${RANDY} -e HSM_URL=http://synthetic_hsm_${RANDY}:27779 -e LOG_LEVEL=Trace --network ${RANDY} ${CAPMC_LOCAL_PORT} capmc_pmdb_test/capmc_${RANDY}
+  docker stop hms-capmc_${RANDY}
+  docker build -t capmc_pmdb_test/capmc_${RANDY} .
+  docker run -d --rm --name hms-capmc_${RANDY} -e DB_HOSTNAME=hms-postgresql-pmdb_${RANDY} -e HSM_URL=http://synthetic_hsm_${RANDY}:27779 -e LOG_LEVEL=Trace --network ${RANDY} ${CAPMC_LOCAL_PORT} capmc_pmdb_test/capmc_${RANDY}
   cd ${CURWD}
   exit 0
 fi
@@ -189,32 +189,32 @@ for repo in ${REPOS[@]} ; do
 
     #step 3) build that source into container image
     echo "loaded correct branch, proceeding to build"
-    podman build -t cray/${repo}_${RANDY} -f Dockerfile .
+    docker build -t cray/${repo}_${RANDY} -f Dockerfile .
 done
 
  #step 4) stand up the new image with the network, wait for db to be done.
 
 #need to set the hostname on these container!
-podman network create ${RANDY}
-podman run -d --rm --name hms-postgresql-pmdb_${RANDY} -e POSTGRES_HOST_AUTH_METHOD=trust --network ${RANDY} ${PSQL_LOCAL_PORT} cray/hms/hms-postgresql_${RANDY}
-podman run -d --rm --name hms-postgresql-util_${RANDY} -e PMDB_HOSTNAME=hms-postgresql-pmdb_${RANDY} --network ${RANDY} cray/hms/hms-postgresql-util_${RANDY}
-podman wait hms-postgresql-util_${RANDY}
+docker network create ${RANDY}
+docker run -d --rm --name hms-postgresql-pmdb_${RANDY} -e POSTGRES_HOST_AUTH_METHOD=trust --network ${RANDY} ${PSQL_LOCAL_PORT} cray/hms/hms-postgresql_${RANDY}
+docker run -d --rm --name hms-postgresql-util_${RANDY} -e PMDB_HOSTNAME=hms-postgresql-pmdb_${RANDY} --network ${RANDY} cray/hms/hms-postgresql-util_${RANDY}
+docker wait hms-postgresql-util_${RANDY}
 
 #step 5) need to apply csv files to database!
 cd ${CURWD}/pmdb-loader
-podman build -t capmc_pmdb_test/pmdb_loader_${RANDY} .
-podman run -d --rm --name hms-pmdb-loader_${RANDY} -e DB_HOSTNAME=hms-postgresql-pmdb_${RANDY} --network ${RANDY} capmc_pmdb_test/pmdb_loader_${RANDY}
-#podman run -d --name hms-pmdb-loader_${RANDY} -e DB_HOSTNAME=hms-postgresql-pmdb_${RANDY} --network ${RANDY} capmc_pmdb_test/pmdb_loader_${RANDY}
+docker build -t capmc_pmdb_test/pmdb_loader_${RANDY} .
+docker run -d --rm --name hms-pmdb-loader_${RANDY} -e DB_HOSTNAME=hms-postgresql-pmdb_${RANDY} --network ${RANDY} capmc_pmdb_test/pmdb_loader_${RANDY}
+#docker run -d --name hms-pmdb-loader_${RANDY} -e DB_HOSTNAME=hms-postgresql-pmdb_${RANDY} --network ${RANDY} capmc_pmdb_test/pmdb_loader_${RANDY}
 
 #step 6) need to stand up synthetic hsm
 cd ${CURWD}/synthetic-hsm
-podman build -t capmc_pmdb_test/synthetic_hsm_${RANDY} .
-podman run -d --rm --name synthetic_hsm_${RANDY} --network ${RANDY} ${HSM_LOCAL_PORT} capmc_pmdb_test/synthetic_hsm_${RANDY}
+docker build -t capmc_pmdb_test/synthetic_hsm_${RANDY} .
+docker run -d --rm --name synthetic_hsm_${RANDY} --network ${RANDY} ${HSM_LOCAL_PORT} capmc_pmdb_test/synthetic_hsm_${RANDY}
 
 #step 7) need to stand up capmc
 cd ${CURWD}/..
-podman build -t capmc_pmdb_test/capmc_${RANDY} .
-podman run -d --rm --name hms-capmc_${RANDY} -e DB_HOSTNAME=hms-postgresql-pmdb_${RANDY} -e HSM_URL=http://synthetic_hsm_${RANDY}:27779 -e LOG_LEVEL=Trace --network ${RANDY} ${CAPMC_LOCAL_PORT} capmc_pmdb_test/capmc_${RANDY}
+docker build -t capmc_pmdb_test/capmc_${RANDY} .
+docker run -d --rm --name hms-capmc_${RANDY} -e DB_HOSTNAME=hms-postgresql-pmdb_${RANDY} -e HSM_URL=http://synthetic_hsm_${RANDY}:27779 -e LOG_LEVEL=Trace --network ${RANDY} ${CAPMC_LOCAL_PORT} capmc_pmdb_test/capmc_${RANDY}
 
 #step 8) run the testing script, wait to complete, and pull the exit code
 #  NOTE: when running in debug mode do not execute tests, just set up the
@@ -226,12 +226,12 @@ then
   #  tests or they will fail.  Without readiness probe, will just sleep a little...
   sleep 5
 
-  # run the test from inside another podman image - wait for it to complete
+  # run the test from inside another docker image - wait for it to complete
   cd ${CURWD}/capmc-pmdb-test
-  podman build -t capmc_pmdb_test/capmc_pmdb_script_${RANDY} .
-  podman run --name capmc-pmdb-tests_${RANDY} -e HSM_URL=http://synthetic_hsm_${RANDY}:27779 -e CAPMC_URL=http://hms-capmc_${RANDY}:27777 --network ${RANDY} capmc_pmdb_test/capmc_pmdb_script_${RANDY}
-  podman wait capmc-pmdb-tests_${RANDY}
-  RESULT=$(podman inspect capmc-pmdb-tests_${RANDY} --format='{{.State.ExitCode}}')
+  docker build -t capmc_pmdb_test/capmc_pmdb_script_${RANDY} .
+  docker run --name capmc-pmdb-tests_${RANDY} -e HSM_URL=http://synthetic_hsm_${RANDY}:27779 -e CAPMC_URL=http://hms-capmc_${RANDY}:27777 --network ${RANDY} capmc_pmdb_test/capmc_pmdb_script_${RANDY}
+  docker wait capmc-pmdb-tests_${RANDY}
+  RESULT=$(docker inspect capmc-pmdb-tests_${RANDY} --format='{{.State.ExitCode}}')
 fi
 
 #step 9) Tear it all down and clean up the fingerprints
