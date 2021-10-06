@@ -23,7 +23,7 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 set -ex
-SNYK_OPTS="--dev --show-vulnerable-paths=all --fail-on=all --severity-threshold=${SEVERITY:-high} --skip-unresolved=true --json"
+SNYK_OPTS="--insecure --debug --dev --show-vulnerable-paths=all --fail-on=all --severity-threshold=${SEVERITY:-high} --skip-unresolved=true --json"
 
 OUT=$(set -x; snyk test --all-projects --detection-depth=999 $SNYK_OPTS)
 
@@ -35,8 +35,8 @@ echo Snyk project check: $PROJ_CHECK
 DOCKER_CHECK=
 if [ -f Dockerfile ]; then
     DOCKER_IMAGE=${PWD/*\//}:$(cat .version)
-    docker build --tag $DOCKER_IMAGE .
-    OUT=$(set -x; snyk test --docker $DOCKER_IMAGE --file=${PWD}/Dockerfile $SNYK_OPTS)
+    podman build --tag $DOCKER_IMAGE .
+    OUT=$(set -x; snyk test --docker localhost/$DOCKER_IMAGE --file=${PWD}/Dockerfile $SNYK_OPTS)
     DOCKER_CHECK=OK
     jq .ok <<<"$OUT" | grep -q false && DOCKER_CHECK=FAIL
 fi

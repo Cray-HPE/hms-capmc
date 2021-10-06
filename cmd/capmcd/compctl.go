@@ -263,7 +263,6 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 			continue
 		}
 
-		var extraWait bool
 		for _, t := range compPowerSeq {
 			if list, ok := cmap[cmd][t]; ok {
 				waitNum, waitCh := d.queueBmcCmd(bmcCmd{cmd: cmd}, list)
@@ -293,13 +292,6 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 							// Check any future actions for the same xname and remove it.
 							doRemoveComp(cmap, t, result.ni.Hostname, d.ReinitActionSeq[actionNum+1:])
 						}
-
-						// command is the power action requested by the client
-						if (command == bmcCmdPowerForceRestart ||
-							command == bmcCmdPowerRestart) &&
-							isGigabyte(result.ni) {
-							extraWait = true
-						}
 					}
 				}
 
@@ -317,12 +309,6 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 						time.Sleep(time.Duration(5+len(cmap[cmd]["Node"])) * time.Second)
 					default:
 					}
-				}
-
-				if extraWait {
-					waitForGigabyte := d.config.CapmcConf.waitForGigabyte
-					time.Sleep(time.Duration(waitForGigabyte) * time.Second)
-					extraWait = false
 				}
 			}
 		}

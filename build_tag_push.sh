@@ -41,7 +41,7 @@ echo "Building $FORCE and pushing to $REGISTRY_HOSTNAME in repo $REPO"
 
 set -e
 set -x
-docker build $FORCE -t cray/$IMAGE_NAME:$TAG .
-docker tag cray/$IMAGE_NAME:$TAG $REGISTRY_HOSTNAME/$REPO/$IMAGE_NAME:$TAG
-docker push $REGISTRY_HOSTNAME/$REPO/$IMAGE_NAME:$TAG
+podman build $FORCE -t cray/$IMAGE_NAME:$TAG .
+podman tag cray/$IMAGE_NAME:$TAG $REGISTRY_HOSTNAME/$REPO/$IMAGE_NAME:$TAG
+podman push $REGISTRY_HOSTNAME/$REPO/$IMAGE_NAME:$TAG
 
