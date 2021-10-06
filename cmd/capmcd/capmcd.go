@@ -508,13 +508,18 @@ func main() {
 	log.Printf("Service name/instance: '%s'", serviceName)
 
 	svc.config = loadConfig(configFile)
+	conf := svc.config.CapmcConf
 
-	svc.ActionMaxWorkers = svc.config.CapmcConf.ActionMaxWorkers
-	svc.OnUnsupportedAction = svc.config.CapmcConf.OnUnsupportedAction
-	svc.ReinitActionSeq = svc.config.CapmcConf.ReinitActionSeq
+	log.Printf("Configuration loaded:\n")
+	log.Printf("\tMax workers: %d\n", conf.ActionMaxWorkers)
+	log.Printf("\tOn unsupported action: %s\n", conf.OnUnsupportedAction)
+	log.Printf("\tReinit seq: %v\n", conf.ReinitActionSeq)
+	log.Printf("\tWait for off retries: %d\n", conf.waitForOffRetries)
+	log.Printf("\tWait for off sleep: %d\n", conf.waitForOffSleep)
 
-	log.Printf("Configuration loaded:\n\tMax workers: %d\n\tUnsupported action: %s\n\tReinit seq: %v\n",
-		svc.ActionMaxWorkers, svc.OnUnsupportedAction, svc.ReinitActionSeq)
+	svc.ActionMaxWorkers = conf.ActionMaxWorkers
+	svc.OnUnsupportedAction = conf.OnUnsupportedAction
+	svc.ReinitActionSeq = conf.ReinitActionSeq
 
 	// log the hostname of this instance - mostly useful for pod name in
 	// multi-replica k8s envinronment
