@@ -35,7 +35,7 @@ echo Snyk project check: $PROJ_CHECK
 DOCKER_CHECK=
 if [ -f Dockerfile ]; then
     DOCKER_IMAGE=${PWD/*\//}:$(cat .version)
-    podman build --tag $DOCKER_IMAGE .
+    docker build --tag $DOCKER_IMAGE .
     OUT=$(set -x; snyk test --docker localhost/$DOCKER_IMAGE --file=${PWD}/Dockerfile $SNYK_OPTS)
     DOCKER_CHECK=OK
     jq .ok <<<"$OUT" | grep -q false && DOCKER_CHECK=FAIL

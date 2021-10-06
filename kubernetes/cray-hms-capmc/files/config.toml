@@ -187,7 +187,3 @@ PowerBandMax = 0
 # waitForOffRetries = 4
 # Amount of time to sleep between checks of component power state for Off.
 # waitForOffSleep = 15
-
-# During a power Off for a simulated Restart with Gigabyte BMCs, delay before
-# sending the power On commands
-# waitForGigabyte = 40
