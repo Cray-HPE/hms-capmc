@@ -514,8 +514,8 @@ func main() {
 	log.Printf("\tMax workers: %d\n", conf.ActionMaxWorkers)
 	log.Printf("\tOn unsupported action: %s\n", conf.OnUnsupportedAction)
 	log.Printf("\tReinit seq: %v\n", conf.ReinitActionSeq)
-	log.Printf("\tWait for off retries: %d\n", conf.waitForOffRetries)
-	log.Printf("\tWait for off sleep: %d\n", conf.waitForOffSleep)
+	log.Printf("\tWait for off retries: %d\n", conf.WaitForOffRetries)
+	log.Printf("\tWait for off sleep: %d\n", conf.WaitForOffSleep)
 
 	svc.ActionMaxWorkers = conf.ActionMaxWorkers
 	svc.OnUnsupportedAction = conf.OnUnsupportedAction

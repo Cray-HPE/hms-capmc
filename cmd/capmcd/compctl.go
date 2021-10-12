@@ -172,8 +172,8 @@ func (d *CapmcD) waitForOff(ni *NodeInfo) bmcPowerRc {
 
 	nl = append(nl, ni)
 
-	offRetries := d.config.CapmcConf.waitForOffRetries
-	offSleep := d.config.CapmcConf.waitForOffSleep
+	offRetries := d.config.CapmcConf.WaitForOffRetries
+	offSleep := d.config.CapmcConf.WaitForOffSleep
 
 	for retries = 0; retries < offRetries; retries++ {
 		rsp := d.doCompStatus(nl, bmcCmdPowerStatus, capmc.FilterShowOffBit)
@@ -306,7 +306,7 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 					case "Chassis":
 						time.Sleep(90 * time.Second)
 					case "ComputeModule":
-						time.Sleep(time.Duration(5+len(cmap[cmd]["Node"])) * time.Second)
+						time.Sleep(15 * time.Second)
 					default:
 					}
 				}

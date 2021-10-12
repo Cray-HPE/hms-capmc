@@ -191,8 +191,8 @@ var (
 		ActionMaxWorkers:    defaultActionMaxWorkers,
 		OnUnsupportedAction: defaultOnUnsupportedAction,
 		ReinitActionSeq:     defaultReinitActionSeq,
-		waitForOffRetries:   defaultWaitForOffRetries,
-		waitForOffSleep:     defaultWaitForOffSleep,
+		WaitForOffRetries:   defaultWaitForOffRetries,
+		WaitForOffSleep:     defaultWaitForOffSleep,
 	}
 )
 
@@ -355,8 +355,8 @@ type CapmcConfiguration struct {
 	ActionMaxWorkers    int
 	OnUnsupportedAction string
 	ReinitActionSeq     []string
-	waitForOffRetries   int
-	waitForOffSleep     int
+	WaitForOffRetries   int
+	WaitForOffSleep     int
 }
 
 //PowerCapCapabilityMonikerType is consistent with the V3 XC moniker schema

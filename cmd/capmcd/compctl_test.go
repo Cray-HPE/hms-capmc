@@ -399,8 +399,8 @@ func TestWaitForOff(t *testing.T) {
 	tSvc.ActionMaxWorkers = tSvc.config.CapmcConf.ActionMaxWorkers
 	tSvc.OnUnsupportedAction = tSvc.config.CapmcConf.OnUnsupportedAction
 	tSvc.ReinitActionSeq = tSvc.config.CapmcConf.ReinitActionSeq
-	tSvc.config.CapmcConf.waitForOffRetries = 1
-	tSvc.config.CapmcConf.waitForOffSleep = 0
+	tSvc.config.CapmcConf.WaitForOffRetries = 1
+	tSvc.config.CapmcConf.WaitForOffSleep = 0
 	tSvc.WPool = base.NewWorkerPool(1, 10)
 	tSvc.WPool.Run()
 
