@@ -258,6 +258,9 @@ func runTest(t *testing.T, hsm string, testReq *testData, rlist *[]testData, vau
 		log.Fatalf("Invalid HSM URI specified: %s", err)
 	}
 	svc.config = loadConfig("")
+	svc.ActionMaxWorkers = svc.config.CapmcConf.ActionMaxWorkers
+	svc.OnUnsupportedAction = svc.config.CapmcConf.OnUnsupportedAction
+	svc.ReinitActionSeq = svc.config.CapmcConf.ReinitActionSeq
 	mockVault.LookupNum = 0
 	mockVault.LookupData = vaultData
 	handler := findHandler(testReq.reqURL)

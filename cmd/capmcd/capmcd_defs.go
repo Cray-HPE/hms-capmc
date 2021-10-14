@@ -113,8 +113,10 @@ type BmcCmdToActionResetTypeMap map[string][]string
 // These values are used when there is no configuration file.
 var (
 	defaultActionMaxWorkers    = 1000
-	defaultOnUnsupportedAction = actionIgnore
+	defaultOnUnsupportedAction = actionSimulate
 	defaultReinitActionSeq     = []string{bmcCmdPowerOff, bmcCmdPowerForceOff, bmcCmdPowerRestart, bmcCmdPowerForceRestart, bmcCmdPowerOn, bmcCmdPowerForceOn, bmcCmdNMI}
+	defaultWaitForOffRetries   = 4
+	defaultWaitForOffSleep     = 15
 	// CompSeq:
 	// The power sequencing list based on comments in CASMHMS-836
 	// consists only of the following components:
@@ -184,6 +186,13 @@ var (
 		RampLimit:      2000000,
 		PowerBandMin:   0,
 		PowerBandMax:   0,
+	}
+	defaultCapmcConfiguration = CapmcConfiguration{
+		ActionMaxWorkers:    defaultActionMaxWorkers,
+		OnUnsupportedAction: defaultOnUnsupportedAction,
+		ReinitActionSeq:     defaultReinitActionSeq,
+		WaitForOffRetries:   defaultWaitForOffRetries,
+		WaitForOffSleep:     defaultWaitForOffSleep,
 	}
 )
 
@@ -338,6 +347,16 @@ type SystemParameters struct {
 	// Administratively defined maximum allowable system power consumption,
 	// specified in watts
 	PowerBandMax int
+}
+
+// CapmcConfiguration defines the internal knobs that can be modified inside
+// of CAPMC to alter how certain portions of the code work.
+type CapmcConfiguration struct {
+	ActionMaxWorkers    int
+	OnUnsupportedAction string
+	ReinitActionSeq     []string
+	WaitForOffRetries   int
+	WaitForOffSleep     int
 }
 
 //PowerCapCapabilityMonikerType is consistent with the V3 XC moniker schema

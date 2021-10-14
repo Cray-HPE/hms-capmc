@@ -24,6 +24,13 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.26.0] - 2021-10-06
+
+### Changed
+
+- Power off waits for target to be off and components that don't support
+  GracefulShutdown can be emulated.
+
 ## [1.25.12] - 2021-09-22
 
 ### Changed
