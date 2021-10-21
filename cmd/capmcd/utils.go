@@ -156,3 +156,11 @@ func isControlPoint(ni *NodeInfo) bool {
 
 	return false
 }
+
+func isGigabyte(ni *NodeInfo) bool {
+	if strings.Contains(ni.RfPowerURL, "Chassis/Self") {
+		return true
+	}
+
+	return false
+}
