@@ -50,7 +50,7 @@ type Power struct {
 	PowerLimits       []HpePowerLimits       `json:"PowerLimits,omitempty"`
 
 	// Redfish Control.v1_0_0.Control
-	RfControl *RFControl `json:"RFControl,omitempty"`
+	RFControl
 }
 
 // Structs used to [un]marshal HPE Redfish

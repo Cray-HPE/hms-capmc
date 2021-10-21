@@ -417,50 +417,7 @@ func (d *CapmcD) GetNodes(query HSMQuery) ([]*NodeInfo, error) {
 			continue
 		}
 
-		if componentEndpoint.RedfishChassisInfo != nil &&
-			componentEndpoint.RedfishChassisInfo.Actions != nil {
-			ni.RfResetTypes = componentEndpoint.RedfishChassisInfo.Actions.ChassisReset.AllowableValues
-			ni.RfActionURI = componentEndpoint.RedfishChassisInfo.Actions.ChassisReset.Target
-			if componentEndpoint.RedfishChassisInfo.Actions.OEM != nil {
-				ni.RfEpoURI = componentEndpoint.RedfishChassisInfo.Actions.OEM.ChassisEmergencyPower.Target
-			}
-		}
-
-		if componentEndpoint.RedfishSystemInfo != nil &&
-			componentEndpoint.RedfishSystemInfo.Actions != nil {
-			ni.RfActionURI = componentEndpoint.RedfishSystemInfo.Actions.ComputerSystemReset.Target
-			ni.RfResetTypes = componentEndpoint.RedfishSystemInfo.Actions.ComputerSystemReset.AllowableValues
-			ni.RfPowerURL = componentEndpoint.RedfishSystemInfo.PowerURL
-			ni.RfPwrCtlCnt = len(componentEndpoint.RedfishSystemInfo.PowerCtlInfo.PowerCtl)
-			if ni.RfPwrCtlCnt > 0 {
-				pwrCtl := componentEndpoint.RedfishSystemInfo.PowerCtlInfo.PowerCtl[0]
-				if pwrCtl.OEM != nil {
-					if pwrCtl.OEM.HPE != nil {
-						if len(pwrCtl.OEM.HPE.Target) > 0 {
-							ni.RfPowerTarget = pwrCtl.OEM.HPE.Target
-						}
-					}
-				}
-				ni.PowerCaps = convertPowerCtlsToPowerCaps(ni, componentEndpoint.RedfishSystemInfo.PowerCtlInfo)
-			}
-			ni.RfControlsCnt = len(componentEndpoint.RedfishSystemInfo.Controls)
-			if ni.RfControlsCnt > 0 {
-				ni.PowerCaps = convertControlsToPowerCaps(ni, componentEndpoint.RedfishSystemInfo.Controls)
-			}
-		}
-
-		if componentEndpoint.RedfishManagerInfo != nil &&
-			componentEndpoint.RedfishManagerInfo.Actions != nil {
-			ni.RfActionURI = componentEndpoint.RedfishManagerInfo.Actions.ManagerReset.Target
-			ni.RfResetTypes = componentEndpoint.RedfishManagerInfo.Actions.ManagerReset.AllowableValues
-			// TODO: Does something need to be done with OEM actions if they are available?
-		}
-
-		if componentEndpoint.RedfishOutletInfo != nil &&
-			componentEndpoint.RedfishOutletInfo.Actions != nil {
-			ni.RfActionURI = componentEndpoint.RedfishOutletInfo.Actions.PowerControl.Target
-			ni.RfResetTypes = componentEndpoint.RedfishOutletInfo.Actions.PowerControl.AllowableValues
-		}
+		extractRedfishInfo(componentEndpoint, ni)
 
 		ni.Domain = componentEndpoint.Domain
 		ni.FQDN = componentEndpoint.FQDN
@@ -487,6 +444,63 @@ func (d *CapmcD) GetNodes(query HSMQuery) ([]*NodeInfo, error) {
 	}
 
 	return nodeList, nil
+}
+
+func extractRedfishInfo(componentEndpoint *sm.ComponentEndpoint, ni *NodeInfo) {
+	if componentEndpoint.RedfishChassisInfo != nil &&
+		componentEndpoint.RedfishChassisInfo.Actions != nil {
+		extractRedfishChassisInfo(ni, componentEndpoint)
+	} else if componentEndpoint.RedfishSystemInfo != nil &&
+		componentEndpoint.RedfishSystemInfo.Actions != nil {
+		extractRedfishSystemInfo(ni, componentEndpoint)
+	} else if componentEndpoint.RedfishManagerInfo != nil &&
+		componentEndpoint.RedfishManagerInfo.Actions != nil {
+		extractRedfishManagerInfo(ni, componentEndpoint)
+	} else if componentEndpoint.RedfishOutletInfo != nil &&
+		componentEndpoint.RedfishOutletInfo.Actions != nil {
+		extractRedfishOutletInfo(ni, componentEndpoint)
+	}
+}
+
+func extractRedfishOutletInfo(ni *NodeInfo, componentEndpoint *sm.ComponentEndpoint) {
+	ni.RfActionURI = componentEndpoint.RedfishOutletInfo.Actions.PowerControl.Target
+	ni.RfResetTypes = componentEndpoint.RedfishOutletInfo.Actions.PowerControl.AllowableValues
+}
+
+func extractRedfishManagerInfo(ni *NodeInfo, componentEndpoint *sm.ComponentEndpoint) {
+	ni.RfActionURI = componentEndpoint.RedfishManagerInfo.Actions.ManagerReset.Target
+	ni.RfResetTypes = componentEndpoint.RedfishManagerInfo.Actions.ManagerReset.AllowableValues
+	// TODO: Does something need to be done with OEM actions if they are available?
+}
+
+func extractRedfishSystemInfo(ni *NodeInfo, componentEndpoint *sm.ComponentEndpoint) {
+	ni.RfActionURI = componentEndpoint.RedfishSystemInfo.Actions.ComputerSystemReset.Target
+	ni.RfResetTypes = componentEndpoint.RedfishSystemInfo.Actions.ComputerSystemReset.AllowableValues
+	ni.RfPowerURL = componentEndpoint.RedfishSystemInfo.PowerURL
+	ni.RfPwrCtlCnt = len(componentEndpoint.RedfishSystemInfo.PowerCtlInfo.PowerCtl)
+	if ni.RfPwrCtlCnt > 0 {
+		pwrCtl := componentEndpoint.RedfishSystemInfo.PowerCtlInfo.PowerCtl[0]
+		if pwrCtl.OEM != nil {
+			if pwrCtl.OEM.HPE != nil {
+				if len(pwrCtl.OEM.HPE.Target) > 0 {
+					ni.RfPowerTarget = pwrCtl.OEM.HPE.Target
+				}
+			}
+		}
+		ni.PowerCaps = convertPowerCtlsToPowerCaps(ni, componentEndpoint.RedfishSystemInfo.PowerCtlInfo)
+	}
+	ni.RfControlsCnt = len(componentEndpoint.RedfishSystemInfo.Controls)
+	if ni.RfControlsCnt > 0 {
+		ni.PowerCaps = convertControlsToPowerCaps(ni, componentEndpoint.RedfishSystemInfo.Controls)
+	}
+}
+
+func extractRedfishChassisInfo(ni *NodeInfo, componentEndpoint *sm.ComponentEndpoint) {
+	ni.RfResetTypes = componentEndpoint.RedfishChassisInfo.Actions.ChassisReset.AllowableValues
+	ni.RfActionURI = componentEndpoint.RedfishChassisInfo.Actions.ChassisReset.Target
+	if componentEndpoint.RedfishChassisInfo.Actions.OEM != nil {
+		ni.RfEpoURI = componentEndpoint.RedfishChassisInfo.Actions.OEM.ChassisEmergencyPower.Target
+	}
 }
 
 // TODO Remove/rework as this is TEMPORARY (hopefully) since the hardware

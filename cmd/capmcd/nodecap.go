@@ -379,8 +379,8 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 			var val *int
 			var controls []capmc.PowerCapControl
 			if ctlLen > 0 {
-				if rfPower.RfControl.SetPoint != nil {
-					val = rfPower.RfControl.SetPoint
+				if rfPower.SetPoint != nil {
+					val = rfPower.SetPoint
 				} else {
 					var unconstrained int
 					val = &unconstrained

@@ -30,6 +30,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -41,6 +42,7 @@ import (
 	compcreds "github.com/Cray-HPE/hms-compcredentials"
 	sstorage "github.com/Cray-HPE/hms-securestorage"
 	rf "github.com/Cray-HPE/hms-smd/pkg/redfish"
+	"github.com/Cray-HPE/hms-smd/pkg/sm"
 )
 
 // testEq tests for equality between two arrays/slices
@@ -1029,6 +1031,284 @@ func TestConvertControlsToPowerCaps(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := convertControlsToPowerCaps(tt.ni, tt.controls); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("convertControlsToPowerCaps() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+const riverNodeCompEndpoint = `
+{
+  "ID": "x3000c0s9b0n0",
+  "Type": "Node",
+  "RedfishType": "ComputerSystem",
+  "RedfishSubtype": "Physical",
+  "UUID": "36383150-3630-584D-5130-31393032304A",
+  "OdataID": "/redfish/v1/Systems/1",
+  "RedfishEndpointID": "x3000c0s9b0",
+  "Enabled": true,
+  "RedfishEndpointFQDN": "x3000c0s9b0",
+  "RedfishURL": "x3000c0s9b0/redfish/v1/Systems/1",
+  "ComponentEndpointType": "ComponentEndpointComputerSystem",
+  "RedfishSystemInfo": {
+    "Name": "Computer System",
+    "Actions": {
+      "#ComputerSystem.Reset": {
+        "ResetType@Redfish.AllowableValues": [
+          "On",
+          "ForceOff",
+          "GracefulShutdown",
+          "ForceRestart",
+          "Nmi",
+          "PushPowerButton",
+          "GracefulRestart"
+        ],
+        "@Redfish.ActionInfo": "",
+        "target": "/redfish/v1/Systems/1/Actions/ComputerSystem.Reset"
+      }
+    },
+    "EthernetNICInfo": [
+      {
+        "RedfishId": "1",
+        "@odata.id": "/redfish/v1/Systems/1/EthernetInterfaces/1",
+        "MACAddress": "94:40:c9:5b:e5:70"
+      },
+      {
+        "RedfishId": "2",
+        "@odata.id": "/redfish/v1/Systems/1/EthernetInterfaces/2",
+        "InterfaceEnabled": true,
+        "MACAddress": "94:40:c9:5b:e5:71"
+      },
+      {
+        "RedfishId": "3",
+        "@odata.id": "/redfish/v1/Systems/1/EthernetInterfaces/3",
+        "InterfaceEnabled": true,
+        "MACAddress": "14:02:ec:d9:3e:90"
+      },
+      {
+        "RedfishId": "4",
+        "@odata.id": "/redfish/v1/Systems/1/EthernetInterfaces/4",
+        "InterfaceEnabled": true,
+        "MACAddress": "14:02:ec:d9:3e:91"
+      }
+    ],
+    "PowerURL": "/redfish/v1/Chassis/1/Power",
+    "PowerControl": [
+      {
+        "@odata.id": "/redfish/v1/Chassis/1/Power#PowerControl/0",
+        "MemberId": "0",
+        "PowerCapacityWatts": 1000
+      }
+    ]
+  }
+}
+`
+
+const mountainBardPeakCompEndpoint = `
+{
+  "ID": "x9000c3s0b0n0",
+  "Type": "Node",
+  "RedfishType": "ComputerSystem",
+  "RedfishSubtype": "Physical",
+  "OdataID": "/redfish/v1/Systems/Node0",
+  "RedfishEndpointID": "x9000c3s0b0",
+  "Enabled": true,
+  "RedfishEndpointFQDN": "x9000c3s0b0",
+  "RedfishURL": "x9000c3s0b0/redfish/v1/Systems/Node0",
+  "ComponentEndpointType": "ComponentEndpointComputerSystem",
+  "RedfishSystemInfo": {
+    "Name": "Node0",
+    "Actions": {
+      "#ComputerSystem.Reset": {
+        "ResetType@Redfish.AllowableValues": [
+          "ForceOff",
+          "Off",
+          "On"
+        ],
+        "@Redfish.ActionInfo": "/redfish/v1/Systems/Node0/ResetActionInfo",
+        "target": "/redfish/v1/Systems/Node0/Actions/ComputerSystem.Reset"
+      }
+    },
+    "EthernetNICInfo": [
+      {
+        "RedfishId": "HPCNet0",
+        "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/HPCNet0",
+        "Description": "SS11 200Gb 2P NIC Mezz REV02 (HSN)",
+        "MACAddress": "Not Available"
+      },
+      {
+        "RedfishId": "HPCNet1",
+        "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/HPCNet1",
+        "Description": "SS11 200Gb 2P NIC Mezz REV02 (HSN)",
+        "MACAddress": "Not Available"
+      },
+      {
+        "RedfishId": "HPCNet2",
+        "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/HPCNet2",
+        "Description": "SS11 200Gb 2P NIC Mezz REV02 (HSN)",
+        "MACAddress": "Not Available"
+      },
+      {
+        "RedfishId": "HPCNet3",
+        "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/HPCNet3",
+        "Description": "SS11 200Gb 2P NIC Mezz REV02 (HSN)",
+        "MACAddress": "Not Available"
+      },
+      {
+        "RedfishId": "ManagementEthernet",
+        "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/ManagementEthernet",
+        "Description": "Node Maintenance Network",
+        "MACAddress": "00:40:a6:83:3a:52",
+        "PermanentMACAddress": "00:40:a6:83:3a:52"
+      }
+    ],
+    "PowerURL": "/redfish/v1/Chassis/Node0/Power",
+    "Controls": [
+      {
+        "URL": "/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
+        "Control": {
+          "ControlDelaySeconds": 6,
+          "ControlMode": "Disabled",
+          "ControlType": "Power",
+          "Id": "NodePowerLimit",
+          "Name": "Node Power Limit",
+          "PhysicalContext": "Chassis",
+          "SetPoint": 0,
+          "SetPointUnits": "",
+          "SettingRangeMax": 2754,
+          "SettingRangeMin": 764,
+          "Status": {
+            "Health": "OK"
+          }
+        }
+      },
+      {
+        "URL": "/redfish/v1/Chassis/Node0/Controls/Accelerator0PowerLimit",
+        "Control": {
+          "ControlDelaySeconds": 6,
+          "ControlMode": "Disabled",
+          "ControlType": "Power",
+          "Id": "Accelerator0PowerLimit",
+          "Name": "Accelerator0 Power Limit",
+          "PhysicalContext": "Accelerator",
+          "SetPoint": 0,
+          "SetPointUnits": "",
+          "SettingRangeMax": 560,
+          "SettingRangeMin": 100,
+          "Status": {
+            "Health": "OK"
+          }
+        }
+      },
+      {
+        "URL": "/redfish/v1/Chassis/Node0/Controls/Accelerator1PowerLimit",
+        "Control": {
+          "ControlDelaySeconds": 6,
+          "ControlMode": "Disabled",
+          "ControlType": "Power",
+          "Id": "Accelerator1PowerLimit",
+          "Name": "Accelerator1 Power Limit",
+          "PhysicalContext": "Accelerator",
+          "SetPoint": 0,
+          "SetPointUnits": "",
+          "SettingRangeMax": 560,
+          "SettingRangeMin": 100,
+          "Status": {
+            "Health": "OK"
+          }
+        }
+      },
+      {
+        "URL": "/redfish/v1/Chassis/Node0/Controls/Accelerator2PowerLimit",
+        "Control": {
+          "ControlDelaySeconds": 6,
+          "ControlMode": "Disabled",
+          "ControlType": "Power",
+          "Id": "Accelerator2PowerLimit",
+          "Name": "Accelerator2 Power Limit",
+          "PhysicalContext": "Accelerator",
+          "SetPoint": 0,
+          "SetPointUnits": "",
+          "SettingRangeMax": 560,
+          "SettingRangeMin": 100,
+          "Status": {
+            "Health": "OK"
+          }
+        }
+      },
+      {
+        "URL": "/redfish/v1/Chassis/Node0/Controls/Accelerator3PowerLimit",
+        "Control": {
+          "ControlDelaySeconds": 6,
+          "ControlMode": "Disabled",
+          "ControlType": "Power",
+          "Id": "Accelerator3PowerLimit",
+          "Name": "Accelerator3 Power Limit",
+          "PhysicalContext": "Accelerator",
+          "SetPoint": 0,
+          "SetPointUnits": "",
+          "SettingRangeMax": 560,
+          "SettingRangeMin": 100,
+          "Status": {
+            "Health": "OK"
+          }
+        }
+      }
+    ]
+  }
+}
+`
+
+func TestExtractRedfishSystemInfo(t *testing.T) {
+	var niRiver NodeInfo
+	var niMtnBP NodeInfo
+	tests := []struct {
+		name string
+		ni   *NodeInfo
+		json string
+		want NodeInfo
+	}{
+		{"River node", &niRiver, riverNodeCompEndpoint, NodeInfo{
+			Nid:           0,
+			Enabled:       false,
+			RfActionURI:   "/redfish/v1/Systems/1/Actions/ComputerSystem.Reset",
+			RfResetTypes:  []string{"On", "ForceOff", "GracefulShutdown", "ForceRestart", "Nmi", "PushPowerButton", "GracefulRestart"},
+			RfPowerURL:    "/redfish/v1/Chassis/1/Power",
+			RfPwrCtlCnt:   1,
+			RfControlsCnt: 0,
+			PowerCaps: map[string]PowerCap{
+				"Node Power Control": {Name: "Node Power Control", Path: "/redfish/v1/Chassis/1/Power", Min: -1, Max: -1, PwrCtlIndex: 0},
+			},
+		}},
+		{"Mtn BP node", &niMtnBP, mountainBardPeakCompEndpoint, NodeInfo{
+			Nid:           0,
+			Enabled:       false,
+			RfActionURI:   "/redfish/v1/Systems/Node0/Actions/ComputerSystem.Reset",
+			RfResetTypes:  []string{"ForceOff", "Off", "On"},
+			RfPowerURL:    "/redfish/v1/Chassis/Node0/Power",
+			RfPwrCtlCnt:   0,
+			RfControlsCnt: 5,
+			PowerCaps: map[string]PowerCap{
+				"Accelerator0 Power Limit": {Name: "Accelerator0 Power Limit", Path: "/redfish/v1/Chassis/Node0/Controls/Accelerator0PowerLimit", Min: 100, Max: 560, PwrCtlIndex: 1},
+				"Accelerator1 Power Limit": {Name: "Accelerator1 Power Limit", Path: "/redfish/v1/Chassis/Node0/Controls/Accelerator1PowerLimit", Min: 100, Max: 560, PwrCtlIndex: 2},
+				"Accelerator2 Power Limit": {Name: "Accelerator2 Power Limit", Path: "/redfish/v1/Chassis/Node0/Controls/Accelerator2PowerLimit", Min: 100, Max: 560, PwrCtlIndex: 3},
+				"Accelerator3 Power Limit": {Name: "Accelerator3 Power Limit", Path: "/redfish/v1/Chassis/Node0/Controls/Accelerator3PowerLimit", Min: 100, Max: 560, PwrCtlIndex: 4},
+				"Node Power Limit":         {Name: "Node Power Limit", Path: "/redfish/v1/Chassis/Node0/Controls/NodePowerLimit", Min: 764, Max: 2754, PwrCtlIndex: 0},
+			},
+		}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var ce sm.ComponentEndpoint
+
+			err := json.Unmarshal([]byte(tt.json), &ce)
+			if err != nil {
+				t.Errorf("Failed to unmarshal json %s\n", tt.json)
+			}
+
+			extractRedfishSystemInfo(tt.ni, &ce)
+
+			if !reflect.DeepEqual(&tt.want, tt.ni) {
+				t.Errorf("FAIL - Expected\n%v\nbut got\n%v", tt.want, tt.ni)
 			}
 		})
 	}
