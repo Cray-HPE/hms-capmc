@@ -916,13 +916,15 @@ func TestBuildPowerCapCapabilitiesGroup(t *testing.T) {
 	}
 
 	if len(monikerGroups) > 0 && len(xnameComponentLookup) > 0 {
-		powerCapGroup, pcgErr := buildPowerCapCapabilitiesGroup(monikerGroups[0], xnameComponentLookup)
-		if pcgErr != nil {
-			t.Error("buildPowerCapCapabilitiesGroup returned an error: " + pcgErr.Error())
-		}
-		//do some checking of powerCapGroup therefore
-		if powerCapGroup.Controls == nil {
-			t.Error("powerCapGroup controls is nil")
+		for _, mg := range monikerGroups {
+			powerCapGroup, pcgErr := buildPowerCapCapabilitiesGroup(mg, xnameComponentLookup)
+			if pcgErr != nil {
+				t.Error("buildPowerCapCapabilitiesGroup returned an error: " + pcgErr.Error())
+			}
+			//do some checking of powerCapGroup therefore
+			if powerCapGroup.Controls == nil {
+				t.Error("powerCapGroup controls is nil")
+			}
 		}
 	} else {
 		t.Error("Unable to unmarshall testMonikerGroups data")

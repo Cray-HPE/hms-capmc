@@ -904,7 +904,12 @@ func buildPowerCapCapabilitiesGroup(monikerGroup PowerCapCapabilityMonikerGroup,
 		controlsArray := componentEndpoint.RedfishSystemInfo.Controls
 		if controlsArray != nil && len(controlsArray) > 0 {
 			for _, controlElem := range controlsArray {
-				var pccControl capmc.PowerCapCapabilityControl = capmc.PowerCapCapabilityControl{Name: string(controlElem.Control.Name), Desc: string(controlElem.Control.Name), Max: 0, Min: 0}
+				var pccControl capmc.PowerCapCapabilityControl = capmc.PowerCapCapabilityControl{
+					Name: string(controlElem.Control.Name),
+					Desc: string(controlElem.Control.Name),
+					Max:  0,
+					Min:  0,
+				}
 				max := int(controlElem.Control.SettingRangeMax)
 				min := int(controlElem.Control.SettingRangeMin)
 				if controlElem.Control.PhysicalContext == "Chassis" {
@@ -912,10 +917,10 @@ func buildPowerCapCapabilitiesGroup(monikerGroup PowerCapCapabilityMonikerGroup,
 					group.Powerup = 0 // TODO: FIND A SOURCE FOR THIS
 					group.HostLimitMax = max
 					group.HostLimitMin = min
-				} else {
-					pccControl.Max = max
-					pccControl.Min = min
 				}
+				pccControl.Max = max
+				pccControl.Min = min
+
 				controls = append(controls, pccControl)
 			}
 		}
