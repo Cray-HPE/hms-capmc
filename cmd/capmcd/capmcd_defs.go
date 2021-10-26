@@ -273,6 +273,7 @@ type NodeInfo struct {
 	RfPowerURL    string
 	RfPowerTarget string
 	RfPwrCtlCnt   int
+	RfControlsCnt int
 	PowerCaps     map[string]PowerCap
 	PowerETag     string
 	Type          string

@@ -48,6 +48,9 @@ type Power struct {
 	ActualPowerLimits []HpeActualPowerLimits `json:"ActualPowerLimits,omitempty"`
 	PowerLimitRanges  []HpePowerLimitRanges  `json:"PowerLimitRanges,omitempty"`
 	PowerLimits       []HpePowerLimits       `json:"PowerLimits,omitempty"`
+
+	// Redfish Control.v1_0_0.Control
+	RFControl
 }
 
 // Structs used to [un]marshal HPE Redfish
@@ -94,6 +97,28 @@ type PowerControl struct {
 	PowerLimit          *PowerLimit      `json:"PowerLimit,omitempty"`
 	PowerMetrics        *PowerMetric     `json:"PowerMetrics,omitempty"`
 	PowerRequestedWatts *int             `json:"PowerRequestedWatts,omitempty"`
+}
+
+// StatusRF struct used to unmarshal health info from Redfish Control.v1_0_0
+type StatusRF struct {
+	Health       string `json:"Health,omitempty"`
+	HealthRollUp string `json:"HealthRollUp,omitempty"`
+	State        string `json:"State,omitempty"`
+}
+
+// RFControl struct used to unmarshal the Redfish Control.v1_0_0.Control data
+type RFControl struct {
+	ControlDelaySeconds *int      `json:"ControlDelaySeconds,omitempty"`
+	ControlMode         string    `json:"ControlMode,omitempty"`
+	ControlType         string    `json:"ControlType,omitempty"`
+	Id                  string    `json:"Id,omitempty"`
+	Name                string    `json:"Name,omitempty"`
+	PhysicalContext     string    `json:"PhysicalContext,omitempty"`
+	SetPoint            *int      `json:"SetPoint,omitempty"`
+	SetPointUnits       string    `json:"SetPointUnits,omitempty"`
+	SettingRangeMax     *int      `json:"SettingRangeMax,omitempty"`
+	SettingRangeMin     *int      `json:"SettingRangeMin,omitempty"`
+	Status              *StatusRF `json:"Status,omitempty"`
 }
 
 // PowerControlOEM contains a pointer to the OEM specific information

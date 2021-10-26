@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.27.0] - 2021-10-21
+
+### Added
+
+- Power capping support for new Redfish power controls (Bard Peak)
+
 ## [1.26.0] - 2021-10-06
 
 ### Changed
