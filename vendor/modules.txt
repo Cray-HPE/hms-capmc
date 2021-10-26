@@ -13,7 +13,7 @@ github.com/Cray-HPE/hms-compcredentials
 # github.com/Cray-HPE/hms-securestorage v1.12.2
 ## explicit
 github.com/Cray-HPE/hms-securestorage
-# github.com/Cray-HPE/hms-smd v1.30.9
+# github.com/Cray-HPE/hms-smd v1.30.16
 ## explicit
 github.com/Cray-HPE/hms-smd/pkg/redfish
 github.com/Cray-HPE/hms-smd/pkg/service-reservations
