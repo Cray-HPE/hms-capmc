@@ -1,13 +1,13 @@
 {
-   "ComponentEndpoints" : [
+   "ComponentEndpoints": [
       {
-         "RedfishURL" : "10.4.0.6/redfish/v1/Systems/QSBP82704060",
-         "RedfishSystemInfo" : {
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "target" : "/redfish/v1/Systems/QSBP82704060/Actions/ComputerSystem.Reset",
-                  "@Redfish.ActionInfo" : "",
-                  "ResetType@Redfish.AllowableValues" : [
+         "RedfishURL": "10.4.0.6/redfish/v1/Systems/QSBP82704060",
+         "RedfishSystemInfo": {
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "target": "/redfish/v1/Systems/QSBP82704060/Actions/ComputerSystem.Reset",
+                  "@Redfish.ActionInfo": "",
+                  "ResetType@Redfish.AllowableValues": [
                      "PushPowerButton",
                      "On",
                      "GracefulShutdown",
@@ -18,103 +18,103 @@
                   ]
                }
             },
-            "EthernetNICInfo" : [
+            "EthernetNICInfo": [
                {
-                  "Description" : "Missing interface 1, MAC computed via workaround",
-                  "@odata.id" : "",
-                  "RedfishId" : "",
-                  "MACAddress" : "a4:bf:01:3e:cf:6b"
+                  "Description": "Missing interface 1, MAC computed via workaround",
+                  "@odata.id": "",
+                  "RedfishId": "",
+                  "MACAddress": "a4:bf:01:3e:cf:6b"
                },
                {
-                  "Description" : "Missing interface 2, MAC computed via workaround",
-                  "@odata.id" : "",
-                  "RedfishId" : "",
-                  "MACAddress" : "a4:bf:01:3e:cf:6c"
+                  "Description": "Missing interface 2, MAC computed via workaround",
+                  "@odata.id": "",
+                  "RedfishId": "",
+                  "MACAddress": "a4:bf:01:3e:cf:6c"
                }
             ],
-            "Name" : "S2600BPB",
+            "Name": "S2600BPB",
             "PowerControl": [
-                {
-                    "RelatedItem@odata.count": 1,
-                    "PowerCapacityWatts": 900,
-                    "Name": "Node Power Control",
-                    "Oem": {
-                        "Cray": {
-                            "PowerAllocatedWatts": 900,
-                            "PowerIdleWatts": 250,
-                            "PowerLimit": {
-                                "Min": 350,
-                                "Max": 850,
-                                "Factor": 1.02
-                            },
-                            "PowerFloorTargetWatts": 0,
-                            "PowerResetWatts": 250
-                        }
-                    },
-                    "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
-                    "PowerLimit": {
-                        "LimitException": "LogEventOnly",
-                        "CorrectionInMs": 6000,
-                        "LimitInWatts": 500
-                    },
-                    "RelatedItem": [
-                        {
-                            "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
-                        }
-                    ]
-                },
-                {
-                    "RelatedItem@odata.count": 0,
-                    "Name": "Accelerator0 Power Control",
-                    "Oem": {
-                        "Cray": {
-                            "PowerIdleWatts": 100,
-                            "PowerLimit": {
-                                "Min": 200,
-                                "Max": 350,
-                                "Factor": 1.0
-                            },
-                            "PowerFloorTargetWatts": 0
-                        }
-                    },
-                    "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
-                    "PowerLimit": {
-                        "LimitException": "LogEventOnly",
-                        "CorrectionInMs": 6000,
-                        "LimitInWatts": 300
-                    }
-                }
+               {
+                  "RelatedItem@odata.count": 1,
+                  "PowerCapacityWatts": 900,
+                  "Name": "Node Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerAllocatedWatts": 900,
+                        "PowerIdleWatts": 250,
+                        "PowerLimit": {
+                           "Min": 350,
+                           "Max": 850,
+                           "Factor": 1.02
+                        },
+                        "PowerFloorTargetWatts": 0,
+                        "PowerResetWatts": 250
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 500
+                  },
+                  "RelatedItem": [
+                     {
+                        "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
+                     }
+                  ]
+               },
+               {
+                  "RelatedItem@odata.count": 0,
+                  "Name": "Accelerator0 Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerIdleWatts": 100,
+                        "PowerLimit": {
+                           "Min": 200,
+                           "Max": 350,
+                           "Factor": 1.0
+                        },
+                        "PowerFloorTargetWatts": 0
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 300
+                  }
+               }
             ]
          },
-         "UUID" : "1c08769e-817a-11e8-ab21-a4bf013ecf6b",
-         "RedfishEndpointFQDN" : "10.4.0.6",
-         "RedfishEndpointID" : "x2014c0s27b2",
-         "RedfishSubtype" : "Physical",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "ID" : "x2014c0s27b2n0",
-         "RedfishType" : "ComputerSystem",
-         "MACAddr" : "a4:bf:01:3e:cf:6b",
-         "OdataID" : "/redfish/v1/Systems/QSBP82704060",
-         "Type" : "Node"
+         "UUID": "1c08769e-817a-11e8-ab21-a4bf013ecf6b",
+         "RedfishEndpointFQDN": "10.4.0.6",
+         "RedfishEndpointID": "x2014c0s27b2",
+         "RedfishSubtype": "Physical",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "ID": "x2014c0s27b2n0",
+         "RedfishType": "ComputerSystem",
+         "MACAddr": "a4:bf:01:3e:cf:6b",
+         "OdataID": "/redfish/v1/Systems/QSBP82704060",
+         "Type": "Node"
       },
       {
-         "RedfishType" : "ComputerSystem",
-         "ID" : "x2014c0s27b3n0",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "RedfishSubtype" : "Physical",
-         "RedfishEndpointID" : "x2014c0s27b3",
-         "Type" : "Node",
-         "OdataID" : "/redfish/v1/Systems/QSBP82703750",
-         "MACAddr" : "a4:bf:01:3e:c9:5d",
-         "RedfishURL" : "10.4.0.7/redfish/v1/Systems/QSBP82703750",
-         "RedfishEndpointFQDN" : "10.4.0.7",
-         "UUID" : "c96d01ea-8193-11e8-ab21-a4bf013ec95d",
-         "RedfishSystemInfo" : {
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "@Redfish.ActionInfo" : "",
-                  "target" : "/redfish/v1/Systems/QSBP82703750/Actions/ComputerSystem.Reset",
-                  "ResetType@Redfish.AllowableValues" : [
+         "RedfishType": "ComputerSystem",
+         "ID": "x2014c0s27b3n0",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "RedfishSubtype": "Physical",
+         "RedfishEndpointID": "x2014c0s27b3",
+         "Type": "Node",
+         "OdataID": "/redfish/v1/Systems/QSBP82703750",
+         "MACAddr": "a4:bf:01:3e:c9:5d",
+         "RedfishURL": "10.4.0.7/redfish/v1/Systems/QSBP82703750",
+         "RedfishEndpointFQDN": "10.4.0.7",
+         "UUID": "c96d01ea-8193-11e8-ab21-a4bf013ec95d",
+         "RedfishSystemInfo": {
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "@Redfish.ActionInfo": "",
+                  "target": "/redfish/v1/Systems/QSBP82703750/Actions/ComputerSystem.Reset",
+                  "ResetType@Redfish.AllowableValues": [
                      "PushPowerButton",
                      "On",
                      "GracefulShutdown",
@@ -125,83 +125,83 @@
                   ]
                }
             },
-            "EthernetNICInfo" : [
+            "EthernetNICInfo": [
                {
-                  "MACAddress" : "a4:bf:01:3e:c9:5d",
-                  "@odata.id" : "",
-                  "Description" : "Missing interface 1, MAC computed via workaround",
-                  "RedfishId" : ""
+                  "MACAddress": "a4:bf:01:3e:c9:5d",
+                  "@odata.id": "",
+                  "Description": "Missing interface 1, MAC computed via workaround",
+                  "RedfishId": ""
                },
                {
-                  "Description" : "Missing interface 2, MAC computed via workaround",
-                  "RedfishId" : "",
-                  "@odata.id" : "",
-                  "MACAddress" : "a4:bf:01:3e:c9:5e"
+                  "Description": "Missing interface 2, MAC computed via workaround",
+                  "RedfishId": "",
+                  "@odata.id": "",
+                  "MACAddress": "a4:bf:01:3e:c9:5e"
                }
             ],
-            "Name" : "S2600BPB",
+            "Name": "S2600BPB",
             "PowerControl": [
-        		{
-            "RelatedItem@odata.count": 1,
-            "PowerCapacityWatts": 900,
-            "Name": "Node Power Control",
-            "Oem": {
-                "Cray": {
-                    "PowerAllocatedWatts": 900,
-                    "PowerIdleWatts": 250,
-                    "PowerLimit": {
-                        "Min": 350,
-                        "Max": 850,
-                        "Factor": 1.02
-                    },
-                    "PowerFloorTargetWatts": 0,
-                    "PowerResetWatts": 250
-                }
-            },
-            "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
-            "PowerLimit": {
-                "LimitException": "LogEventOnly",
-                "CorrectionInMs": 6000,
-                "LimitInWatts": 500
-            },
-            "RelatedItem": [
-                {
-                    "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
-                }
+               {
+                  "RelatedItem@odata.count": 1,
+                  "PowerCapacityWatts": 900,
+                  "Name": "Node Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerAllocatedWatts": 900,
+                        "PowerIdleWatts": 250,
+                        "PowerLimit": {
+                           "Min": 350,
+                           "Max": 850,
+                           "Factor": 1.02
+                        },
+                        "PowerFloorTargetWatts": 0,
+                        "PowerResetWatts": 250
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 500
+                  },
+                  "RelatedItem": [
+                     {
+                        "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
+                     }
+                  ]
+               },
+               {
+                  "RelatedItem@odata.count": 0,
+                  "Name": "Accelerator0 Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerIdleWatts": 100,
+                        "PowerLimit": {
+                           "Min": 200,
+                           "Max": 350,
+                           "Factor": 1.0
+                        },
+                        "PowerFloorTargetWatts": 0
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 300
+                  }
+               }
             ]
-        },
-        		{
-            "RelatedItem@odata.count": 0,
-            "Name": "Accelerator0 Power Control",
-            "Oem": {
-                "Cray": {
-                    "PowerIdleWatts": 100,
-                    "PowerLimit": {
-                        "Min": 200,
-                        "Max": 350,
-                        "Factor": 1.0
-                    },
-                    "PowerFloorTargetWatts": 0
-                }
-            },
-            "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
-            "PowerLimit": {
-                "LimitException": "LogEventOnly",
-                "CorrectionInMs": 6000,
-                "LimitInWatts": 300
-            }
-        }
-    		]
          }
       },
       {
-         "RedfishURL" : "10.4.0.8/redfish/v1/Systems/QSBP82703793",
-         "RedfishEndpointFQDN" : "10.4.0.8",
-         "UUID" : "fa3001ea-817f-11e8-ab21-a4bf013eca34",
-         "RedfishSystemInfo" : {
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "ResetType@Redfish.AllowableValues" : [
+         "RedfishURL": "10.4.0.8/redfish/v1/Systems/QSBP82703793",
+         "RedfishEndpointFQDN": "10.4.0.8",
+         "UUID": "fa3001ea-817f-11e8-ab21-a4bf013eca34",
+         "RedfishSystemInfo": {
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "ResetType@Redfish.AllowableValues": [
                      "PushPowerButton",
                      "On",
                      "GracefulShutdown",
@@ -210,103 +210,103 @@
                      "ForceOn",
                      "ForceOff"
                   ],
-                  "@Redfish.ActionInfo" : "",
-                  "target" : "/redfish/v1/Systems/QSBP82703793/Actions/ComputerSystem.Reset"
+                  "@Redfish.ActionInfo": "",
+                  "target": "/redfish/v1/Systems/QSBP82703793/Actions/ComputerSystem.Reset"
                }
             },
-            "EthernetNICInfo" : [
+            "EthernetNICInfo": [
                {
-                  "MACAddress" : "a4:bf:01:3e:ca:34",
-                  "RedfishId" : "",
-                  "Description" : "Missing interface 1, MAC computed via workaround",
-                  "@odata.id" : ""
+                  "MACAddress": "a4:bf:01:3e:ca:34",
+                  "RedfishId": "",
+                  "Description": "Missing interface 1, MAC computed via workaround",
+                  "@odata.id": ""
                },
                {
-                  "MACAddress" : "a4:bf:01:3e:ca:35",
-                  "RedfishId" : "",
-                  "Description" : "Missing interface 2, MAC computed via workaround",
-                  "@odata.id" : ""
+                  "MACAddress": "a4:bf:01:3e:ca:35",
+                  "RedfishId": "",
+                  "Description": "Missing interface 2, MAC computed via workaround",
+                  "@odata.id": ""
                }
             ],
-            "Name" : "S2600BPB",
+            "Name": "S2600BPB",
             "PowerControl": [
-        		{
-            "RelatedItem@odata.count": 1,
-            "PowerCapacityWatts": 900,
-            "Name": "Node Power Control",
-            "Oem": {
-                "Cray": {
-                    "PowerAllocatedWatts": 900,
-                    "PowerIdleWatts": 250,
-                    "PowerLimit": {
-                        "Min": 350,
-                        "Max": 850,
-                        "Factor": 1.02
-                    },
-                    "PowerFloorTargetWatts": 0,
-                    "PowerResetWatts": 250
-                }
-            },
-            "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
-            "PowerLimit": {
-                "LimitException": "LogEventOnly",
-                "CorrectionInMs": 6000,
-                "LimitInWatts": 500
-            },
-            "RelatedItem": [
-                {
-                    "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
-                }
+               {
+                  "RelatedItem@odata.count": 1,
+                  "PowerCapacityWatts": 900,
+                  "Name": "Node Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerAllocatedWatts": 900,
+                        "PowerIdleWatts": 250,
+                        "PowerLimit": {
+                           "Min": 350,
+                           "Max": 850,
+                           "Factor": 1.02
+                        },
+                        "PowerFloorTargetWatts": 0,
+                        "PowerResetWatts": 250
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 500
+                  },
+                  "RelatedItem": [
+                     {
+                        "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
+                     }
+                  ]
+               },
+               {
+                  "RelatedItem@odata.count": 0,
+                  "Name": "Accelerator0 Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerIdleWatts": 100,
+                        "PowerLimit": {
+                           "Min": 200,
+                           "Max": 350,
+                           "Factor": 1.0
+                        },
+                        "PowerFloorTargetWatts": 0
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 300
+                  }
+               }
             ]
-        },
-        		{
-            "RelatedItem@odata.count": 0,
-            "Name": "Accelerator0 Power Control",
-            "Oem": {
-                "Cray": {
-                    "PowerIdleWatts": 100,
-                    "PowerLimit": {
-                        "Min": 200,
-                        "Max": 350,
-                        "Factor": 1.0
-                    },
-                    "PowerFloorTargetWatts": 0
-                }
-            },
-            "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
-            "PowerLimit": {
-                "LimitException": "LogEventOnly",
-                "CorrectionInMs": 6000,
-                "LimitInWatts": 300
-            }
-        }
-    		]
          },
-         "RedfishType" : "ComputerSystem",
-         "RedfishSubtype" : "Physical",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "ID" : "x2014c0s27b4n0",
-         "RedfishEndpointID" : "x2014c0s27b4",
-         "Type" : "Node",
-         "OdataID" : "/redfish/v1/Systems/QSBP82703793",
-         "MACAddr" : "a4:bf:01:3e:ca:34"
+         "RedfishType": "ComputerSystem",
+         "RedfishSubtype": "Physical",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "ID": "x2014c0s27b4n0",
+         "RedfishEndpointID": "x2014c0s27b4",
+         "Type": "Node",
+         "OdataID": "/redfish/v1/Systems/QSBP82703793",
+         "MACAddr": "a4:bf:01:3e:ca:34"
       },
       {
-         "MACAddr" : "a4:bf:01:3e:cb:60",
-         "OdataID" : "/redfish/v1/Systems/QSBP82703853",
-         "Type" : "Node",
-         "RedfishEndpointID" : "x2014c0s27b1",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "RedfishSubtype" : "Physical",
-         "ID" : "x2014c0s27b1n0",
-         "RedfishType" : "ComputerSystem",
-         "RedfishSystemInfo" : {
-            "Name" : "S2600BPB",
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "@Redfish.ActionInfo" : "",
-                  "target" : "/redfish/v1/Systems/QSBP82703853/Actions/ComputerSystem.Reset",
-                  "ResetType@Redfish.AllowableValues" : [
+         "MACAddr": "a4:bf:01:3e:cb:60",
+         "OdataID": "/redfish/v1/Systems/QSBP82703853",
+         "Type": "Node",
+         "RedfishEndpointID": "x2014c0s27b1",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "RedfishSubtype": "Physical",
+         "ID": "x2014c0s27b1n0",
+         "RedfishType": "ComputerSystem",
+         "RedfishSystemInfo": {
+            "Name": "S2600BPB",
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "@Redfish.ActionInfo": "",
+                  "target": "/redfish/v1/Systems/QSBP82703853/Actions/ComputerSystem.Reset",
+                  "ResetType@Redfish.AllowableValues": [
                      "PushPowerButton",
                      "On",
                      "GracefulShutdown",
@@ -317,191 +317,191 @@
                   ]
                }
             },
-            "EthernetNICInfo" : [
+            "EthernetNICInfo": [
                {
-                  "Description" : "Missing interface 1, MAC computed via workaround",
-                  "RedfishId" : "",
-                  "@odata.id" : "",
-                  "MACAddress" : "a4:bf:01:3e:cb:60"
+                  "Description": "Missing interface 1, MAC computed via workaround",
+                  "RedfishId": "",
+                  "@odata.id": "",
+                  "MACAddress": "a4:bf:01:3e:cb:60"
                },
                {
-                  "Description" : "Missing interface 2, MAC computed via workaround",
-                  "@odata.id" : "",
-                  "RedfishId" : "",
-                  "MACAddress" : "a4:bf:01:3e:cb:61"
+                  "Description": "Missing interface 2, MAC computed via workaround",
+                  "@odata.id": "",
+                  "RedfishId": "",
+                  "MACAddress": "a4:bf:01:3e:cb:61"
                }
             ],
-             "PowerControl": [
-        {
-            "RelatedItem@odata.count": 1,
-            "PowerCapacityWatts": 900,
-            "Name": "Node Power Control",
-            "Oem": {
-                "Cray": {
-                    "PowerAllocatedWatts": 900,
-                    "PowerIdleWatts": 250,
-                    "PowerLimit": {
-                        "Min": 350,
-                        "Max": 850,
-                        "Factor": 1.02
-                    },
-                    "PowerFloorTargetWatts": 0,
-                    "PowerResetWatts": 250
-                }
-            },
-            "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
-            "PowerLimit": {
-                "LimitException": "LogEventOnly",
-                "CorrectionInMs": 6000,
-                "LimitInWatts": 500
-            },
-            "RelatedItem": [
-                {
-                    "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
-                }
+            "PowerControl": [
+               {
+                  "RelatedItem@odata.count": 1,
+                  "PowerCapacityWatts": 900,
+                  "Name": "Node Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerAllocatedWatts": 900,
+                        "PowerIdleWatts": 250,
+                        "PowerLimit": {
+                           "Min": 350,
+                           "Max": 850,
+                           "Factor": 1.02
+                        },
+                        "PowerFloorTargetWatts": 0,
+                        "PowerResetWatts": 250
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 500
+                  },
+                  "RelatedItem": [
+                     {
+                        "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
+                     }
+                  ]
+               },
+               {
+                  "RelatedItem@odata.count": 0,
+                  "Name": "Accelerator0 Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerIdleWatts": 100,
+                        "PowerLimit": {
+                           "Min": 200,
+                           "Max": 350,
+                           "Factor": 1.0
+                        },
+                        "PowerFloorTargetWatts": 0
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 300
+                  }
+               }
             ]
-        },
-        {
-            "RelatedItem@odata.count": 0,
-            "Name": "Accelerator0 Power Control",
-            "Oem": {
-                "Cray": {
-                    "PowerIdleWatts": 100,
-                    "PowerLimit": {
-                        "Min": 200,
-                        "Max": 350,
-                        "Factor": 1.0
-                    },
-                    "PowerFloorTargetWatts": 0
-                }
-            },
-            "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
-            "PowerLimit": {
-                "LimitException": "LogEventOnly",
-                "CorrectionInMs": 6000,
-                "LimitInWatts": 300
-            }
-        }
-    ]
          },
-         "UUID" : "b996c5fe-82a9-11e8-ab21-a4bf013ecb60",
-         "RedfishEndpointFQDN" : "10.4.0.5",
-         "RedfishURL" : "10.4.0.5/redfish/v1/Systems/QSBP82703853"
+         "UUID": "b996c5fe-82a9-11e8-ab21-a4bf013ecb60",
+         "RedfishEndpointFQDN": "10.4.0.5",
+         "RedfishURL": "10.4.0.5/redfish/v1/Systems/QSBP82703853"
       },
       {
-         "RedfishType" : "ComputerSystem",
-         "RedfishEndpointID" : "x5000c1s0b1",
-         "ID" : "x5000c1s0b1n0",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "RedfishSubtype" : "Physical",
-         "Type" : "Node",
-         "MACAddr" : "00:40:a6:82:f6:64",
-         "OdataID" : "/redfish/v1/Systems/Node0",
-         "RedfishURL" : "x5000c1s0b1/redfish/v1/Systems/Node0",
-         "RedfishEndpointFQDN" : "x5000c1s0b1",
-         "RedfishSystemInfo" : {
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "ResetType@Redfish.AllowableValues" : [
+         "RedfishType": "ComputerSystem",
+         "RedfishEndpointID": "x5000c1s0b1",
+         "ID": "x5000c1s0b1n0",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "RedfishSubtype": "Physical",
+         "Type": "Node",
+         "MACAddr": "00:40:a6:82:f6:64",
+         "OdataID": "/redfish/v1/Systems/Node0",
+         "RedfishURL": "x5000c1s0b1/redfish/v1/Systems/Node0",
+         "RedfishEndpointFQDN": "x5000c1s0b1",
+         "RedfishSystemInfo": {
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "ResetType@Redfish.AllowableValues": [
                      "ForceOff",
                      "On",
                      "Off"
                   ],
-                  "target" : "/redfish/v1/Systems/Node0/Actions/ComputerSystem.Reset",
-                  "@Redfish.ActionInfo" : "/redfish/v1/Systems/Node0/ResetActionInfo"
+                  "target": "/redfish/v1/Systems/Node0/Actions/ComputerSystem.Reset",
+                  "@Redfish.ActionInfo": "/redfish/v1/Systems/Node0/ResetActionInfo"
                }
             },
-            "EthernetNICInfo" : [
+            "EthernetNICInfo": [
                {
-                  "Description" : "Node Maintenance Network",
-                  "RedfishId" : "ManagementEthernet",
-                  "@odata.id" : "/redfish/v1/Systems/Node0/EthernetInterfaces/ManagementEthernet",
-                  "MACAddress" : "00:40:a6:82:f6:64",
-                  "PermanentMACAddress" : "00:40:a6:82:f6:64"
+                  "Description": "Node Maintenance Network",
+                  "RedfishId": "ManagementEthernet",
+                  "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/ManagementEthernet",
+                  "MACAddress": "00:40:a6:82:f6:64",
+                  "PermanentMACAddress": "00:40:a6:82:f6:64"
                }
             ],
-            "Name" : "Node0",
-             "PowerControl": [
-        {
-            "RelatedItem@odata.count": 1,
-            "PowerCapacityWatts": 900,
-            "Name": "Node Power Control",
-            "Oem": {
-                "Cray": {
-                    "PowerAllocatedWatts": 900,
-                    "PowerIdleWatts": 250,
-                    "PowerLimit": {
-                        "Min": 350,
-                        "Max": 850,
-                        "Factor": 1.02
-                    },
-                    "PowerFloorTargetWatts": 0,
-                    "PowerResetWatts": 250
-                }
-            },
-            "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
-            "PowerLimit": {
-                "LimitException": "LogEventOnly",
-                "CorrectionInMs": 6000,
-                "LimitInWatts": 500
-            },
-            "RelatedItem": [
-                {
-                    "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
-                }
+            "Name": "Node0",
+            "PowerControl": [
+               {
+                  "RelatedItem@odata.count": 1,
+                  "PowerCapacityWatts": 900,
+                  "Name": "Node Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerAllocatedWatts": 900,
+                        "PowerIdleWatts": 250,
+                        "PowerLimit": {
+                           "Min": 350,
+                           "Max": 850,
+                           "Factor": 1.02
+                        },
+                        "PowerFloorTargetWatts": 0,
+                        "PowerResetWatts": 250
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 500
+                  },
+                  "RelatedItem": [
+                     {
+                        "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
+                     }
+                  ]
+               },
+               {
+                  "RelatedItem@odata.count": 0,
+                  "Name": "Accelerator0 Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerIdleWatts": 100,
+                        "PowerLimit": {
+                           "Min": 200,
+                           "Max": 350,
+                           "Factor": 1.0
+                        },
+                        "PowerFloorTargetWatts": 0
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 300
+                  }
+               }
             ]
-        },
-        {
-            "RelatedItem@odata.count": 0,
-            "Name": "Accelerator0 Power Control",
-            "Oem": {
-                "Cray": {
-                    "PowerIdleWatts": 100,
-                    "PowerLimit": {
-                        "Min": 200,
-                        "Max": 350,
-                        "Factor": 1.0
-                    },
-                    "PowerFloorTargetWatts": 0
-                }
-            },
-            "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
-            "PowerLimit": {
-                "LimitException": "LogEventOnly",
-                "CorrectionInMs": 6000,
-                "LimitInWatts": 300
-            }
-        }
-    ]
          }
       },
       {
-         "RedfishType" : "ComputerSystem",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "ID" : "x5000c1s0b1n1",
-         "RedfishSubtype" : "Physical",
-         "RedfishEndpointID" : "x5000c1s0b1",
-         "Type" : "Node",
-         "OdataID" : "/redfish/v1/Systems/Node1",
-         "MACAddr" : "00:40:a6:82:f6:65",
-         "RedfishURL" : "x5000c1s0b1/redfish/v1/Systems/Node1",
-         "RedfishEndpointFQDN" : "x5000c1s0b1",
-         "RedfishSystemInfo" : {
-            "Name" : "Node1",
-            "EthernetNICInfo" : [
+         "RedfishType": "ComputerSystem",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "ID": "x5000c1s0b1n1",
+         "RedfishSubtype": "Physical",
+         "RedfishEndpointID": "x5000c1s0b1",
+         "Type": "Node",
+         "OdataID": "/redfish/v1/Systems/Node1",
+         "MACAddr": "00:40:a6:82:f6:65",
+         "RedfishURL": "x5000c1s0b1/redfish/v1/Systems/Node1",
+         "RedfishEndpointFQDN": "x5000c1s0b1",
+         "RedfishSystemInfo": {
+            "Name": "Node1",
+            "EthernetNICInfo": [
                {
-                  "MACAddress" : "00:40:a6:82:f6:65",
-                  "Description" : "Node Maintenance Network",
-                  "RedfishId" : "ManagementEthernet",
-                  "@odata.id" : "/redfish/v1/Systems/Node1/EthernetInterfaces/ManagementEthernet",
-                  "PermanentMACAddress" : "00:40:a6:82:f6:65"
+                  "MACAddress": "00:40:a6:82:f6:65",
+                  "Description": "Node Maintenance Network",
+                  "RedfishId": "ManagementEthernet",
+                  "@odata.id": "/redfish/v1/Systems/Node1/EthernetInterfaces/ManagementEthernet",
+                  "PermanentMACAddress": "00:40:a6:82:f6:65"
                }
             ],
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "@Redfish.ActionInfo" : "/redfish/v1/Systems/Node1/ResetActionInfo",
-                  "target" : "/redfish/v1/Systems/Node1/Actions/ComputerSystem.Reset",
-                  "ResetType@Redfish.AllowableValues" : [
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "@Redfish.ActionInfo": "/redfish/v1/Systems/Node1/ResetActionInfo",
+                  "target": "/redfish/v1/Systems/Node1/Actions/ComputerSystem.Reset",
+                  "ResetType@Redfish.AllowableValues": [
                      "ForceOff",
                      "On",
                      "Off"
@@ -509,328 +509,328 @@
                }
             },
             "PowerControl": [
-        {
-            "RelatedItem@odata.count": 1,
-            "PowerCapacityWatts": 900,
-            "Name": "Node Power Control",
-            "Oem": {
-                "Cray": {
-                    "PowerAllocatedWatts": 900,
-                    "PowerIdleWatts": 250,
-                    "PowerLimit": {
-                        "Min": 350,
-                        "Max": 850,
-                        "Factor": 1.02
-                    },
-                    "PowerFloorTargetWatts": 0,
-                    "PowerResetWatts": 250
-                }
-            },
-            "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
-            "PowerLimit": {
-                "LimitException": "LogEventOnly",
-                "CorrectionInMs": 6000,
-                "LimitInWatts": 500
-            },
-            "RelatedItem": [
-                {
-                    "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
-                }
+               {
+                  "RelatedItem@odata.count": 1,
+                  "PowerCapacityWatts": 900,
+                  "Name": "Node Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerAllocatedWatts": 900,
+                        "PowerIdleWatts": 250,
+                        "PowerLimit": {
+                           "Min": 350,
+                           "Max": 850,
+                           "Factor": 1.02
+                        },
+                        "PowerFloorTargetWatts": 0,
+                        "PowerResetWatts": 250
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 500
+                  },
+                  "RelatedItem": [
+                     {
+                        "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
+                     }
+                  ]
+               },
+               {
+                  "RelatedItem@odata.count": 0,
+                  "Name": "Accelerator0 Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerIdleWatts": 100,
+                        "PowerLimit": {
+                           "Min": 200,
+                           "Max": 350,
+                           "Factor": 1.0
+                        },
+                        "PowerFloorTargetWatts": 0
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 300
+                  }
+               }
             ]
-        },
-        {
-            "RelatedItem@odata.count": 0,
-            "Name": "Accelerator0 Power Control",
-            "Oem": {
-                "Cray": {
-                    "PowerIdleWatts": 100,
-                    "PowerLimit": {
-                        "Min": 200,
-                        "Max": 350,
-                        "Factor": 1.0
-                    },
-                    "PowerFloorTargetWatts": 0
-                }
-            },
-            "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
-            "PowerLimit": {
-                "LimitException": "LogEventOnly",
-                "CorrectionInMs": 6000,
-                "LimitInWatts": 300
-            }
-        }
-    ]
          }
       },
       {
-         "RedfishSystemInfo" : {
-            "EthernetNICInfo" : [
+         "RedfishSystemInfo": {
+            "EthernetNICInfo": [
                {
-                  "Description" : "Node Maintenance Network",
-                  "@odata.id" : "/redfish/v1/Systems/Node0/EthernetInterfaces/ManagementEthernet",
-                  "RedfishId" : "ManagementEthernet",
-                  "MACAddress" : "00:40:a6:82:f6:c4",
-                  "PermanentMACAddress" : "00:40:a6:82:f6:c4"
+                  "Description": "Node Maintenance Network",
+                  "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/ManagementEthernet",
+                  "RedfishId": "ManagementEthernet",
+                  "MACAddress": "00:40:a6:82:f6:c4",
+                  "PermanentMACAddress": "00:40:a6:82:f6:c4"
                }
             ],
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "target" : "/redfish/v1/Systems/Node0/Actions/ComputerSystem.Reset",
-                  "@Redfish.ActionInfo" : "/redfish/v1/Systems/Node0/ResetActionInfo",
-                  "ResetType@Redfish.AllowableValues" : [
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "target": "/redfish/v1/Systems/Node0/Actions/ComputerSystem.Reset",
+                  "@Redfish.ActionInfo": "/redfish/v1/Systems/Node0/ResetActionInfo",
+                  "ResetType@Redfish.AllowableValues": [
                      "ForceOff",
                      "Off",
                      "On"
                   ]
                }
             },
-            "Name" : "Node0",
+            "Name": "Node0",
             "PowerControl": [
-        {
-            "RelatedItem@odata.count": 1,
-            "PowerCapacityWatts": 900,
-            "Name": "Node Power Control",
-            "Oem": {
-                "Cray": {
-                    "PowerAllocatedWatts": 900,
-                    "PowerIdleWatts": 250,
-                    "PowerLimit": {
-                        "Min": 350,
-                        "Max": 850,
-                        "Factor": 1.02
-                    },
-                    "PowerFloorTargetWatts": 0,
-                    "PowerResetWatts": 250
-                }
-            },
-            "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
-            "PowerLimit": {
-                "LimitException": "LogEventOnly",
-                "CorrectionInMs": 6000,
-                "LimitInWatts": 500
-            },
-            "RelatedItem": [
-                {
-                    "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
-                }
+               {
+                  "RelatedItem@odata.count": 1,
+                  "PowerCapacityWatts": 900,
+                  "Name": "Node Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerAllocatedWatts": 900,
+                        "PowerIdleWatts": 250,
+                        "PowerLimit": {
+                           "Min": 350,
+                           "Max": 850,
+                           "Factor": 1.02
+                        },
+                        "PowerFloorTargetWatts": 0,
+                        "PowerResetWatts": 250
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 500
+                  },
+                  "RelatedItem": [
+                     {
+                        "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
+                     }
+                  ]
+               },
+               {
+                  "RelatedItem@odata.count": 0,
+                  "Name": "Accelerator0 Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerIdleWatts": 100,
+                        "PowerLimit": {
+                           "Min": 200,
+                           "Max": 350,
+                           "Factor": 1.0
+                        },
+                        "PowerFloorTargetWatts": 0
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 300
+                  }
+               }
             ]
-        },
-        {
-            "RelatedItem@odata.count": 0,
-            "Name": "Accelerator0 Power Control",
-            "Oem": {
-                "Cray": {
-                    "PowerIdleWatts": 100,
-                    "PowerLimit": {
-                        "Min": 200,
-                        "Max": 350,
-                        "Factor": 1.0
-                    },
-                    "PowerFloorTargetWatts": 0
-                }
-            },
-            "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
-            "PowerLimit": {
-                "LimitException": "LogEventOnly",
-                "CorrectionInMs": 6000,
-                "LimitInWatts": 300
-            }
-        }
-    ]
          },
-         "RedfishEndpointFQDN" : "x5000c1s1b0",
-         "RedfishURL" : "x5000c1s1b0/redfish/v1/Systems/Node0",
-         "OdataID" : "/redfish/v1/Systems/Node0",
-         "MACAddr" : "00:40:a6:82:f6:c4",
-         "Type" : "Node",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "ID" : "x5000c1s1b0n0",
-         "RedfishSubtype" : "Physical",
-         "RedfishEndpointID" : "x5000c1s1b0",
-         "RedfishType" : "ComputerSystem"
+         "RedfishEndpointFQDN": "x5000c1s1b0",
+         "RedfishURL": "x5000c1s1b0/redfish/v1/Systems/Node0",
+         "OdataID": "/redfish/v1/Systems/Node0",
+         "MACAddr": "00:40:a6:82:f6:c4",
+         "Type": "Node",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "ID": "x5000c1s1b0n0",
+         "RedfishSubtype": "Physical",
+         "RedfishEndpointID": "x5000c1s1b0",
+         "RedfishType": "ComputerSystem"
       },
       {
-         "RedfishURL" : "x5000c1s1b0/redfish/v1/Systems/Node1",
-         "RedfishSystemInfo" : {
-            "Name" : "Node1",
-            "EthernetNICInfo" : [
+         "RedfishURL": "x5000c1s1b0/redfish/v1/Systems/Node1",
+         "RedfishSystemInfo": {
+            "Name": "Node1",
+            "EthernetNICInfo": [
                {
-                  "PermanentMACAddress" : "00:40:a6:82:f6:c5",
-                  "Description" : "Node Maintenance Network",
-                  "RedfishId" : "ManagementEthernet",
-                  "@odata.id" : "/redfish/v1/Systems/Node1/EthernetInterfaces/ManagementEthernet",
-                  "MACAddress" : "00:40:a6:82:f6:c5"
+                  "PermanentMACAddress": "00:40:a6:82:f6:c5",
+                  "Description": "Node Maintenance Network",
+                  "RedfishId": "ManagementEthernet",
+                  "@odata.id": "/redfish/v1/Systems/Node1/EthernetInterfaces/ManagementEthernet",
+                  "MACAddress": "00:40:a6:82:f6:c5"
                }
             ],
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "ResetType@Redfish.AllowableValues" : [
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "ResetType@Redfish.AllowableValues": [
                      "ForceOff",
                      "Off",
                      "On"
                   ],
-                  "@Redfish.ActionInfo" : "/redfish/v1/Systems/Node1/ResetActionInfo",
-                  "target" : "/redfish/v1/Systems/Node1/Actions/ComputerSystem.Reset"
+                  "@Redfish.ActionInfo": "/redfish/v1/Systems/Node1/ResetActionInfo",
+                  "target": "/redfish/v1/Systems/Node1/Actions/ComputerSystem.Reset"
                }
             },
             "PowerControl": [
-        {
-            "RelatedItem@odata.count": 1,
-            "PowerCapacityWatts": 900,
-            "Name": "Node Power Control",
-            "Oem": {
-                "Cray": {
-                    "PowerAllocatedWatts": 900,
-                    "PowerIdleWatts": 250,
-                    "PowerLimit": {
-                        "Min": 350,
-                        "Max": 850,
-                        "Factor": 1.02
-                    },
-                    "PowerFloorTargetWatts": 0,
-                    "PowerResetWatts": 250
-                }
-            },
-            "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
-            "PowerLimit": {
-                "LimitException": "LogEventOnly",
-                "CorrectionInMs": 6000,
-                "LimitInWatts": 500
-            },
-            "RelatedItem": [
-                {
-                    "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
-                }
+               {
+                  "RelatedItem@odata.count": 1,
+                  "PowerCapacityWatts": 900,
+                  "Name": "Node Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerAllocatedWatts": 900,
+                        "PowerIdleWatts": 250,
+                        "PowerLimit": {
+                           "Min": 350,
+                           "Max": 850,
+                           "Factor": 1.02
+                        },
+                        "PowerFloorTargetWatts": 0,
+                        "PowerResetWatts": 250
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Node",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 500
+                  },
+                  "RelatedItem": [
+                     {
+                        "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0"
+                     }
+                  ]
+               },
+               {
+                  "RelatedItem@odata.count": 0,
+                  "Name": "Accelerator0 Power Control",
+                  "Oem": {
+                     "Cray": {
+                        "PowerIdleWatts": 100,
+                        "PowerLimit": {
+                           "Min": 200,
+                           "Max": 350,
+                           "Factor": 1.0
+                        },
+                        "PowerFloorTargetWatts": 0
+                     }
+                  },
+                  "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
+                  "PowerLimit": {
+                     "LimitException": "LogEventOnly",
+                     "CorrectionInMs": 6000,
+                     "LimitInWatts": 300
+                  }
+               }
             ]
-        },
-        {
-            "RelatedItem@odata.count": 0,
-            "Name": "Accelerator0 Power Control",
-            "Oem": {
-                "Cray": {
-                    "PowerIdleWatts": 100,
-                    "PowerLimit": {
-                        "Min": 200,
-                        "Max": 350,
-                        "Factor": 1.0
-                    },
-                    "PowerFloorTargetWatts": 0
-                }
-            },
-            "@odata.id": "/redfish/v1/Chassis/Node0/Power#/PowerControl/Accelerator0",
-            "PowerLimit": {
-                "LimitException": "LogEventOnly",
-                "CorrectionInMs": 6000,
-                "LimitInWatts": 300
-            }
-        }
-    ]
          },
-         "RedfishEndpointFQDN" : "x5000c1s1b0",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "RedfishSubtype" : "Physical",
-         "ID" : "x5000c1s1b0n1",
-         "RedfishEndpointID" : "x5000c1s1b0",
-         "RedfishType" : "ComputerSystem",
-         "OdataID" : "/redfish/v1/Systems/Node1",
-         "MACAddr" : "00:40:a6:82:f6:c5",
-         "Type" : "Node"
+         "RedfishEndpointFQDN": "x5000c1s1b0",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "RedfishSubtype": "Physical",
+         "ID": "x5000c1s1b0n1",
+         "RedfishEndpointID": "x5000c1s1b0",
+         "RedfishType": "ComputerSystem",
+         "OdataID": "/redfish/v1/Systems/Node1",
+         "MACAddr": "00:40:a6:82:f6:c5",
+         "Type": "Node"
       },
       {
-         "RedfishURL" : "x5000c1s0b0/redfish/v1/Systems/Node0",
-         "RedfishSystemInfo" : {
-            "Name" : "Node0",
-            "EthernetNICInfo" : [
+         "RedfishURL": "x5000c1s0b0/redfish/v1/Systems/Node0",
+         "RedfishSystemInfo": {
+            "Name": "Node0",
+            "EthernetNICInfo": [
                {
-                  "MACAddress" : "00:40:a6:82:f6:76",
-                  "RedfishId" : "ManagementEthernet",
-                  "Description" : "Node Maintenance Network",
-                  "@odata.id" : "/redfish/v1/Systems/Node0/EthernetInterfaces/ManagementEthernet",
-                  "PermanentMACAddress" : "00:40:a6:82:f6:76"
+                  "MACAddress": "00:40:a6:82:f6:76",
+                  "RedfishId": "ManagementEthernet",
+                  "Description": "Node Maintenance Network",
+                  "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/ManagementEthernet",
+                  "PermanentMACAddress": "00:40:a6:82:f6:76"
                }
             ],
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "ResetType@Redfish.AllowableValues" : [
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "ResetType@Redfish.AllowableValues": [
                      "On",
                      "Off",
                      "ForceOff"
                   ],
-                  "target" : "/redfish/v1/Systems/Node0/Actions/ComputerSystem.Reset",
-                  "@Redfish.ActionInfo" : "/redfish/v1/Systems/Node0/ResetActionInfo"
+                  "target": "/redfish/v1/Systems/Node0/Actions/ComputerSystem.Reset",
+                  "@Redfish.ActionInfo": "/redfish/v1/Systems/Node0/ResetActionInfo"
                }
             }
          },
-         "RedfishEndpointFQDN" : "x5000c1s0b0",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "RedfishSubtype" : "Physical",
-         "ID" : "x5000c1s0b0n0",
-         "RedfishEndpointID" : "x5000c1s0b0",
-         "RedfishType" : "ComputerSystem",
-         "OdataID" : "/redfish/v1/Systems/Node0",
-         "MACAddr" : "00:40:a6:82:f6:76",
-         "Type" : "Node"
+         "RedfishEndpointFQDN": "x5000c1s0b0",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "RedfishSubtype": "Physical",
+         "ID": "x5000c1s0b0n0",
+         "RedfishEndpointID": "x5000c1s0b0",
+         "RedfishType": "ComputerSystem",
+         "OdataID": "/redfish/v1/Systems/Node0",
+         "MACAddr": "00:40:a6:82:f6:76",
+         "Type": "Node"
       },
       {
-         "MACAddr" : "00:40:a6:82:f6:77",
-         "OdataID" : "/redfish/v1/Systems/Node1",
-         "Type" : "Node",
-         "RedfishEndpointID" : "x5000c1s0b0",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "RedfishSubtype" : "Physical",
-         "ID" : "x5000c1s0b0n1",
-         "RedfishType" : "ComputerSystem",
-         "RedfishSystemInfo" : {
-            "EthernetNICInfo" : [
+         "MACAddr": "00:40:a6:82:f6:77",
+         "OdataID": "/redfish/v1/Systems/Node1",
+         "Type": "Node",
+         "RedfishEndpointID": "x5000c1s0b0",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "RedfishSubtype": "Physical",
+         "ID": "x5000c1s0b0n1",
+         "RedfishType": "ComputerSystem",
+         "RedfishSystemInfo": {
+            "EthernetNICInfo": [
                {
-                  "PermanentMACAddress" : "00:40:a6:82:f6:77",
-                  "MACAddress" : "00:40:a6:82:f6:77",
-                  "Description" : "Node Maintenance Network",
-                  "RedfishId" : "ManagementEthernet",
-                  "@odata.id" : "/redfish/v1/Systems/Node1/EthernetInterfaces/ManagementEthernet"
+                  "PermanentMACAddress": "00:40:a6:82:f6:77",
+                  "MACAddress": "00:40:a6:82:f6:77",
+                  "Description": "Node Maintenance Network",
+                  "RedfishId": "ManagementEthernet",
+                  "@odata.id": "/redfish/v1/Systems/Node1/EthernetInterfaces/ManagementEthernet"
                }
             ],
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "ResetType@Redfish.AllowableValues" : [
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "ResetType@Redfish.AllowableValues": [
                      "On",
                      "Off",
                      "ForceOff"
                   ],
-                  "@Redfish.ActionInfo" : "/redfish/v1/Systems/Node1/ResetActionInfo",
-                  "target" : "/redfish/v1/Systems/Node1/Actions/ComputerSystem.Reset"
+                  "@Redfish.ActionInfo": "/redfish/v1/Systems/Node1/ResetActionInfo",
+                  "target": "/redfish/v1/Systems/Node1/Actions/ComputerSystem.Reset"
                }
             },
-            "Name" : "Node1"
+            "Name": "Node1"
          },
-         "RedfishEndpointFQDN" : "x5000c1s0b0",
-         "RedfishURL" : "x5000c1s0b0/redfish/v1/Systems/Node1"
+         "RedfishEndpointFQDN": "x5000c1s0b0",
+         "RedfishURL": "x5000c1s0b0/redfish/v1/Systems/Node1"
       },
       {
-         "OdataID" : "/redfish/v1/Systems/Node0",
-         "MACAddr" : "00:40:a6:82:f7:0c",
-         "Type" : "Node",
-         "ID" : "x5000c1s1b1n0",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "RedfishSubtype" : "Physical",
-         "RedfishEndpointID" : "x5000c1s1b1",
-         "RedfishType" : "ComputerSystem",
-         "RedfishSystemInfo" : {
-            "Name" : "Node0",
-            "EthernetNICInfo" : [
+         "OdataID": "/redfish/v1/Systems/Node0",
+         "MACAddr": "00:40:a6:82:f7:0c",
+         "Type": "Node",
+         "ID": "x5000c1s1b1n0",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "RedfishSubtype": "Physical",
+         "RedfishEndpointID": "x5000c1s1b1",
+         "RedfishType": "ComputerSystem",
+         "RedfishSystemInfo": {
+            "Name": "Node0",
+            "EthernetNICInfo": [
                {
-                  "MACAddress" : "00:40:a6:82:f7:0c",
-                  "@odata.id" : "/redfish/v1/Systems/Node0/EthernetInterfaces/ManagementEthernet",
-                  "Description" : "Node Maintenance Network",
-                  "RedfishId" : "ManagementEthernet",
-                  "PermanentMACAddress" : "00:40:a6:82:f7:0c"
+                  "MACAddress": "00:40:a6:82:f7:0c",
+                  "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/ManagementEthernet",
+                  "Description": "Node Maintenance Network",
+                  "RedfishId": "ManagementEthernet",
+                  "PermanentMACAddress": "00:40:a6:82:f7:0c"
                }
             ],
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "@Redfish.ActionInfo" : "/redfish/v1/Systems/Node0/ResetActionInfo",
-                  "target" : "/redfish/v1/Systems/Node0/Actions/ComputerSystem.Reset",
-                  "ResetType@Redfish.AllowableValues" : [
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "@Redfish.ActionInfo": "/redfish/v1/Systems/Node0/ResetActionInfo",
+                  "target": "/redfish/v1/Systems/Node0/Actions/ComputerSystem.Reset",
+                  "ResetType@Redfish.AllowableValues": [
                      "On",
                      "Off",
                      "ForceOff"
@@ -838,61 +838,61 @@
                }
             }
          },
-         "RedfishEndpointFQDN" : "x5000c1s1b1",
-         "RedfishURL" : "x5000c1s1b1/redfish/v1/Systems/Node0"
+         "RedfishEndpointFQDN": "x5000c1s1b1",
+         "RedfishURL": "x5000c1s1b1/redfish/v1/Systems/Node0"
       },
       {
-         "RedfishEndpointFQDN" : "x5000c1s1b1",
-         "RedfishSystemInfo" : {
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "target" : "/redfish/v1/Systems/Node1/Actions/ComputerSystem.Reset",
-                  "@Redfish.ActionInfo" : "/redfish/v1/Systems/Node1/ResetActionInfo",
-                  "ResetType@Redfish.AllowableValues" : [
+         "RedfishEndpointFQDN": "x5000c1s1b1",
+         "RedfishSystemInfo": {
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "target": "/redfish/v1/Systems/Node1/Actions/ComputerSystem.Reset",
+                  "@Redfish.ActionInfo": "/redfish/v1/Systems/Node1/ResetActionInfo",
+                  "ResetType@Redfish.AllowableValues": [
                      "On",
                      "Off",
                      "ForceOff"
                   ]
                }
             },
-            "EthernetNICInfo" : [
+            "EthernetNICInfo": [
                {
-                  "MACAddress" : "00:40:a6:82:f7:0d",
-                  "Description" : "Node Maintenance Network",
-                  "@odata.id" : "/redfish/v1/Systems/Node1/EthernetInterfaces/ManagementEthernet",
-                  "RedfishId" : "ManagementEthernet",
-                  "PermanentMACAddress" : "00:40:a6:82:f7:0d"
+                  "MACAddress": "00:40:a6:82:f7:0d",
+                  "Description": "Node Maintenance Network",
+                  "@odata.id": "/redfish/v1/Systems/Node1/EthernetInterfaces/ManagementEthernet",
+                  "RedfishId": "ManagementEthernet",
+                  "PermanentMACAddress": "00:40:a6:82:f7:0d"
                }
             ],
-            "Name" : "Node1"
+            "Name": "Node1"
          },
-         "RedfishURL" : "x5000c1s1b1/redfish/v1/Systems/Node1",
-         "Type" : "Node",
-         "OdataID" : "/redfish/v1/Systems/Node1",
-         "MACAddr" : "00:40:a6:82:f7:0d",
-         "RedfishType" : "ComputerSystem",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "RedfishSubtype" : "Physical",
-         "ID" : "x5000c1s1b1n1",
-         "RedfishEndpointID" : "x5000c1s1b1"
+         "RedfishURL": "x5000c1s1b1/redfish/v1/Systems/Node1",
+         "Type": "Node",
+         "OdataID": "/redfish/v1/Systems/Node1",
+         "MACAddr": "00:40:a6:82:f7:0d",
+         "RedfishType": "ComputerSystem",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "RedfishSubtype": "Physical",
+         "ID": "x5000c1s1b1n1",
+         "RedfishEndpointID": "x5000c1s1b1"
       },
       {
-         "Type" : "Node",
-         "OdataID" : "/redfish/v1/Systems/Self",
-         "RedfishType" : "ComputerSystem",
-         "RedfishSubtype" : "Physical",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "ID" : "x2014c0s29b1n0",
-         "RedfishEndpointID" : "x2014c0s29b1",
-         "RedfishEndpointFQDN" : "10.4.0.9",
-         "UUID" : "cd210000-3b17-11ea-8000-b42e993b6f4c",
-         "RedfishSystemInfo" : {
-            "Name" : "System",
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "target" : "/redfish/v1/Systems/Self/Actions/ComputerSystem.Reset",
-                  "@Redfish.ActionInfo" : "/redfish/v1/Systems/Self/ResetActionInfo",
-                  "ResetType@Redfish.AllowableValues" : [
+         "Type": "Node",
+         "OdataID": "/redfish/v1/Systems/Self",
+         "RedfishType": "ComputerSystem",
+         "RedfishSubtype": "Physical",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "ID": "x2014c0s29b1n0",
+         "RedfishEndpointID": "x2014c0s29b1",
+         "RedfishEndpointFQDN": "10.4.0.9",
+         "UUID": "cd210000-3b17-11ea-8000-b42e993b6f4c",
+         "RedfishSystemInfo": {
+            "Name": "System",
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "target": "/redfish/v1/Systems/Self/Actions/ComputerSystem.Reset",
+                  "@Redfish.ActionInfo": "/redfish/v1/Systems/Self/ResetActionInfo",
+                  "ResetType@Redfish.AllowableValues": [
                      "On",
                      "ForceOff",
                      "ForceRestart",
@@ -900,52 +900,52 @@
                   ]
                }
             },
-            "EthernetNICInfo" : [
+            "EthernetNICInfo": [
                {
-                  "MACAddress" : "b4:2e:99:3b:6f:4c",
-                  "RedfishId" : "1",
-                  "Description" : "Ethernet Interface Lan1",
-                  "@odata.id" : "/redfish/v1/Systems/Self/EthernetInterfaces/1"
+                  "MACAddress": "b4:2e:99:3b:6f:4c",
+                  "RedfishId": "1",
+                  "Description": "Ethernet Interface Lan1",
+                  "@odata.id": "/redfish/v1/Systems/Self/EthernetInterfaces/1"
                },
                {
-                  "RedfishId" : "2",
-                  "Description" : "Ethernet Interface Lan2",
-                  "@odata.id" : "/redfish/v1/Systems/Self/EthernetInterfaces/2",
-                  "MACAddress" : "b4:2e:99:3b:6f:4d"
+                  "RedfishId": "2",
+                  "Description": "Ethernet Interface Lan2",
+                  "@odata.id": "/redfish/v1/Systems/Self/EthernetInterfaces/2",
+                  "MACAddress": "b4:2e:99:3b:6f:4d"
                }
             ]
          },
-         "RedfishURL" : "10.4.0.9/redfish/v1/Systems/Self"
+         "RedfishURL": "10.4.0.9/redfish/v1/Systems/Self"
       },
       {
-         "RedfishEndpointID" : "x2014c0s29b2",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "RedfishSubtype" : "Physical",
-         "ID" : "x2014c0s29b2n0",
-         "RedfishType" : "ComputerSystem",
-         "OdataID" : "/redfish/v1/Systems/Self",
-         "Type" : "Node",
-         "RedfishURL" : "10.4.0.10/redfish/v1/Systems/Self",
-         "RedfishSystemInfo" : {
-            "EthernetNICInfo" : [
+         "RedfishEndpointID": "x2014c0s29b2",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "RedfishSubtype": "Physical",
+         "ID": "x2014c0s29b2n0",
+         "RedfishType": "ComputerSystem",
+         "OdataID": "/redfish/v1/Systems/Self",
+         "Type": "Node",
+         "RedfishURL": "10.4.0.10/redfish/v1/Systems/Self",
+         "RedfishSystemInfo": {
+            "EthernetNICInfo": [
                {
-                  "MACAddress" : "b4:2e:99:3b:6f:50",
-                  "Description" : "Ethernet Interface Lan1",
-                  "RedfishId" : "1",
-                  "@odata.id" : "/redfish/v1/Systems/Self/EthernetInterfaces/1"
+                  "MACAddress": "b4:2e:99:3b:6f:50",
+                  "Description": "Ethernet Interface Lan1",
+                  "RedfishId": "1",
+                  "@odata.id": "/redfish/v1/Systems/Self/EthernetInterfaces/1"
                },
                {
-                  "MACAddress" : "b4:2e:99:3b:6f:51",
-                  "Description" : "Ethernet Interface Lan2",
-                  "RedfishId" : "2",
-                  "@odata.id" : "/redfish/v1/Systems/Self/EthernetInterfaces/2"
+                  "MACAddress": "b4:2e:99:3b:6f:51",
+                  "Description": "Ethernet Interface Lan2",
+                  "RedfishId": "2",
+                  "@odata.id": "/redfish/v1/Systems/Self/EthernetInterfaces/2"
                }
             ],
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "target" : "/redfish/v1/Systems/Self/Actions/ComputerSystem.Reset",
-                  "@Redfish.ActionInfo" : "/redfish/v1/Systems/Self/ResetActionInfo",
-                  "ResetType@Redfish.AllowableValues" : [
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "target": "/redfish/v1/Systems/Self/Actions/ComputerSystem.Reset",
+                  "@Redfish.ActionInfo": "/redfish/v1/Systems/Self/ResetActionInfo",
+                  "ResetType@Redfish.AllowableValues": [
                      "On",
                      "ForceRestart",
                      "GracefulShutdown",
@@ -953,67 +953,67 @@
                   ]
                }
             },
-            "Name" : "System"
+            "Name": "System"
          },
-         "UUID" : "cd210000-3b17-11ea-8000-b42e993b6f50",
-         "RedfishEndpointFQDN" : "10.4.0.10"
+         "UUID": "cd210000-3b17-11ea-8000-b42e993b6f50",
+         "RedfishEndpointFQDN": "10.4.0.10"
       },
       {
-         "OdataID" : "/redfish/v1/Systems/Self",
-         "Type" : "Node",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "ID" : "x2014c0s29b3n0",
-         "RedfishSubtype" : "Physical",
-         "RedfishEndpointID" : "x2014c0s29b3",
-         "RedfishType" : "ComputerSystem",
-         "RedfishSystemInfo" : {
-            "Name" : "System",
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "ResetType@Redfish.AllowableValues" : [
+         "OdataID": "/redfish/v1/Systems/Self",
+         "Type": "Node",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "ID": "x2014c0s29b3n0",
+         "RedfishSubtype": "Physical",
+         "RedfishEndpointID": "x2014c0s29b3",
+         "RedfishType": "ComputerSystem",
+         "RedfishSystemInfo": {
+            "Name": "System",
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "ResetType@Redfish.AllowableValues": [
                      "ForceOff",
                      "GracefulShutdown",
                      "On",
                      "ForceRestart"
                   ],
-                  "@Redfish.ActionInfo" : "/redfish/v1/Systems/Self/ResetActionInfo",
-                  "target" : "/redfish/v1/Systems/Self/Actions/ComputerSystem.Reset"
+                  "@Redfish.ActionInfo": "/redfish/v1/Systems/Self/ResetActionInfo",
+                  "target": "/redfish/v1/Systems/Self/Actions/ComputerSystem.Reset"
                }
             }
          },
-         "RedfishEndpointFQDN" : "10.4.0.11",
-         "UUID" : "cd210000-3b17-11ea-8000-b42e993b6f3c",
-         "RedfishURL" : "10.4.0.11/redfish/v1/Systems/Self"
+         "RedfishEndpointFQDN": "10.4.0.11",
+         "UUID": "cd210000-3b17-11ea-8000-b42e993b6f3c",
+         "RedfishURL": "10.4.0.11/redfish/v1/Systems/Self"
       },
       {
-         "RedfishEndpointID" : "x2014c0s29b4",
-         "RedfishSubtype" : "Physical",
-         "ComponentEndpointType" : "ComponentEndpointComputerSystem",
-         "ID" : "x2014c0s29b4n0",
-         "RedfishType" : "ComputerSystem",
-         "OdataID" : "/redfish/v1/Systems/Self",
-         "Type" : "Node",
-         "RedfishURL" : "10.4.0.12/redfish/v1/Systems/Self",
-         "RedfishSystemInfo" : {
-            "EthernetNICInfo" : [
+         "RedfishEndpointID": "x2014c0s29b4",
+         "RedfishSubtype": "Physical",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "ID": "x2014c0s29b4n0",
+         "RedfishType": "ComputerSystem",
+         "OdataID": "/redfish/v1/Systems/Self",
+         "Type": "Node",
+         "RedfishURL": "10.4.0.12/redfish/v1/Systems/Self",
+         "RedfishSystemInfo": {
+            "EthernetNICInfo": [
                {
-                  "MACAddress" : "b4:2e:99:3b:6f:24",
-                  "@odata.id" : "/redfish/v1/Systems/Self/EthernetInterfaces/1",
-                  "Description" : "Ethernet Interface Lan1",
-                  "RedfishId" : "1"
+                  "MACAddress": "b4:2e:99:3b:6f:24",
+                  "@odata.id": "/redfish/v1/Systems/Self/EthernetInterfaces/1",
+                  "Description": "Ethernet Interface Lan1",
+                  "RedfishId": "1"
                },
                {
-                  "MACAddress" : "b4:2e:99:3b:6f:25",
-                  "@odata.id" : "/redfish/v1/Systems/Self/EthernetInterfaces/2",
-                  "Description" : "Ethernet Interface Lan2",
-                  "RedfishId" : "2"
+                  "MACAddress": "b4:2e:99:3b:6f:25",
+                  "@odata.id": "/redfish/v1/Systems/Self/EthernetInterfaces/2",
+                  "Description": "Ethernet Interface Lan2",
+                  "RedfishId": "2"
                }
             ],
-            "Actions" : {
-               "#ComputerSystem.Reset" : {
-                  "target" : "/redfish/v1/Systems/Self/Actions/ComputerSystem.Reset",
-                  "@Redfish.ActionInfo" : "/redfish/v1/Systems/Self/ResetActionInfo",
-                  "ResetType@Redfish.AllowableValues" : [
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "target": "/redfish/v1/Systems/Self/Actions/ComputerSystem.Reset",
+                  "@Redfish.ActionInfo": "/redfish/v1/Systems/Self/ResetActionInfo",
+                  "ResetType@Redfish.AllowableValues": [
                      "ForceRestart",
                      "On",
                      "ForceOff",
@@ -1021,10 +1021,10 @@
                   ]
                }
             },
-            "Name" : "System"
+            "Name": "System"
          },
-         "UUID" : "cd210000-3b17-11ea-8000-b42e993b6f24",
-         "RedfishEndpointFQDN" : "10.4.0.12"
+         "UUID": "cd210000-3b17-11ea-8000-b42e993b6f24",
+         "RedfishEndpointFQDN": "10.4.0.12"
       },
       {
          "ID": "x3000c0s24b0n0",
@@ -1086,6 +1086,152 @@
                         "PowerRegulationEnabled": true,
                         "Status": "OK",
                         "Target": "/redfish/v1/Chassis/1/Power/AccPowerService/PowerLimit/Actions/HpeServerAccPowerLimit.ConfigurePowerLimit"
+                     }
+                  }
+               }
+            ]
+         }
+      },
+      {
+         "ID": "x9000c0s3b0n0",
+         "Type": "Node",
+         "RedfishType": "ComputerSystem",
+         "RedfishSubtype": "Physical",
+         "UUID": "38334C44-4735-534A-3035-4E5031303732",
+         "OdataID": "/redfish/v1/Systems/Node0",
+         "RedfishEndpointID": "x9000c0s3b0",
+         "Enabled": true,
+         "RedfishEndpointFQDN": "x9000c0s3b0",
+         "RedfishURL": "x9000c0s3b0/redfish/v1/Systems/Node0",
+         "ComponentEndpointType": "ComponentEndpointComputerSystem",
+         "RedfishSystemInfo": {
+            "Name": "Computer System",
+            "Actions": {
+               "#ComputerSystem.Reset": {
+                  "ResetType@Redfish.AllowableValues": [
+                     "On",
+                     "ForceOff",
+                     "GracefulShutdown",
+                     "ForceRestart",
+                     "Nmi",
+                     "PushPowerButton"
+                  ],
+                  "@Redfish.ActionInfo": "",
+                  "target": "/redfish/v1/Systems/Node0/Actions/ComputerSystem.Reset"
+               }
+            },
+            "EthernetNICInfo": [
+               {
+                  "RedfishId": "1",
+                  "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/1",
+                  "MACAddress": "b4:7a:f1:12:fb:70"
+               },
+               {
+                  "RedfishId": "2",
+                  "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/2",
+                  "MACAddress": "b4:7a:f1:12:fb:71"
+               },
+               {
+                  "RedfishId": "3",
+                  "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/3",
+                  "MACAddress": "98:03:9b:1e:d4:18"
+               }
+            ],
+            "PowerURL": "/redfish/v1/Chassis/Node0/Power/AccPowerService/PowerLimit",
+            "PowerControl": [],
+            "Controls": [
+               {
+                  "URL": "/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
+                  "Control": {
+                     "ControlDelaySeconds": 6,
+                     "ControlMode": "Automatic",
+                     "ControlType": "Power",
+                     "Id": "NodePowerLimit",
+                     "Name": "Node Power Limit",
+                     "PhysicalContext": "Chassis",
+                     "SetPoint": 1000,
+                     "SetPointUnits": "W",
+                     "SettingRangeMax": 1000,
+                     "SettingRangeMin": 200,
+                     "Status": {
+                        "Health": "OK",
+                        "State": ""
+                     }
+                  }
+               },
+               {
+                  "URL": "/redfish/v1/Chassis/Node0/Controls/GPU0PowerLimit",
+                  "Control": {
+                     "ControlDelaySeconds": 6,
+                     "ControlMode": "Automatic",
+                     "ControlType": "Power",
+                     "Id": "GPU0PowerLimit",
+                     "Name": "GPU0 Power Limit",
+                     "PhysicalContext": "GPU",
+                     "SetPoint": 1000,
+                     "SetPointUnits": "W",
+                     "SettingRangeMax": 1000,
+                     "SettingRangeMin": 200,
+                     "Status": {
+                        "Health": "OK",
+                        "State": ""
+                     }
+                  }
+               },
+               {
+                  "URL": "/redfish/v1/Chassis/Node0/Controls/GPU1PowerLimit",
+                  "Control": {
+                     "ControlDelaySeconds": 6,
+                     "ControlMode": "Automatic",
+                     "ControlType": "Power",
+                     "Id": "GPU1PowerLimit",
+                     "Name": "GPU1 Power Limit",
+                     "PhysicalContext": "GPU",
+                     "SetPoint": 1000,
+                     "SetPointUnits": "W",
+                     "SettingRangeMax": 1000,
+                     "SettingRangeMin": 200,
+                     "Status": {
+                        "Health": "OK",
+                        "State": ""
+                     }
+                  }
+               },
+               {
+                  "URL": "/redfish/v1/Chassis/Node0/Controls/GPU2PowerLimit",
+                  "Control": {
+                     "ControlDelaySeconds": 6,
+                     "ControlMode": "Automatic",
+                     "ControlType": "Power",
+                     "Id": "GPU2PowerLimit",
+                     "Name": "GPU2 Power Limit",
+                     "PhysicalContext": "GPU",
+                     "SetPoint": 1000,
+                     "SetPointUnits": "W",
+                     "SettingRangeMax": 1000,
+                     "SettingRangeMin": 200,
+                     "Status": {
+                        "Health": "OK",
+                        "State": ""
+                     }
+                  }
+               },
+               {
+                  "URL": "/redfish/v1/Chassis/Node0/Controls/GPU3PowerLimit",
+                  "Control": {
+                     "ControlDelaySeconds": 6,
+                     "ControlMode": "Automatic",
+                     "ControlType": "Power",
+                     "Id": "GPU3PowerLimit",
+                     "Name": "GPU3 Power Limit",
+                     "PhysicalContext": "GPU",
+                     "SetPoint": 1000,
+                     "SetPointUnits": "W",
+                     "SettingRangeMax": 1000,
+                     "SettingRangeMin": 200,
+                     "Status": {
+                        "Health": "OK",
+                        "State": ""
                      }
                   }
                }

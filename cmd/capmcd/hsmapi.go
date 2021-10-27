@@ -191,6 +191,27 @@ func getRestrictStr(query HSMQuery) string {
 	return params.Encode()
 }
 
+func convertControlsToPowerCaps(ni *NodeInfo, controls []*rf.Control) map[string]PowerCap {
+	pwrCaps := make(map[string]PowerCap)
+
+	for i, ctl := range controls {
+		pwrCaps[ctl.Control.Name] = PowerCap{
+			Name:        ctl.Control.Name,
+			Path:        ctl.URL,
+			Min:         ctl.Control.SettingRangeMin,
+			Max:         ctl.Control.SettingRangeMax,
+			PwrCtlIndex: i,
+		}
+	}
+
+	// an empty map and a nil map aren't the same thing
+	if len(pwrCaps) > 0 {
+		return pwrCaps
+	} else {
+		return nil
+	}
+}
+
 // convertPowerCtlToPowerCaps converts HSM PowerCtlInfo into a CAPMC
 // PowerCap adding to the mapping of CAPMC power capping controls to Redfish
 // PowerControls.
@@ -201,21 +222,12 @@ func convertPowerCtlsToPowerCaps(ni *NodeInfo, pwrCtlInfo rf.PowerCtlInfo) map[s
 
 		// no range check; buyer beware (default)
 		min, max = -1, -1
-		ctlName, ok := defaultPowerCtlToCap[pwrCtl.Name]
-		if !ok {
-			// HPE devices may not have a name in their power control/limit
-			// structurres. Make sure they are populated correctly here.
-			if isHpeApollo6500(ni) {
-				pwrCtl.Name = "PowerLimit Resource for AccPowerService"
-				ctlName = "node"
-			} else if isHpeServer(ni) {
-				pwrCtl.Name = "HPE Power Control"
-				ctlName = "node"
-			} else {
-				log.Printf("Notice: Skipped unknown PowerControl: %s",
-					pwrCtl.Name)
-				continue
-			}
+		// HPE devices may not have a name in their power control/limit
+		// structurres. Make sure they are populated correctly here.
+		if isHpeApollo6500(ni) {
+			pwrCtl.Name = "Node Power Control"
+		} else if isHpeServer(ni) {
+			pwrCtl.Name = "Node Power Control"
 		}
 
 		if pwrCtl.OEM != nil {
@@ -242,7 +254,7 @@ func convertPowerCtlsToPowerCaps(ni *NodeInfo, pwrCtlInfo rf.PowerCtlInfo) map[s
 			path = pwrCtlInfo.PowerURL
 		}
 
-		pwrCaps[ctlName] = PowerCap{
+		pwrCaps[pwrCtl.Name] = PowerCap{
 			Name:        pwrCtl.Name,
 			Path:        path,
 			Min:         min,
@@ -405,44 +417,7 @@ func (d *CapmcD) GetNodes(query HSMQuery) ([]*NodeInfo, error) {
 			continue
 		}
 
-		if componentEndpoint.RedfishChassisInfo != nil &&
-			componentEndpoint.RedfishChassisInfo.Actions != nil {
-			ni.RfResetTypes = componentEndpoint.RedfishChassisInfo.Actions.ChassisReset.AllowableValues
-			ni.RfActionURI = componentEndpoint.RedfishChassisInfo.Actions.ChassisReset.Target
-			if componentEndpoint.RedfishChassisInfo.Actions.OEM != nil {
-				ni.RfEpoURI = componentEndpoint.RedfishChassisInfo.Actions.OEM.ChassisEmergencyPower.Target
-			}
-		}
-
-		if componentEndpoint.RedfishSystemInfo != nil &&
-			componentEndpoint.RedfishSystemInfo.Actions != nil {
-			ni.RfActionURI = componentEndpoint.RedfishSystemInfo.Actions.ComputerSystemReset.Target
-			ni.RfResetTypes = componentEndpoint.RedfishSystemInfo.Actions.ComputerSystemReset.AllowableValues
-			ni.RfPowerURL = componentEndpoint.RedfishSystemInfo.PowerURL
-			ni.RfPwrCtlCnt = len(componentEndpoint.RedfishSystemInfo.PowerCtlInfo.PowerCtl)
-			if ni.RfPwrCtlCnt > 0 {
-				pwrCtl := componentEndpoint.RedfishSystemInfo.PowerCtlInfo.PowerCtl[0]
-				if pwrCtl.OEM != nil {
-					if pwrCtl.OEM.HPE != nil {
-						if len(pwrCtl.OEM.HPE.Target) > 0 {
-							ni.RfPowerTarget = pwrCtl.OEM.HPE.Target
-						}
-					}
-				}
-				ni.PowerCaps = convertPowerCtlsToPowerCaps(ni, componentEndpoint.RedfishSystemInfo.PowerCtlInfo)
-			}
-		}
-		if componentEndpoint.RedfishManagerInfo != nil &&
-			componentEndpoint.RedfishManagerInfo.Actions != nil {
-			ni.RfActionURI = componentEndpoint.RedfishManagerInfo.Actions.ManagerReset.Target
-			ni.RfResetTypes = componentEndpoint.RedfishManagerInfo.Actions.ManagerReset.AllowableValues
-			// TODO: Does something need to be done with OEM actions if they are available?
-		}
-		if componentEndpoint.RedfishOutletInfo != nil &&
-			componentEndpoint.RedfishOutletInfo.Actions != nil {
-			ni.RfActionURI = componentEndpoint.RedfishOutletInfo.Actions.PowerControl.Target
-			ni.RfResetTypes = componentEndpoint.RedfishOutletInfo.Actions.PowerControl.AllowableValues
-		}
+		extractRedfishInfo(componentEndpoint, ni)
 
 		ni.Domain = componentEndpoint.Domain
 		ni.FQDN = componentEndpoint.FQDN
@@ -469,6 +444,63 @@ func (d *CapmcD) GetNodes(query HSMQuery) ([]*NodeInfo, error) {
 	}
 
 	return nodeList, nil
+}
+
+func extractRedfishInfo(componentEndpoint *sm.ComponentEndpoint, ni *NodeInfo) {
+	if componentEndpoint.RedfishChassisInfo != nil &&
+		componentEndpoint.RedfishChassisInfo.Actions != nil {
+		extractRedfishChassisInfo(ni, componentEndpoint)
+	} else if componentEndpoint.RedfishSystemInfo != nil &&
+		componentEndpoint.RedfishSystemInfo.Actions != nil {
+		extractRedfishSystemInfo(ni, componentEndpoint)
+	} else if componentEndpoint.RedfishManagerInfo != nil &&
+		componentEndpoint.RedfishManagerInfo.Actions != nil {
+		extractRedfishManagerInfo(ni, componentEndpoint)
+	} else if componentEndpoint.RedfishOutletInfo != nil &&
+		componentEndpoint.RedfishOutletInfo.Actions != nil {
+		extractRedfishOutletInfo(ni, componentEndpoint)
+	}
+}
+
+func extractRedfishOutletInfo(ni *NodeInfo, componentEndpoint *sm.ComponentEndpoint) {
+	ni.RfActionURI = componentEndpoint.RedfishOutletInfo.Actions.PowerControl.Target
+	ni.RfResetTypes = componentEndpoint.RedfishOutletInfo.Actions.PowerControl.AllowableValues
+}
+
+func extractRedfishManagerInfo(ni *NodeInfo, componentEndpoint *sm.ComponentEndpoint) {
+	ni.RfActionURI = componentEndpoint.RedfishManagerInfo.Actions.ManagerReset.Target
+	ni.RfResetTypes = componentEndpoint.RedfishManagerInfo.Actions.ManagerReset.AllowableValues
+	// TODO: Does something need to be done with OEM actions if they are available?
+}
+
+func extractRedfishSystemInfo(ni *NodeInfo, componentEndpoint *sm.ComponentEndpoint) {
+	ni.RfActionURI = componentEndpoint.RedfishSystemInfo.Actions.ComputerSystemReset.Target
+	ni.RfResetTypes = componentEndpoint.RedfishSystemInfo.Actions.ComputerSystemReset.AllowableValues
+	ni.RfPowerURL = componentEndpoint.RedfishSystemInfo.PowerURL
+	ni.RfPwrCtlCnt = len(componentEndpoint.RedfishSystemInfo.PowerCtlInfo.PowerCtl)
+	if ni.RfPwrCtlCnt > 0 {
+		pwrCtl := componentEndpoint.RedfishSystemInfo.PowerCtlInfo.PowerCtl[0]
+		if pwrCtl.OEM != nil {
+			if pwrCtl.OEM.HPE != nil {
+				if len(pwrCtl.OEM.HPE.Target) > 0 {
+					ni.RfPowerTarget = pwrCtl.OEM.HPE.Target
+				}
+			}
+		}
+		ni.PowerCaps = convertPowerCtlsToPowerCaps(ni, componentEndpoint.RedfishSystemInfo.PowerCtlInfo)
+	}
+	ni.RfControlsCnt = len(componentEndpoint.RedfishSystemInfo.Controls)
+	if ni.RfControlsCnt > 0 {
+		ni.PowerCaps = convertControlsToPowerCaps(ni, componentEndpoint.RedfishSystemInfo.Controls)
+	}
+}
+
+func extractRedfishChassisInfo(ni *NodeInfo, componentEndpoint *sm.ComponentEndpoint) {
+	ni.RfResetTypes = componentEndpoint.RedfishChassisInfo.Actions.ChassisReset.AllowableValues
+	ni.RfActionURI = componentEndpoint.RedfishChassisInfo.Actions.ChassisReset.Target
+	if componentEndpoint.RedfishChassisInfo.Actions.OEM != nil {
+		ni.RfEpoURI = componentEndpoint.RedfishChassisInfo.Actions.OEM.ChassisEmergencyPower.Target
+	}
 }
 
 // TODO Remove/rework as this is TEMPORARY (hopefully) since the hardware

@@ -39,6 +39,7 @@ type Config struct {
 	NodeRules     PowerOpRules        `toml:"NodeRules"`
 	PowerControls map[string]PowerCtl `toml:"PowerControls"`
 	SystemParams  SystemParameters    `toml:"SystemParameters"`
+	CapmcConf     CapmcConfiguration  `toml:"CapmcConfiguration"`
 }
 
 // PowerCtl holds the list of blocked roles, component sequences, and reset
@@ -53,6 +54,7 @@ var config = Config{
 	defaultNodeRules,
 	defaultPowerControl,
 	defaultSystemParameters,
+	defaultCapmcConfiguration,
 }
 
 const (

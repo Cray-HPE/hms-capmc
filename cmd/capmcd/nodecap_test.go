@@ -37,12 +37,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Cray-HPE/hms-capmc/internal/capmc"
-	"github.com/Cray-HPE/hms-smd/pkg/sm"
-
 	base "github.com/Cray-HPE/hms-base"
+	"github.com/Cray-HPE/hms-capmc/internal/capmc"
 	compcreds "github.com/Cray-HPE/hms-compcredentials"
 	sstorage "github.com/Cray-HPE/hms-securestorage"
+	"github.com/Cray-HPE/hms-smd/pkg/sm"
 )
 
 var vaultData = []sstorage.MockLookup{
@@ -917,13 +916,15 @@ func TestBuildPowerCapCapabilitiesGroup(t *testing.T) {
 	}
 
 	if len(monikerGroups) > 0 && len(xnameComponentLookup) > 0 {
-		powerCapGroup, pcgErr := buildPowerCapCapabilitiesGroup(monikerGroups[0], xnameComponentLookup)
-		if pcgErr != nil {
-			t.Error("buildPowerCapCapabilitiesGroup returned an error: " + pcgErr.Error())
-		}
-		//do some checking of powerCapGroup therefore
-		if powerCapGroup.Controls == nil {
-			t.Error("powerCapGroup controls is nil")
+		for _, mg := range monikerGroups {
+			powerCapGroup, pcgErr := buildPowerCapCapabilitiesGroup(mg, xnameComponentLookup)
+			if pcgErr != nil {
+				t.Error("buildPowerCapCapabilitiesGroup returned an error: " + pcgErr.Error())
+			}
+			//do some checking of powerCapGroup therefore
+			if powerCapGroup.Controls == nil {
+				t.Error("powerCapGroup controls is nil")
+			}
 		}
 	} else {
 		t.Error("Unable to unmarshall testMonikerGroups data")
@@ -947,16 +948,19 @@ func TestConvertSystemHWInventoryToUniqueMonikerGroups(t *testing.T) {
 
 func TestGeneratePayload(t *testing.T) {
 	var (
-		pCtl    []capmc.PowerControl
-		pLimit  capmc.HpeConfigurePowerLimit
-		goodCtl []capmc.PowerControl
-		goodLim capmc.HpeConfigurePowerLimit
+		pCtl       []capmc.PowerControl
+		goodPwrCtl []capmc.PowerControl
+		pLimit     capmc.HpeConfigurePowerLimit
+		goodPwrLim capmc.HpeConfigurePowerLimit
+		rfCtl      capmc.RFControl
+		goodRfCtl  capmc.RFControl
+		zeroCtl    capmc.RFControl
 	)
 
 	var fiveHundred int = 500
 	var oneThousand int = 1000
 
-	goodCtl = []capmc.PowerControl{
+	goodPwrCtl = []capmc.PowerControl{
 		{
 			PowerLimit: &capmc.PowerLimit{
 				LimitInWatts: &oneThousand,
@@ -971,7 +975,7 @@ func TestGeneratePayload(t *testing.T) {
 
 	var zero int = 0
 
-	goodLim = capmc.HpeConfigurePowerLimit{
+	goodPwrLim = capmc.HpeConfigurePowerLimit{
 		PowerLimits: []capmc.HpePowerLimits{
 			{
 				PowerLimitInWatts: &oneThousand,
@@ -980,10 +984,19 @@ func TestGeneratePayload(t *testing.T) {
 		},
 	}
 
+	goodRfCtl = capmc.RFControl{
+		SetPoint: &oneThousand,
+	}
+
+	zeroCtl = capmc.RFControl{
+		SetPoint: &zero,
+	}
+
 	type args struct {
 		node       *NodeInfo
 		powerCtl   []capmc.PowerControl
 		powerLimit capmc.HpeConfigurePowerLimit
+		rfCtl      capmc.RFControl
 	}
 
 	mtnNode := NodeInfo{
@@ -994,6 +1007,14 @@ func TestGeneratePayload(t *testing.T) {
 	}
 	A6500Node := NodeInfo{
 		RfPowerURL: "/redfish/v1/Chassis/1/Power/AccPowerService/PowerLimit",
+	}
+	bardNode := NodeInfo{
+		RfPowerURL:    "/redfish/v1/Chassis/Node/Controls/NodePowerLimit",
+		RfControlsCnt: 5,
+	}
+	GPU0Node := NodeInfo{
+		RfPowerURL:    "/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit",
+		RfControlsCnt: 5,
 	}
 
 	tests := []struct {
@@ -1008,6 +1029,7 @@ func TestGeneratePayload(t *testing.T) {
 				node:       &mtnNode,
 				powerCtl:   pCtl,
 				powerLimit: pLimit,
+				rfCtl:      rfCtl,
 			},
 			want:    nil,
 			wantErr: true,
@@ -1018,6 +1040,7 @@ func TestGeneratePayload(t *testing.T) {
 				node:       &stdNode,
 				powerCtl:   pCtl,
 				powerLimit: pLimit,
+				rfCtl:      rfCtl,
 			},
 			want:    nil,
 			wantErr: true,
@@ -1028,6 +1051,18 @@ func TestGeneratePayload(t *testing.T) {
 				node:       &A6500Node,
 				powerCtl:   pCtl,
 				powerLimit: pLimit,
+				rfCtl:      rfCtl,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "bad bard node",
+			args: args{
+				node:       &bardNode,
+				powerCtl:   pCtl,
+				powerLimit: pLimit,
+				rfCtl:      rfCtl,
 			},
 			want:    nil,
 			wantErr: true,
@@ -1036,8 +1071,9 @@ func TestGeneratePayload(t *testing.T) {
 			name: "good mtnNode",
 			args: args{
 				node:       &mtnNode,
-				powerCtl:   goodCtl,
+				powerCtl:   goodPwrCtl,
 				powerLimit: pLimit,
+				rfCtl:      rfCtl,
 			},
 			want:    json.RawMessage(`{"PowerControl":[{"PowerLimit":{"LimitInWatts":1000}},{"PowerLimit":{"LimitInWatts":500}}]}`),
 			wantErr: false,
@@ -1046,8 +1082,9 @@ func TestGeneratePayload(t *testing.T) {
 			name: "good stdNode",
 			args: args{
 				node:       &stdNode,
-				powerCtl:   goodCtl,
+				powerCtl:   goodPwrCtl,
 				powerLimit: pLimit,
+				rfCtl:      rfCtl,
 			},
 			want:    json.RawMessage(`{"PowerControl":[{"PowerLimit":{"LimitInWatts":1000}},{"PowerLimit":{"LimitInWatts":500}}]}`),
 			wantErr: false,
@@ -1057,22 +1094,187 @@ func TestGeneratePayload(t *testing.T) {
 			args: args{
 				node:       &A6500Node,
 				powerCtl:   pCtl,
-				powerLimit: goodLim,
+				powerLimit: goodPwrLim,
+				rfCtl:      rfCtl,
 			},
 			want:    json.RawMessage(`{"PowerLimits":[{"PowerLimitInWatts":1000,"ZoneNumber":0}]}`),
 			wantErr: false,
 		},
-		//want:    json.RawMessage(`{"PowerLimits":null}`),
+		{
+			name: "good mtnNode node",
+			args: args{
+				node:       &bardNode,
+				powerCtl:   pCtl,
+				powerLimit: pLimit,
+				rfCtl:      goodRfCtl,
+			},
+			want:    json.RawMessage(`{"SetPoint":1000}`),
+			wantErr: false,
+		},
+		{
+			name: "good mtnNode GPU",
+			args: args{
+				node:       &GPU0Node,
+				powerCtl:   pCtl,
+				powerLimit: pLimit,
+				rfCtl:      goodRfCtl,
+			},
+			want:    json.RawMessage(`{"SetPoint":1000}`),
+			wantErr: false,
+		},
+		{
+			name: "good mtnNode zero",
+			args: args{
+				node:       &bardNode,
+				powerCtl:   pCtl,
+				powerLimit: pLimit,
+				rfCtl:      zeroCtl,
+			},
+			want:    json.RawMessage(`{"SetPoint":0}`),
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := generatePayload(tt.args.node, tt.args.powerCtl, tt.args.powerLimit)
+			//got, err := generatePayload(tt.args.node, tt.args.powerCtl, tt.args.powerLimit)
+			got, err := generatePayload(tt.args.node,
+				powerGen{
+					powerCtl:   tt.args.powerCtl,
+					powerLimit: tt.args.powerLimit,
+					controls:   tt.args.rfCtl,
+				})
 			if (err != nil) != tt.wantErr {
 				t.Errorf("generatePayload() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("generatePayload() = %s, want %s", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestExpandNodeListForControlStruct(t *testing.T) {
+	var pc1 = make(map[string]PowerCap)
+	pc1["Node Power Limit"] = PowerCap{
+		Name:        "Node Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Power",
+		Min:         200,
+		Max:         1000,
+		PwrCtlIndex: 0,
+	}
+
+	var node1 = NodeInfo{
+		Hostname:      "x1000c0s0b0n0",
+		RfPowerURL:    "/redfish/v1/Chassis/Node0/Power",
+		RfControlsCnt: 0,
+		RfPwrCtlCnt:   1,
+		PowerCaps:     pc1,
+	}
+
+	wantNode1 := []string{"/redfish/v1/Chassis/Node0/Power"}
+
+	var pc2 = make(map[string]PowerCap)
+	pc2["Node Power Limit"] = PowerCap{
+		Name:        "Node Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
+		Min:         200,
+		Max:         1000,
+		PwrCtlIndex: 0,
+	}
+	pc2["GPU0 Power Limit"] = PowerCap{
+		Name:        "GPU0 Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU0PowerLimit",
+		Min:         100,
+		Max:         200,
+		PwrCtlIndex: 1,
+	}
+	pc2["GPU1 Power Limit"] = PowerCap{
+		Name:        "GPU1 Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU1PowerLimit",
+		Min:         100,
+		Max:         200,
+		PwrCtlIndex: 2,
+	}
+	pc2["GPU2 Power Limit"] = PowerCap{
+		Name:        "GPU2 Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU2PowerLimit",
+		Min:         100,
+		Max:         200,
+		PwrCtlIndex: 3,
+	}
+	pc2["GPU3 Power Limit"] = PowerCap{
+		Name:        "GPU3 Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU3PowerLimit",
+		Min:         100,
+		Max:         200,
+		PwrCtlIndex: 4,
+	}
+
+	var node2 = NodeInfo{
+		Hostname:      "x1000c0s0b0n0",
+		RfPowerURL:    "/redfish/v1/Chassis/Node0/Power",
+		RfControlsCnt: 5,
+		RfPwrCtlCnt:   0,
+		PowerCaps:     pc2,
+	}
+
+	wantNode2 := []string{
+		"/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
+		"/redfish/v1/Chassis/Node0/Controls/GPU0PowerLimit",
+		"/redfish/v1/Chassis/Node0/Controls/GPU1PowerLimit",
+		"/redfish/v1/Chassis/Node0/Controls/GPU2PowerLimit",
+		"/redfish/v1/Chassis/Node0/Controls/GPU3PowerLimit",
+	}
+
+	var nlNoExpand []*NodeInfo
+	var nlExpand []*NodeInfo
+
+	nlNoExpand = append(nlNoExpand, &node1)
+	nlExpand = append(nlExpand, &node2)
+
+	tests := []struct {
+		name string
+		nl   []*NodeInfo
+		want []string
+	}{
+		{
+			"No expand",
+			nlNoExpand,
+			wantNode1,
+		},
+		{
+			"Expand",
+			nlExpand,
+			wantNode2,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := expandNodeListForControlStruct(tt.nl)
+			if len(got) != len(tt.want) {
+				var paths []string
+				for _, e := range got {
+					paths = append(paths, e.RfPowerURL)
+				}
+				t.Errorf("List different length than expected, got %v, want %v",
+					paths, tt.want)
+			}
+			found := 0
+			for _, g := range got {
+				for _, w := range tt.want {
+					if g.RfPowerURL == w {
+						found += 1
+						continue
+					}
+				}
+			}
+			if found != got[0].RfControlsCnt && found != got[0].RfPwrCtlCnt {
+				var paths []string
+				for _, e := range got {
+					paths = append(paths, e.RfPowerURL)
+				}
+				t.Errorf("List mismatch, got %v, want %v", paths, tt.want)
 			}
 		})
 	}
