@@ -9386,6 +9386,1345 @@
       }
     }
   ]
+},
+      {
+  "ID": "x9000c0s3b0n0",
+  "Type": "Node",
+  "Ordinal": 0,
+  "Status": "Populated",
+  "HWInventoryByLocationType": "HWInvByLocNode",
+  "NodeLocationInfo": {
+    "Id": "1",
+    "Name": "Computer System",
+    "Description": "",
+    "HostName": "",
+    "ProcessorSummary": {
+      "Count": 2,
+      "Model": "AMD EPYC 7742 64-Core Processor                "
+    },
+    "MemorySummary": {
+      "TotalSystemMemoryGiB": 256
+    }
+  },
+  "PopulatedFRU": {
+    "FRUID": "Node.HPE.JS05NP1072",
+    "Type": "Node",
+    "Subtype": "",
+    "HWInventoryByFRUType": "HWInvByFRUNode",
+    "NodeFRUInfo": {
+      "AssetTag": "                                ",
+      "BiosVersion": "A47 v1.34 (08/18/2020)",
+      "Model": "ProLiant XL675d Gen10 Plus",
+      "Manufacturer": "HPE",
+      "PartNumber": "",
+      "SerialNumber": "JS05NP1072",
+      "SKU": "DL385G10+",
+      "SystemType": "Physical",
+      "UUID": "38334C44-4735-534A-3035-4E5031303732"
+    }
+  },
+  "Processors": [
+    {
+      "ID": "x9000c0s3b0n0p0",
+      "Type": "Processor",
+      "Ordinal": 0,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocProcessor",
+      "ProcessorLocationInfo": {
+        "Id": "1",
+        "Name": "Processors",
+        "Description": "",
+        "Socket": "Proc 1"
+      },
+      "PopulatedFRU": {
+        "FRUID": "FRUIDforx9000c0s3b0n0p0",
+        "Type": "Processor",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUProcessor",
+        "ProcessorFRUInfo": {
+          "InstructionSet": "x86-64",
+          "Manufacturer": "Advanced Micro Devices, Inc.",
+          "MaxSpeedMHz": 3100,
+          "Model": "AMD EPYC 7742 64-Core Processor                ",
+          "SerialNumber": "",
+          "PartNumber": "",
+          "ProcessorArchitecture": "x86",
+          "ProcessorId": {
+            "EffectiveFamily": "107",
+            "EffectiveModel": "1",
+            "IdentificationRegisters": "0x0f100083fbff178b",
+            "MicrocodeInfo": "",
+            "Step": "0",
+            "VendorID": "Advanced Micro Devices, Inc."
+          },
+          "ProcessorType": "CPU",
+          "TotalCores": 64,
+          "TotalThreads": 128,
+          "Oem": {}
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0p1",
+      "Type": "Processor",
+      "Ordinal": 1,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocProcessor",
+      "ProcessorLocationInfo": {
+        "Id": "2",
+        "Name": "Processors",
+        "Description": "",
+        "Socket": "Proc 2"
+      },
+      "PopulatedFRU": {
+        "FRUID": "FRUIDforx9000c0s3b0n0p1",
+        "Type": "Processor",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUProcessor",
+        "ProcessorFRUInfo": {
+          "InstructionSet": "x86-64",
+          "Manufacturer": "Advanced Micro Devices, Inc.",
+          "MaxSpeedMHz": 3100,
+          "Model": "AMD EPYC 7742 64-Core Processor                ",
+          "SerialNumber": "",
+          "PartNumber": "",
+          "ProcessorArchitecture": "x86",
+          "ProcessorId": {
+            "EffectiveFamily": "107",
+            "EffectiveModel": "1",
+            "IdentificationRegisters": "0x0f100083fbff178b",
+            "MicrocodeInfo": "",
+            "Step": "0",
+            "VendorID": "Advanced Micro Devices, Inc."
+          },
+          "ProcessorType": "CPU",
+          "TotalCores": 64,
+          "TotalThreads": 128,
+          "Oem": {}
+        }
+      }
+    }
+  ],
+  "Memory": [
+    {
+      "ID": "x9000c0s3b0n0d1",
+      "Type": "Memory",
+      "Ordinal": 1,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm10",
+        "Name": "proc1dimm10",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 1,
+          "Channel": 1,
+          "Slot": 10
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.2837A6DF",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "2837A6DF"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d12",
+      "Type": "Memory",
+      "Ordinal": 12,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm6",
+        "Name": "proc1dimm6",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 8,
+          "Channel": 8,
+          "Slot": 6
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d14",
+      "Type": "Memory",
+      "Ordinal": 14,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm8",
+        "Name": "proc1dimm8",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 7,
+          "Channel": 7,
+          "Slot": 8
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d24",
+      "Type": "Memory",
+      "Ordinal": 24,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm2",
+        "Name": "proc2dimm2",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 13,
+          "Channel": 5,
+          "Slot": 2
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d29",
+      "Type": "Memory",
+      "Ordinal": 29,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm7",
+        "Name": "proc2dimm7",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 15,
+          "Channel": 7,
+          "Slot": 7
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.2837A657",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "2837A657"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d30",
+      "Type": "Memory",
+      "Ordinal": 30,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm8",
+        "Name": "proc2dimm8",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 15,
+          "Channel": 7,
+          "Slot": 8
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d2",
+      "Type": "Memory",
+      "Ordinal": 2,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm11",
+        "Name": "proc1dimm11",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 2,
+          "Channel": 2,
+          "Slot": 11
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d4",
+      "Type": "Memory",
+      "Ordinal": 4,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm13",
+        "Name": "proc1dimm13",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 4,
+          "Channel": 4,
+          "Slot": 13
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d6",
+      "Type": "Memory",
+      "Ordinal": 6,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm15",
+        "Name": "proc1dimm15",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 3,
+          "Channel": 3,
+          "Slot": 15
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d23",
+      "Type": "Memory",
+      "Ordinal": 23,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm16",
+        "Name": "proc2dimm16",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 11,
+          "Channel": 3,
+          "Slot": 16
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.2837B3B0",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "2837B3B0"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d5",
+      "Type": "Memory",
+      "Ordinal": 5,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm14",
+        "Name": "proc1dimm14",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 4,
+          "Channel": 4,
+          "Slot": 14
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.283762DF",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "283762DF"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d8",
+      "Type": "Memory",
+      "Ordinal": 8,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm2",
+        "Name": "proc1dimm2",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 5,
+          "Channel": 5,
+          "Slot": 2
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d16",
+      "Type": "Memory",
+      "Ordinal": 16,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm1",
+        "Name": "proc2dimm1",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 13,
+          "Channel": 5,
+          "Slot": 1
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.28373B18",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "28373B18"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d17",
+      "Type": "Memory",
+      "Ordinal": 17,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm10",
+        "Name": "proc2dimm10",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 9,
+          "Channel": 1,
+          "Slot": 10
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.283755B8",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "283755B8"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d19",
+      "Type": "Memory",
+      "Ordinal": 19,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm12",
+        "Name": "proc2dimm12",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 10,
+          "Channel": 2,
+          "Slot": 12
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.28374BC2",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "28374BC2"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d21",
+      "Type": "Memory",
+      "Ordinal": 21,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm14",
+        "Name": "proc2dimm14",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 12,
+          "Channel": 4,
+          "Slot": 14
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.2837CBDE",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "2837CBDE"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d26",
+      "Type": "Memory",
+      "Ordinal": 26,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm4",
+        "Name": "proc2dimm4",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 14,
+          "Channel": 6,
+          "Slot": 4
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d0",
+      "Type": "Memory",
+      "Ordinal": 0,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm1",
+        "Name": "proc1dimm1",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 5,
+          "Channel": 5,
+          "Slot": 1
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.2837A69D",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "2837A69D"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d3",
+      "Type": "Memory",
+      "Ordinal": 3,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm12",
+        "Name": "proc1dimm12",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 2,
+          "Channel": 2,
+          "Slot": 12
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.2837BFE6",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "2837BFE6"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d15",
+      "Type": "Memory",
+      "Ordinal": 15,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm9",
+        "Name": "proc1dimm9",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 1,
+          "Channel": 1,
+          "Slot": 9
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d18",
+      "Type": "Memory",
+      "Ordinal": 18,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm11",
+        "Name": "proc2dimm11",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 10,
+          "Channel": 2,
+          "Slot": 11
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d31",
+      "Type": "Memory",
+      "Ordinal": 31,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm9",
+        "Name": "proc2dimm9",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 9,
+          "Channel": 1,
+          "Slot": 9
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d9",
+      "Type": "Memory",
+      "Ordinal": 9,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm3",
+        "Name": "proc1dimm3",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 6,
+          "Channel": 6,
+          "Slot": 3
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.28375F5E",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "28375F5E"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d11",
+      "Type": "Memory",
+      "Ordinal": 11,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm5",
+        "Name": "proc1dimm5",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 8,
+          "Channel": 8,
+          "Slot": 5
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.28375F79",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "28375F79"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d20",
+      "Type": "Memory",
+      "Ordinal": 20,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm13",
+        "Name": "proc2dimm13",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 12,
+          "Channel": 4,
+          "Slot": 13
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d25",
+      "Type": "Memory",
+      "Ordinal": 25,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm3",
+        "Name": "proc2dimm3",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 14,
+          "Channel": 6,
+          "Slot": 3
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.2837CB10",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "2837CB10"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d7",
+      "Type": "Memory",
+      "Ordinal": 7,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm16",
+        "Name": "proc1dimm16",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 3,
+          "Channel": 3,
+          "Slot": 16
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.28375F45",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "28375F45"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d10",
+      "Type": "Memory",
+      "Ordinal": 10,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm4",
+        "Name": "proc1dimm4",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 6,
+          "Channel": 6,
+          "Slot": 4
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d27",
+      "Type": "Memory",
+      "Ordinal": 27,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm5",
+        "Name": "proc2dimm5",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 16,
+          "Channel": 8,
+          "Slot": 5
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.2837CB02",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "2837CB02"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d28",
+      "Type": "Memory",
+      "Ordinal": 28,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm6",
+        "Name": "proc2dimm6",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 16,
+          "Channel": 8,
+          "Slot": 6
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d13",
+      "Type": "Memory",
+      "Ordinal": 13,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc1dimm7",
+        "Name": "proc1dimm7",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 1,
+          "MemoryController": 7,
+          "Channel": 7,
+          "Slot": 7
+        }
+      },
+      "PopulatedFRU": {
+        "FRUID": "Memory.Micron.18ASF2G72PZ3G2E2.2837B3EF",
+        "Type": "Memory",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUMemory",
+        "MemoryFRUInfo": {
+          "BaseModuleType": "RDIMM",
+          "BusWidthBits": 72,
+          "CapacityMiB": 16384,
+          "DataWidthBits": 64,
+          "ErrorCorrection": "MultiBitECC",
+          "Manufacturer": "Micron",
+          "MemoryType": "DRAM",
+          "MemoryDeviceType": "DDR4",
+          "OperatingSpeedMhz": 3200,
+          "PartNumber": "18ASF2G72PZ-3G2E2",
+          "RankCount": 1,
+          "SerialNumber": "2837B3EF"
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0d22",
+      "Type": "Memory",
+      "Ordinal": 22,
+      "Status": "Empty",
+      "HWInventoryByLocationType": "HWInvByLocMemory",
+      "MemoryLocationInfo": {
+        "Id": "proc2dimm15",
+        "Name": "proc2dimm15",
+        "Description": "",
+        "MemoryLocation": {
+          "Socket": 2,
+          "MemoryController": 11,
+          "Channel": 3,
+          "Slot": 15
+        }
+      }
+    }
+  ],
+  "NodeAccels": [
+    {
+      "ID": "x9000c0s3b0n0a6",
+      "Type": "NodeAccel",
+      "Ordinal": 6,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocNodeAccel",
+      "NodeAccelLocationInfo": {
+        "Id": "8",
+        "Name": "NVIDIA NVIDIA A40",
+        "Description": "PCI-E Slot 2",
+        "Socket": ""
+      },
+      "PopulatedFRU": {
+        "FRUID": "NodeAccel.NVIDIA.1334520060099",
+        "Type": "NodeAccel",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUNodeAccel",
+        "NodeAccelFRUInfo": {
+          "InstructionSet": "",
+          "Manufacturer": "NVIDIA",
+          "MaxSpeedMHz": 0,
+          "Model": "",
+          "SerialNumber": "1334520060099",
+          "PartNumber": "",
+          "ProcessorArchitecture": "",
+          "ProcessorId": {
+            "EffectiveFamily": "",
+            "EffectiveModel": "",
+            "IdentificationRegisters": "",
+            "MicrocodeInfo": "",
+            "Step": "",
+            "VendorID": ""
+          },
+          "ProcessorType": "GPU",
+          "TotalCores": 0,
+          "TotalThreads": 0,
+          "Oem": null
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0a0",
+      "Type": "NodeAccel",
+      "Ordinal": 0,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocNodeAccel",
+      "NodeAccelLocationInfo": {
+        "Id": "11",
+        "Name": "NVIDIA NVIDIA A40",
+        "Description": "PCI-E Slot 5",
+        "Socket": ""
+      },
+      "PopulatedFRU": {
+        "FRUID": "NodeAccel.NVIDIA.1325120036836",
+        "Type": "NodeAccel",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUNodeAccel",
+        "NodeAccelFRUInfo": {
+          "InstructionSet": "",
+          "Manufacturer": "NVIDIA",
+          "MaxSpeedMHz": 0,
+          "Model": "",
+          "SerialNumber": "1325120036836",
+          "PartNumber": "",
+          "ProcessorArchitecture": "",
+          "ProcessorId": {
+            "EffectiveFamily": "",
+            "EffectiveModel": "",
+            "IdentificationRegisters": "",
+            "MicrocodeInfo": "",
+            "Step": "",
+            "VendorID": ""
+          },
+          "ProcessorType": "GPU",
+          "TotalCores": 0,
+          "TotalThreads": 0,
+          "Oem": null
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0a2",
+      "Type": "NodeAccel",
+      "Ordinal": 2,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocNodeAccel",
+      "NodeAccelLocationInfo": {
+        "Id": "15",
+        "Name": "NVIDIA NVIDIA A40",
+        "Description": "PCI-E Slot 9",
+        "Socket": ""
+      },
+      "PopulatedFRU": {
+        "FRUID": "NodeAccel.NVIDIA.1334520060138",
+        "Type": "NodeAccel",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUNodeAccel",
+        "NodeAccelFRUInfo": {
+          "InstructionSet": "",
+          "Manufacturer": "NVIDIA",
+          "MaxSpeedMHz": 0,
+          "Model": "",
+          "SerialNumber": "1334520060138",
+          "PartNumber": "",
+          "ProcessorArchitecture": "",
+          "ProcessorId": {
+            "EffectiveFamily": "",
+            "EffectiveModel": "",
+            "IdentificationRegisters": "",
+            "MicrocodeInfo": "",
+            "Step": "",
+            "VendorID": ""
+          },
+          "ProcessorType": "GPU",
+          "TotalCores": 0,
+          "TotalThreads": 0,
+          "Oem": null
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0a1",
+      "Type": "NodeAccel",
+      "Ordinal": 1,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocNodeAccel",
+      "NodeAccelLocationInfo": {
+        "Id": "13",
+        "Name": "NVIDIA NVIDIA A40",
+        "Description": "PCI-E Slot 7",
+        "Socket": ""
+      },
+      "PopulatedFRU": {
+        "FRUID": "NodeAccel.NVIDIA.1325120036457",
+        "Type": "NodeAccel",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUNodeAccel",
+        "NodeAccelFRUInfo": {
+          "InstructionSet": "",
+          "Manufacturer": "NVIDIA",
+          "MaxSpeedMHz": 0,
+          "Model": "",
+          "SerialNumber": "1325120036457",
+          "PartNumber": "",
+          "ProcessorArchitecture": "",
+          "ProcessorId": {
+            "EffectiveFamily": "",
+            "EffectiveModel": "",
+            "IdentificationRegisters": "",
+            "MicrocodeInfo": "",
+            "Step": "",
+            "VendorID": ""
+          },
+          "ProcessorType": "GPU",
+          "TotalCores": 0,
+          "TotalThreads": 0,
+          "Oem": null
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0a3",
+      "Type": "NodeAccel",
+      "Ordinal": 3,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocNodeAccel",
+      "NodeAccelLocationInfo": {
+        "Id": "17",
+        "Name": "NVIDIA NVIDIA A40",
+        "Description": "PCI-E Slot 11",
+        "Socket": ""
+      },
+      "PopulatedFRU": {
+        "FRUID": "NodeAccel.NVIDIA.1334520060358",
+        "Type": "NodeAccel",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUNodeAccel",
+        "NodeAccelFRUInfo": {
+          "InstructionSet": "",
+          "Manufacturer": "NVIDIA",
+          "MaxSpeedMHz": 0,
+          "Model": "",
+          "SerialNumber": "1334520060358",
+          "PartNumber": "",
+          "ProcessorArchitecture": "",
+          "ProcessorId": {
+            "EffectiveFamily": "",
+            "EffectiveModel": "",
+            "IdentificationRegisters": "",
+            "MicrocodeInfo": "",
+            "Step": "",
+            "VendorID": ""
+          },
+          "ProcessorType": "GPU",
+          "TotalCores": 0,
+          "TotalThreads": 0,
+          "Oem": null
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0a7",
+      "Type": "NodeAccel",
+      "Ordinal": 7,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocNodeAccel",
+      "NodeAccelLocationInfo": {
+        "Id": "9",
+        "Name": "NVIDIA NVIDIA A40",
+        "Description": "PCI-E Slot 3",
+        "Socket": ""
+      },
+      "PopulatedFRU": {
+        "FRUID": "NodeAccel.NVIDIA.1334520060273",
+        "Type": "NodeAccel",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUNodeAccel",
+        "NodeAccelFRUInfo": {
+          "InstructionSet": "",
+          "Manufacturer": "NVIDIA",
+          "MaxSpeedMHz": 0,
+          "Model": "",
+          "SerialNumber": "1334520060273",
+          "PartNumber": "",
+          "ProcessorArchitecture": "",
+          "ProcessorId": {
+            "EffectiveFamily": "",
+            "EffectiveModel": "",
+            "IdentificationRegisters": "",
+            "MicrocodeInfo": "",
+            "Step": "",
+            "VendorID": ""
+          },
+          "ProcessorType": "GPU",
+          "TotalCores": 0,
+          "TotalThreads": 0,
+          "Oem": null
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0a5",
+      "Type": "NodeAccel",
+      "Ordinal": 5,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocNodeAccel",
+      "NodeAccelLocationInfo": {
+        "Id": "7",
+        "Name": "NVIDIA NVIDIA A40",
+        "Description": "PCI-E Slot 1",
+        "Socket": ""
+      },
+      "PopulatedFRU": {
+        "FRUID": "NodeAccel.NVIDIA.1334520060094",
+        "Type": "NodeAccel",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUNodeAccel",
+        "NodeAccelFRUInfo": {
+          "InstructionSet": "",
+          "Manufacturer": "NVIDIA",
+          "MaxSpeedMHz": 0,
+          "Model": "",
+          "SerialNumber": "1334520060094",
+          "PartNumber": "",
+          "ProcessorArchitecture": "",
+          "ProcessorId": {
+            "EffectiveFamily": "",
+            "EffectiveModel": "",
+            "IdentificationRegisters": "",
+            "MicrocodeInfo": "",
+            "Step": "",
+            "VendorID": ""
+          },
+          "ProcessorType": "GPU",
+          "TotalCores": 0,
+          "TotalThreads": 0,
+          "Oem": null
+        }
+      }
+    },
+    {
+      "ID": "x9000c0s3b0n0a4",
+      "Type": "NodeAccel",
+      "Ordinal": 4,
+      "Status": "Populated",
+      "HWInventoryByLocationType": "HWInvByLocNodeAccel",
+      "NodeAccelLocationInfo": {
+        "Id": "19",
+        "Name": "NVIDIA NVIDIA A40",
+        "Description": "PCI-E Slot 13",
+        "Socket": ""
+      },
+      "PopulatedFRU": {
+        "FRUID": "NodeAccel.NVIDIA.1334520060098",
+        "Type": "NodeAccel",
+        "Subtype": "",
+        "HWInventoryByFRUType": "HWInvByFRUNodeAccel",
+        "NodeAccelFRUInfo": {
+          "InstructionSet": "",
+          "Manufacturer": "NVIDIA",
+          "MaxSpeedMHz": 0,
+          "Model": "",
+          "SerialNumber": "1334520060098",
+          "PartNumber": "",
+          "ProcessorArchitecture": "",
+          "ProcessorId": {
+            "EffectiveFamily": "",
+            "EffectiveModel": "",
+            "IdentificationRegisters": "",
+            "MicrocodeInfo": "",
+            "Step": "",
+            "VendorID": ""
+          },
+          "ProcessorType": "GPU",
+          "TotalCores": 0,
+          "TotalThreads": 0,
+          "Oem": null
+        }
+      }
+    }
+  ]
 }
    ]
 }

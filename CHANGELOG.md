@@ -24,11 +24,24 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
-## [1.25.13] - 2021-10-11
+## [1.28.0] - 2021-10-27
 
 ### Added
 
 - CASMHMS-5055 - Added CAPMC CT test RPM.
+
+## [1.27.0] - 2021-10-21
+
+### Added
+
+- Power capping support for new Redfish power controls (Bard Peak)
+
+## [1.26.0] - 2021-10-06
+
+### Changed
+
+- Power off waits for target to be off and components that don't support
+  GracefulShutdown can be emulated.
 
 ## [1.25.12] - 2021-09-22
 

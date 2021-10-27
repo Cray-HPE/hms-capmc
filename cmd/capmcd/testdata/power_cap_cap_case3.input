@@ -94,7 +94,8 @@
 			"supply": 12000,
 			"powerup": 0,
 			"nids": [
-				9
+				9,
+				2000
 			],
 			"controls": [
 				{

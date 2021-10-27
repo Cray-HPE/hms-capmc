@@ -98,6 +98,17 @@
          "State" : "Ready",
          "Type" : "Node",
          "ID" : "x3000c0s24b0n0"
+      },
+      {
+         "NID" : 2000,
+         "Enabled" : true,
+         "Arch" : "X86",
+         "Flag" : "OK",
+         "Role" : "Compute",
+         "NetType" : "Sling",
+         "State" : "Ready",
+         "Type" : "Node",
+         "ID" : "x9000c0s3b0n0"
       }
    ]
 }
