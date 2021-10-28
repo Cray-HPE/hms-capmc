@@ -71,6 +71,12 @@ cray capmc xname_off create --xnames x1000c0 --recursive
 
 On target system, delete the running pod and the one pushed will get started.
 
+## CAPMC CT Testing
+
+This repository builds and publishes hms-capmc-ct-test RPMs along with the service itself containing tests that verify CAPMC on
+the NCNs of live Shasta systems. The tests require the hms-ct-test-base RPM to also be installed on the NCNs in order to execute.
+The version of the test RPM installed on the NCNs should always match the version of CAPMC deployed on the system.
+
 ## API Map
 
 When the different APIs will be supported:

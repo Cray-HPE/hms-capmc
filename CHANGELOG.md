@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.28.0] - 2021-10-27
+
+### Added
+
+- CASMHMS-5055 - Added CAPMC CT test RPM.
+
 ## [1.27.0] - 2021-10-21
 
 ### Added
