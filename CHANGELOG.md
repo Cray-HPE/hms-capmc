@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.29.0] - 2021-10-28
+
+### Fixed
+
+- Fixed status query when using filters
+
 ## [1.28.0] - 2021-10-27
 
 ### Added
