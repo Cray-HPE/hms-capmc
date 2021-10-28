@@ -299,8 +299,9 @@ const RedfishPowerStateOff = `{"@odata.context":"/redfish/v1/$metadata#ComputerS
 
 func StatusFunc() RoundTripFunc {
 	return func(req *http.Request) (*http.Response, error) {
+		//fmt.Printf("StatusFunc %s\n", req.URL.String())
 		switch req.URL.String() {
-		case "http://localhost:27779/State/Components?enabled=true&state=Ready&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
+		case "http://localhost:27779/State/Components?enabled=true&state=Off&state=On&state=Ready&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
 			return &http.Response{
 				StatusCode: 200,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(compStatusEnabledReadyOK)),
@@ -312,7 +313,7 @@ func StatusFunc() RoundTripFunc {
 				Body:       ioutil.NopCloser(bytes.NewBufferString(x1002c0s0b0n0CompEndpoint)),
 				Header:     make(http.Header),
 			}, nil
-		case "http://localhost:27779/State/Components?enabled=true&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
+		case "http://localhost:27779/State/Components?enabled=true&state=Off&state=On&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
 			return &http.Response{
 				StatusCode: 200,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(compStatusEnabledOnOK)),
@@ -330,7 +331,7 @@ func StatusFunc() RoundTripFunc {
 				Body:       ioutil.NopCloser(bytes.NewBufferString(x1002c0s0b1n0CompEndpoint)),
 				Header:     make(http.Header),
 			}, nil
-		case "http://localhost:27779/State/Components?enabled=true&state=Standby&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
+		case "http://localhost:27779/State/Components?enabled=true&state=Off&state=On&state=Standby&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
 			return &http.Response{
 				StatusCode: 200,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(compStatusEnabledStandbyOK)),
@@ -342,7 +343,7 @@ func StatusFunc() RoundTripFunc {
 				Body:       ioutil.NopCloser(bytes.NewBufferString(x1002c0s0b1n1CompEndpoint)),
 				Header:     make(http.Header),
 			}, nil
-		case "http://localhost:27779/State/Components?enabled=false&state=Ready&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
+		case "http://localhost:27779/State/Components?enabled=false&state=Off&state=On&state=Ready&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
 			return &http.Response{
 				StatusCode: 200,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(compStatusNotEnabledReadyOK)),
@@ -354,7 +355,7 @@ func StatusFunc() RoundTripFunc {
 				Body:       ioutil.NopCloser(bytes.NewBufferString(x1002c0s1b0n0CompEndpoint)),
 				Header:     make(http.Header),
 			}, nil
-		case "http://localhost:27779/State/Components?enabled=false&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
+		case "http://localhost:27779/State/Components?enabled=false&state=Off&state=On&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
 			return &http.Response{
 				StatusCode: 200,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(compStatusNotEnabledOnOK)),
@@ -372,7 +373,7 @@ func StatusFunc() RoundTripFunc {
 				Body:       ioutil.NopCloser(bytes.NewBufferString(x1002c0s1b1n0CompEndpoint)),
 				Header:     make(http.Header),
 			}, nil
-		case "http://localhost:27779/State/Components?enabled=false&state=Standby&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
+		case "http://localhost:27779/State/Components?enabled=false&state=Off&state=On&state=Standby&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node":
 			return &http.Response{
 				StatusCode: 200,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(compStatusNotEnabledStandbyOK)),
