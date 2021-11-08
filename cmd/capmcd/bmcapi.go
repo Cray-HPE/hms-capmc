@@ -36,6 +36,7 @@ import (
 	"net/http"
 	"path"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/Cray-HPE/hms-capmc/internal/capmc"
@@ -315,13 +316,33 @@ func (d *CapmcD) doBmcPowerCall(call bmcCall) bmcPowerRc {
 	}
 
 	var body string
+	var sessionAuthPath = ""
+	var sessionAuthBody = ""
 	switch ni.Type {
 	// The CabinetPDUOutlet HMSType has been depricated in favor of
 	// CabinetPDUPowerConnector. Support both for now.
 	case "CabinetPDUOutlet":
 		fallthrough
 	case "CabinetPDUPowerConnector":
-		body = fmt.Sprintf(`{"PowerState": "%s"}`, resetType)
+		var HPEPDU = true
+		if strings.Contains(ni.BmcFQDN, "rts") {
+			HPEPDU = false
+		}
+		if HPEPDU {
+			outletNum := strings.Split(ni.Hostname, "v")
+			if len(outletNum) < 2 {
+				log.Printf("Could not get outlet number")
+				outletNum = append(outletNum, "")
+				outletNum = append(outletNum, "")
+			} else {
+				log.Printf("Outlet number: %s", outletNum)
+			}
+			body = fmt.Sprintf(`{"OutletNumber":%s,"RebootDelay":5,"OutletStatus":"%s"}`, outletNum[1], strings.ToLower(resetType))
+			sessionAuthPath = "https://" + ni.BmcFQDN + "/redfish/v1/SessionService/Sessions"
+			sessionAuthBody = fmt.Sprintf(`{"username":"%s","password":"%s"}`, ni.BmcUser, ni.BmcPass)
+		} else {
+			body = fmt.Sprintf(`{"PowerState": "%s"}`, resetType)
+		}
 	default:
 		body = fmt.Sprintf(`{"ResetType": "%s"}`, resetType)
 	}
@@ -344,11 +365,35 @@ func (d *CapmcD) doBmcPowerCall(call bmcCall) bmcPowerRc {
 			return res
 		}
 	}
+
+	var sessionAuthToken string
+	if len(sessionAuthPath) > 0 {
+		req, err := http.NewRequest("POST", sessionAuthPath, bytes.NewBuffer([]byte(sessionAuthBody)))
+		req.SetBasicAuth(ni.BmcUser, ni.BmcPass)
+		req.Header.Set("Accept", "*/*")
+		req.Header.Set("Content-Type", "application/json")
+		// execute the request
+		rfClientLock.RLock()
+		rsp, err := d.rfClient.Do(req)
+		rfClientLock.RUnlock()
+		if err != nil {
+			log.Printf("POST %s\n Body           --> %s\n %s Network Error: %s",
+				sessionAuthPath, sessionAuthBody, ni.BmcType, err)
+			res.msg = fmt.Sprintf("%s Communication Error", ni.BmcType)
+			return res
+		}
+		defer rsp.Body.Close()
+		sessionAuthToken = rsp.Header.Get("X-Auth-Token")
+	}
+	log.Printf("doBmcPowerCall with: POST %s, Data: %s", actionPath, body)
 	// create the request
 	req, err := http.NewRequest("POST", actionPath, bytes.NewBuffer([]byte(body)))
 	req.SetBasicAuth(ni.BmcUser, ni.BmcPass)
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("Content-Type", "application/json")
+	if len(sessionAuthToken) > 0 {
+		req.Header.Set("X-Auth-Token", sessionAuthToken)
+	}
 
 	// execute the request
 	rfClientLock.RLock()
