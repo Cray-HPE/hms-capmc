@@ -337,7 +337,7 @@ func (d *CapmcD) doBmcPowerCall(call bmcCall) bmcPowerRc {
 			} else {
 				log.Printf("Outlet number: %s", outletNum)
 			}
-			body = fmt.Sprintf(`{"OutletNumber":%s,"RebootDelay":5,"OutletStatus":"%s"}`, outletNum[1], strings.ToLower(resetType))
+			body = fmt.Sprintf(`{"OutletNumber":%s,"StartupState":"on","Outletname":"OUTLET%s","OnDelay":0,"OffDelay":0,"RebootDelay":5,"OutletStatus":"%s"}`, outletNum[1], outletNum[1], strings.ToLower(resetType))
 			sessionAuthPath = "https://" + ni.BmcFQDN + "/redfish/v1/SessionService/Sessions"
 			sessionAuthBody = fmt.Sprintf(`{"username":"%s","password":"%s"}`, ni.BmcUser, ni.BmcPass)
 		} else {
