@@ -57,8 +57,6 @@ STOPSIGNAL SIGTERM
 # Note: The name used here must match that used in the builder stage.
 COPY --from=builder /usr/local/bin/capmc-service /usr/local/bin
 
-COPY configs /configs
-
 COPY kubernetes/cray-hms-capmc/files/config.toml /usr/local/etc/capmc-service/default/config.toml
 
 # Setup environment variables.
