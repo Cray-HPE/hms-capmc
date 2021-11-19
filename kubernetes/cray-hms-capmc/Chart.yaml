@@ -3,4 +3,4 @@ apiVersion: v1
 description: "Kubernetes resources for cray-hms-capmc"
 name: "cray-hms-capmc"
 home: "HMS/hms-capmc"
-version: 1.29.0
+version: 1.30.0

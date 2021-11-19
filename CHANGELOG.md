@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.30.0] - 2021-11-19
+
+### Added
+
+Support for HPE PDUs
+
 ## [1.29.0] - 2021-10-28
 
 ### Fixed
@@ -258,12 +264,12 @@ Added TLS verification capability to Redfish HTTP transports.
 
 ## [1.18.4] - 2020-08-18
 
-### Added 
+### Added
 - CASMHMS-3809 - Added support for the CabinetPDUPowerConnector HMSType
 
 ## [1.18.3] - 2020-07-15
 
-### Changed 
+### Changed
 - CASMHMS-3771 - Increased the HTTP client timeout from 20 seconds to 3 minutes.
 
 ## [1.18.2] - 2020-07-09
@@ -400,7 +406,7 @@ Added TLS verification capability to Redfish HTTP transports.
   successful operations.  Now the json return object returns 'e':0
   on success to match the api documentation.
 
-- CASMHMS-2584 - get_system_power_details was returning an error code on 
+- CASMHMS-2584 - get_system_power_details was returning an error code on
   all successful operations.  Now the json return object returns 'e':0
   on success to match the api documentation.
 
@@ -408,8 +414,8 @@ Added TLS verification capability to Redfish HTTP transports.
   start time.  If the user did not pass in a start time, it would query
   a time window that was arbitrarily large.
 
-- CASMHMS-2577 - get_system_power_details was incorrectly calculating the 
-  default start time.  If the user did not pass in a start time, it would 
+- CASMHMS-2577 - get_system_power_details was incorrectly calculating the
+  default start time.  If the user did not pass in a start time, it would
   query a time window that was arbitrarily large.
 
 # [1.15.4] - 2019-12-06
@@ -436,7 +442,7 @@ Added TLS verification capability to Redfish HTTP transports.
 # [1.15.3] - 2019-11-27
 
 ### Fixed
-- CASMHMS-2563 - Fixed the DoSystemPower function to not cause a 
+- CASMHMS-2563 - Fixed the DoSystemPower function to not cause a
   panic when making the query to the databse.  The function now
   also correctly returns an error if there is no data present for
   the requested time interval.
@@ -469,8 +475,8 @@ Added TLS verification capability to Redfish HTTP transports.
 # [1.14.5] - 2019-11-12
 
 ### Changed
-- CASMHMS-2327 - Use the HSM discovered Mountain EPO information 
-  instead of hard coded paths to perform the EPO. 
+- CASMHMS-2327 - Use the HSM discovered Mountain EPO information
+  instead of hard coded paths to perform the EPO.
 
 # [1.14.4] - 2019-11-11
 
