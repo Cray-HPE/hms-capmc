@@ -7,6 +7,9 @@
 #   tag: "" (default = "latest")
 #   pullPolicy: "" (default = "IfNotPresent")
 
+global:
+  appVersion: 1.30.0
+
 image:
   repository: artifactory.algol60.net/csm-docker/stable/cray-capmc
   pullPolicy: IfNotPresent
@@ -23,7 +26,6 @@ cray-service:
       name: "cray-capmc"
       image:
         repository: artifactory.algol60.net/csm-docker/stable/cray-capmc
-        tag: 1.30.0
       ports:
         - name: http
           containerPort: 27777
