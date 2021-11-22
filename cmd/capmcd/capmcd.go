@@ -665,7 +665,11 @@ func main() {
 				time.Sleep(backoff * time.Second)
 			} else {
 				log.Printf("Info: Connection to secure store (Vault) succeeded")
-				svc.ccs = compcreds.NewCompCredStore("secret/hms-creds", svc.ss)
+				vaultKeypath, ok := os.LookupEnv("VAULT_KEYPATH")
+				if !ok {
+					vaultKeypath = "secret/hms-creds"
+				}
+				svc.ccs = compcreds.NewCompCredStore(vaultKeypath, svc.ss)
 				break
 			}
 			if backoff < maxBackoff {
