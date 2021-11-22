@@ -331,11 +331,9 @@ func (d *CapmcD) doBmcPowerCall(call bmcCall) bmcPowerRc {
 		if HPEPDU {
 			outletNum := strings.Split(ni.Hostname, "v")
 			if len(outletNum) < 2 {
-				log.Printf("Could not get outlet number")
-				outletNum = append(outletNum, "")
-				outletNum = append(outletNum, "")
-			} else {
-				log.Printf("Outlet number: %s", outletNum)
+				log.Printf("ERROR: Could not get outlet number")
+				// Just return because it will not work
+				return res
 			}
 			body = fmt.Sprintf(`{"OutletNumber":%s,"StartupState":"on","Outletname":"OUTLET%s","OnDelay":0,"OffDelay":0,"RebootDelay":5,"OutletStatus":"%s"}`, outletNum[1], outletNum[1], strings.ToLower(resetType))
 			sessionAuthPath = "https://" + ni.BmcFQDN + "/redfish/v1/SessionService/Sessions"
@@ -377,8 +375,8 @@ func (d *CapmcD) doBmcPowerCall(call bmcCall) bmcPowerRc {
 		rsp, err := d.rfClient.Do(req)
 		rfClientLock.RUnlock()
 		if err != nil {
-			log.Printf("POST %s\n Body           --> %s\n %s Network Error: %s",
-				sessionAuthPath, sessionAuthBody, ni.BmcType, err)
+			log.Printf("POST %s\n%s Network Error: %s",
+				sessionAuthPath, ni.BmcType, err)
 			res.msg = fmt.Sprintf("%s Communication Error", ni.BmcType)
 			return res
 		}
