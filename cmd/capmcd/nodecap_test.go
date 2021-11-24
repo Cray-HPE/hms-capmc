@@ -922,7 +922,9 @@ func TestBuildPowerCapCapabilitiesGroup(t *testing.T) {
 				t.Error("buildPowerCapCapabilitiesGroup returned an error: " + pcgErr.Error())
 			}
 			//do some checking of powerCapGroup therefore
-			if powerCapGroup.Controls == nil {
+			if powerCapGroup.Controls == nil &&
+				mg.Name != "3_ssd_bbt_bbst_cpuid_tdp_64_244_0_accelerator" &&
+				mg.Name != "3_ssd_bbt_bbst_cpuid_tdp_64_244_3200_accelerator" {
 				t.Error("powerCapGroup controls is nil")
 			}
 		}
@@ -1275,6 +1277,258 @@ func TestExpandNodeListForControlStruct(t *testing.T) {
 					paths = append(paths, e.RfPowerURL)
 				}
 				t.Errorf("List mismatch, got %v, want %v", paths, tt.want)
+			}
+		})
+	}
+}
+
+func TestGenerateControls(t *testing.T) {
+	var fiveHundred int = 500
+	var twoHundred int = 200
+	var fiveThousand int = 5000
+	var one int = 1
+	var zero int = 0
+
+	// Old style Redfish power cap for single control
+	var pc1 = make(map[string]PowerCap)
+	pc1["Node Power Limit"] = PowerCap{Name: "Node Power Limit", Path: "/redfish/v1/Chassis/Node0/Power", Min: 200, Max: 1000, PwrCtlIndex: 0}
+	node1 := NodeInfo{RfPowerURL: "/redfish/v1/Chassis/Node0/Power", RfPwrCtlCnt: 1, RfControlsCnt: 0, PowerCaps: pc1}
+	wantNode1 := make(map[*NodeInfo]powerGen)
+	pc1Ctl := make([]capmc.PowerControl, 1)
+	pc1Ctl[0] = capmc.PowerControl{PowerLimit: &capmc.PowerLimit{LimitInWatts: &fiveHundred}}
+	wantNode1[&node1] = powerGen{powerCtl: pc1Ctl}
+	ctl1 := make([]capmc.PowerCapControl, 1)
+	ctl1[0] = capmc.PowerCapControl{Name: "Node Power Limit", Val: &fiveHundred}
+
+	// Old style Redfish power cap for two controls
+	var pc2 = make(map[string]PowerCap)
+	pc2["Node Power Limit"] = PowerCap{Name: "Node Power Limit", Path: "/redfish/v1/Chassis/Node0/Power", Min: 200, Max: 1000, PwrCtlIndex: 0}
+	pc2["Accelerator Power Limit"] = PowerCap{Name: "Accelerator Power Limit", Path: "/redfish/v1/Chassis/Node0/Power", Min: 100, Max: 400, PwrCtlIndex: 1}
+	node2 := NodeInfo{RfPowerURL: "/redfish/v1/Chassis/Node0/Power", RfPwrCtlCnt: 2, RfControlsCnt: 0, PowerCaps: pc2}
+	wantNode2 := make(map[*NodeInfo]powerGen)
+	pc2Ctl := make([]capmc.PowerControl, 2)
+	pc2Ctl[0] = capmc.PowerControl{PowerLimit: &capmc.PowerLimit{LimitInWatts: &fiveHundred}}
+	pc2Ctl[1] = capmc.PowerControl{PowerLimit: &capmc.PowerLimit{LimitInWatts: &twoHundred}}
+	wantNode2[&node2] = powerGen{powerCtl: pc2Ctl}
+	ctl2 := make([]capmc.PowerCapControl, 2)
+	ctl2[0] = capmc.PowerCapControl{Name: "Node Power Limit", Val: &fiveHundred}
+	ctl2[1] = capmc.PowerCapControl{Name: "Accelerator Power Limit", Val: &twoHundred}
+
+	// HPE Apollo 6500 style power cap
+	var pc3 = make(map[string]PowerCap)
+	pc3["HPE Node Power Limit"] = PowerCap{Name: "HPE Node Power Limit", Path: "/redfish/v1/Chassis/1/Power/AccPowerService/PowerLimit", Min: 200, Max: 1000, PwrCtlIndex: 0}
+	node3 := NodeInfo{RfPowerURL: "/redfish/v1/Chassis/1/Power/AccPowerService/PowerLimit", RfPwrCtlCnt: 1, RfControlsCnt: 0, PowerCaps: pc3}
+	wantNode3 := make(map[*NodeInfo]powerGen)
+	wantNode3[&node3] = powerGen{
+		powerLimit: capmc.HpeConfigurePowerLimit{
+			PowerLimits: []capmc.HpePowerLimits{
+				{
+					PowerLimitInWatts: &fiveHundred,
+					ZoneNumber:        &zero,
+				},
+			},
+		},
+	}
+	ctl3 := make([]capmc.PowerCapControl, 1)
+	ctl3[0] = capmc.PowerCapControl{Name: "HPE Node Power Limit", Val: &fiveHundred}
+
+	// New Redfish controls power capping (Bard Peak), single control
+	var pc4 = make(map[string]PowerCap)
+	pc4["Node Power Limit"] = PowerCap{Name: "Node Power Limit", Path: "/redfish/v1/Chassis/Node/Controls/NodePowerLimit", Min: 200, Max: 1000, PwrCtlIndex: 0}
+	pc4["GPU0 Power Limit"] = PowerCap{Name: "GPU0 Power Limit", Path: "/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit", Min: 100, Max: 400, PwrCtlIndex: 0}
+	pc4["GPU1 Power Limit"] = PowerCap{Name: "GPU1 Power Limit", Path: "/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit", Min: 100, Max: 400, PwrCtlIndex: 0}
+	pc4["GPU2 Power Limit"] = PowerCap{Name: "GPU2 Power Limit", Path: "/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit", Min: 100, Max: 400, PwrCtlIndex: 0}
+	pc4["GPU3 Power Limit"] = PowerCap{Name: "GPU3 Power Limit", Path: "/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit", Min: 100, Max: 400, PwrCtlIndex: 0}
+	node4 := NodeInfo{RfPowerURL: "/redfish/v1/Chassis/Node/Controls/NodePowerLimit", RfPwrCtlCnt: 0, RfControlsCnt: 5, PowerCaps: pc4}
+	wantNode4 := make(map[*NodeInfo]powerGen)
+	wantNode4[&node4] = powerGen{
+		controls: capmc.RFControl{
+			SetPoint: &fiveHundred,
+		},
+	}
+	ctl4 := make([]capmc.PowerCapControl, 1)
+	ctl4[0] = capmc.PowerCapControl{Name: "Node Power Limit", Val: &fiveHundred}
+
+	// New Redfish controls power capping (Bard Peak), multi control
+	var pc5 = make(map[string]PowerCap)
+	pc5["Node Power Limit"] = PowerCap{Name: "Node Power Limit", Path: "/redfish/v1/Chassis/Node/Controls/NodePowerLimit", Min: 200, Max: 1000, PwrCtlIndex: 0}
+	pc5["GPU0 Power Limit"] = PowerCap{Name: "GPU0 Power Limit", Path: "/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit", Min: 100, Max: 400, PwrCtlIndex: 0}
+	pc5["GPU1 Power Limit"] = PowerCap{Name: "GPU1 Power Limit", Path: "/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit", Min: 100, Max: 400, PwrCtlIndex: 0}
+	pc5["GPU2 Power Limit"] = PowerCap{Name: "GPU2 Power Limit", Path: "/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit", Min: 100, Max: 400, PwrCtlIndex: 0}
+	pc5["GPU3 Power Limit"] = PowerCap{Name: "GPU3 Power Limit", Path: "/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit", Min: 100, Max: 400, PwrCtlIndex: 0}
+	node5 := NodeInfo{RfPowerURL: "/redfish/v1/Chassis/Node/Controls/NodePowerLimit", RfPwrCtlCnt: 0, RfControlsCnt: 5, PowerCaps: pc5}
+	wantNode5 := make(map[*NodeInfo]powerGen)
+	wantNode5[&node5] = powerGen{
+		controls: capmc.RFControl{
+			SetPoint: &twoHundred,
+		},
+	}
+	ctl5 := make([]capmc.PowerCapControl, 5)
+	ctl5[0] = capmc.PowerCapControl{Name: "Node Power Limit", Val: &twoHundred}
+	ctl5[1] = capmc.PowerCapControl{Name: "GPU0 Power Limit", Val: &twoHundred}
+	ctl5[2] = capmc.PowerCapControl{Name: "GPU1 Power Limit", Val: &twoHundred}
+	ctl5[3] = capmc.PowerCapControl{Name: "GPU2 Power Limit", Val: &twoHundred}
+	ctl5[4] = capmc.PowerCapControl{Name: "GPU3 Power Limit", Val: &twoHundred}
+
+	// Duplicate controls to produce an error
+	dupCtl := make([]capmc.PowerCapControl, 2)
+	dupCtl[0] = capmc.PowerCapControl{Name: "Node Power Limit", Val: &twoHundred}
+	dupCtl[1] = capmc.PowerCapControl{Name: "Node Power Limit", Val: &twoHundred}
+
+	// Value to set too large
+	tooBigCtl := make([]capmc.PowerCapControl, 1)
+	tooBigCtl[0] = capmc.PowerCapControl{Name: "Node Power Limit", Val: &fiveThousand}
+
+	// Value to set too small but not zero
+	tooSmCtl := make([]capmc.PowerCapControl, 1)
+	tooSmCtl[0] = capmc.PowerCapControl{Name: "Node Power Limit", Val: &one}
+
+	// Set a zero value
+	var pc6 = make(map[string]PowerCap)
+	pc6["Node Power Limit"] = PowerCap{Name: "Node Power Limit", Path: "/redfish/v1/Chassis/Node0/Power", Min: 200, Max: 1000, PwrCtlIndex: 0}
+	node6 := NodeInfo{RfPowerURL: "/redfish/v1/Chassis/Node0/Power", RfPwrCtlCnt: 1, RfControlsCnt: 0, PowerCaps: pc6}
+	wantNode6 := make(map[*NodeInfo]powerGen)
+	pc6Ctl := make([]capmc.PowerControl, 1)
+	pc6Ctl[0] = capmc.PowerControl{PowerLimit: &capmc.PowerLimit{LimitInWatts: &zero}}
+	wantNode6[&node6] = powerGen{powerCtl: pc6Ctl}
+	ctl6 := make([]capmc.PowerCapControl, 1)
+	ctl6[0] = capmc.PowerCapControl{Name: "Node Power Limit", Val: &zero}
+
+	// Bad control name
+	var pc7 = make(map[string]PowerCap)
+	pc7["Node Power Limit"] = PowerCap{Name: "Node Power Limit", Path: "/redfish/v1/Chassis/Node0/Power", Min: 200, Max: 1000, PwrCtlIndex: 0}
+	node7 := NodeInfo{RfPowerURL: "/redfish/v1/Chassis/Node0/Power", RfPwrCtlCnt: 1, RfControlsCnt: 0, PowerCaps: pc7}
+	wantNode7 := make(map[*NodeInfo]powerGen)
+	pc7Ctl := make([]capmc.PowerControl, 1)
+	pc7Ctl[0] = capmc.PowerControl{PowerLimit: &capmc.PowerLimit{LimitInWatts: &zero}}
+	ctl7 := make([]capmc.PowerCapControl, 1)
+	ctl7[0] = capmc.PowerCapControl{Name: "Bad control name", Val: &zero}
+
+	type args struct {
+		node     *NodeInfo
+		controls []capmc.PowerCapControl
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    map[*NodeInfo]powerGen
+		wantErr bool
+	}{
+		{
+			name: "oldRedfishSingle",
+			args: args{
+				node:     &node1,
+				controls: ctl1,
+			},
+			want:    wantNode1,
+			wantErr: false,
+		},
+		{
+			name: "oldRedfishMulti",
+			args: args{
+				node:     &node2,
+				controls: ctl2,
+			},
+			want:    wantNode2,
+			wantErr: false,
+		},
+		{
+			name: "apollo6500",
+			args: args{
+				node:     &node3,
+				controls: ctl3,
+			},
+			want:    wantNode3,
+			wantErr: false,
+		},
+		{
+			name: "newRedfishSingle",
+			args: args{
+				node:     &node4,
+				controls: ctl4,
+			},
+			want:    wantNode4,
+			wantErr: false,
+		},
+		{
+			name: "newRedfishMulti",
+			args: args{
+				node:     &node5,
+				controls: ctl5,
+			},
+			want:    wantNode5,
+			wantErr: false,
+		},
+		{
+			name: "dupCtl",
+			args: args{
+				node:     &node1,
+				controls: dupCtl,
+			},
+			want:    wantNode1,
+			wantErr: true,
+		},
+		{
+			name: "tooBigCtl",
+			args: args{
+				node:     &node1,
+				controls: tooBigCtl,
+			},
+			want:    wantNode1,
+			wantErr: true,
+		},
+		{
+			name: "tooSmCtl",
+			args: args{
+				node:     &node1,
+				controls: tooSmCtl,
+			},
+			want:    wantNode1,
+			wantErr: true,
+		},
+		{
+			name: "setZero",
+			args: args{
+				node:     &node6,
+				controls: ctl6,
+			},
+			want:    wantNode6,
+			wantErr: false,
+		},
+		{
+			name: "badCtlName",
+			args: args{
+				node:     &node7,
+				controls: ctl7,
+			},
+			want:    wantNode7,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := generateControls(tt.args.node, tt.args.controls)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("generateControls() error = %+v, wantErr %+v", err, tt.wantErr)
+				return
+			}
+
+			if (tt.wantErr == true) && (err != nil) {
+				return
+			}
+
+			if len(got) == 0 {
+				if len(got) != len(tt.want) {
+					t.Errorf("generateControls() = %+v, want %+v", got, tt.want)
+				}
+				return
+			}
+
+			for _, eg := range got {
+				if !reflect.DeepEqual(eg, tt.want[tt.args.node]) {
+					t.Errorf("generateControls() = %+v, want %+v", eg,
+						tt.want[tt.args.node])
+				}
 			}
 		})
 	}
