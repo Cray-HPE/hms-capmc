@@ -540,7 +540,7 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bmcCmds := make(map[*NodeInfo]bmcCmd)
-	var nnl []*NodeInfo
+	var newNodes []*NodeInfo
 	for _, node := range nodes {
 		if !node.Enabled || node.State != string(base.StateReady) {
 			data.Nids = append(data.Nids,
@@ -597,6 +597,7 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 				log.Printf("Debug: payload=%s", payload)
 			}
 
+			newNodes = append(newNodes, n)
 			bmcCmds[n] = bmcCmd{
 				cmd:     bmcCmdSetPowerCap,
 				payload: payload,
@@ -622,8 +623,8 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 	// Only set power caps if all the NIDs, controls, and values were 'good'
 	if data.E == 0 {
 		var failed int
-		if len(nnl) > 0 {
-			nodes = append(nodes, nnl...)
+		if len(newNodes) > 0 {
+			nodes = newNodes
 		}
 		waitNum, waitChan := d.queueBmcCmds(bmcCmds, nodes)
 		for i := 0; i < waitNum; i++ {
@@ -658,6 +659,7 @@ func generateControls(node *NodeInfo, controls []capmc.PowerCapControl) (map[*No
 	pControls := make(map[*NodeInfo]powerGen)
 
 	for _, control := range controls {
+		var targNode *NodeInfo
 		var (
 			min, max int = -1, -1
 			ok       bool
@@ -699,13 +701,14 @@ func generateControls(node *NodeInfo, controls []capmc.PowerCapControl) (map[*No
 			path := node.PowerCaps[control.Name].Path
 			if control.Name == "Node Power Limit" {
 				node.RfPowerURL = path
+				targNode = node
 			} else {
 				nni := *node
 				nni.RfPowerURL = path
-				node = &nni
+				targNode = &nni
 			}
 
-			pControls[node] = powerGen{
+			pControls[targNode] = powerGen{
 				controls: capmc.RFControl{
 					SetPoint: control.Val,
 				},
