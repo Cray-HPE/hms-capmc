@@ -17,8 +17,6 @@ pipeline {
         VERSION = getDockerBuildVersion(isStable: env.IS_STABLE)
         DOCKER_ARGS = getDockerBuildArgs(name: "hms-capmc", description: env.DESCRIPTION, version: env.VERSION)
         NO_CACHE = "--no-cache"
-        CHART_NAME = "cray-hms-capmc"
-        CHART_VERSION = getChartVersion(version: env.VERSION)
         TEST_NAME = "hms-capmc-ct-test"
         TEST_SPEC_FILE = "hms-capmc-ct-test.spec"
         BUILD_METADATA = getRpmRevision(isStable: env.IS_STABLE)
@@ -43,13 +41,6 @@ pipeline {
             }
         }
 
-        stage("Build Chart") {
-            steps {
-                updateCsmHelmChartAppVersion(chartPath: "${WORKSPACE}/kubernetes/${CHART_NAME}", appVersion:  env.VERSION)
-                sh "make chart"
-            }
-        }
-
         stage("Test Rpm") {
             steps {
                 echo "RPM build metadata is: ${env.BUILD_METADATA}"
@@ -62,7 +53,6 @@ pipeline {
             steps {
                 script {
                     publishCsmDockerImage(image: env.NAME, tag: env.VERSION, isStable: env.IS_STABLE)
-                    publishCsmHelmCharts(component: env.CHART_NAME, chartsPath: "${WORKSPACE}/kubernetes/.packaged", isStable: env.IS_STABLE)
                     publishCsmRpms(component: env.TEST_NAME, pattern: "dist/capmc-ct-test-rpmbuild/RPMS/x86_64/*.rpm", arch: "x86_64", isStable: env.IS_STABLE)
                     publishCsmRpms(component: env.TEST_NAME, pattern: "dist/capmc-ct-test-rpmbuild/SRPMS/*.rpm", arch: "src", isStable: env.IS_STABLE)
                 }
