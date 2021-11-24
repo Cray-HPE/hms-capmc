@@ -24,11 +24,17 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.31.0] - 2021-11-24
+
+### Fixed
+
+- Power capping of Mountain hardware with Shasta 1.5 firmware
+
 ## [1.30.0] - 2021-11-19
 
 ### Added
 
-Support for HPE PDUs
+- Support for HPE PDUs
 
 ## [1.29.0] - 2021-10-28
 
