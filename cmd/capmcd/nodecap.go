@@ -540,7 +540,7 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bmcCmds := make(map[*NodeInfo]bmcCmd)
-	var nnl []*NodeInfo
+	var newNodes []*NodeInfo
 	for _, node := range nodes {
 		if !node.Enabled || node.State != string(base.StateReady) {
 			data.Nids = append(data.Nids,
@@ -564,163 +564,44 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		// CAPMC has only two defined controls "accel" and "node".
-		// Need ability to set either one or both.
-		// Continue with validation: controls and values
-		var (
-			powerCtl    []capmc.PowerControl
-			powerCtlCnt int
-			powerLimit  capmc.HpeConfigurePowerLimit
-			rfControl   capmc.RFControl
-		)
+		// Loop through all the controls and generate a powerGen structure
+		// that will be used to generate the payload later
+		pGen, err := generateControls(node, controls)
 
-		// Create PowerControl array that matches size of Redfish
-		// returned PowerControl array. The PATCH needs to include
-		// all elements up to the one being replaced. We can't just
-		// append() to the array. The logic below allows for incoming
-		// controls to be in an arbitrary order (even though by
-		// definition a JSON array is ordered).
-		powerCtl = make([]capmc.PowerControl, node.RfPwrCtlCnt)
-
-		// keep track of CAPMC controls seen (duplicate check)
-		seen := make(map[string]bool)
-		for _, control := range controls {
-			var (
-				min, max int = -1, -1 // default no check
-				ok       bool
-				pc       PowerCap
-			)
-
-			if pc, ok = node.PowerCaps[control.Name]; !ok {
-				log.Printf("Notice: skipping undefined control for NID: %s", control.Name)
-				continue
-			}
-
-			// is control duplicate?
-			if _, ok = seen[control.Name]; ok {
-				data.Nids = append(data.Nids,
-					newPowerCapNidError(node.Nid, 22,
-						fmt.Sprintf("Duplicate control specified: %s", control.Name)))
-				break
-			}
-
-			seen[control.Name] = true
-
-			min = pc.Min
-			max = pc.Max
-
-			// Zero means "disabled" on a near universal level.
-			zero := 0
-			if *control.Val != 0 {
-				if (min != -1) && (*control.Val < min) {
-					data.Nids = append(data.Nids,
-						newPowerCapNidError(node.Nid, 22,
-							fmt.Sprintf("Control (%s) value (%d) is less than minimum (%d)",
-								control.Name,
-								*control.Val,
-								min)))
-					break
-				}
-				if (max != -1) && (*control.Val > max) {
-					data.Nids = append(data.Nids,
-						newPowerCapNidError(node.Nid, 22,
-							fmt.Sprintf("Control (%s) value (%d) is greater than maximum (%d)",
-								control.Name,
-								*control.Val,
-								max)))
-					break
-				}
-
-				if node.RfControlsCnt > 0 {
-					path := node.PowerCaps[control.Name].Path
-					if control.Name == "Node Power Limit" {
-						node.RfPowerURL = path
-					} else {
-						nni := *node
-						nni.RfPowerURL = path
-						node = &nni
-						nnl = append(nnl, node)
-					}
-					rfControl = capmc.RFControl{
-						SetPoint: control.Val,
-					}
-				} else if isHpeApollo6500(node) {
-					powerLimit = capmc.HpeConfigurePowerLimit{
-						PowerLimits: []capmc.HpePowerLimits{
-							{
-								PowerLimitInWatts: control.Val,
-								ZoneNumber:        &zero,
-							},
-						},
-					}
-				} else {
-					powerCtl[pc.PwrCtlIndex] =
-						capmc.PowerControl{
-							PowerLimit: &capmc.PowerLimit{
-								LimitInWatts: control.Val,
-							},
-						}
-				}
-				powerCtlCnt++
-			} else {
-				if node.RfControlsCnt > 0 {
-					path := node.PowerCaps[control.Name].Path
-					if control.Name == "Node Power Limit" {
-						node.RfPowerURL = path
-					} else {
-						nni := *node
-						nni.RfPowerURL = path
-						node = &nni
-						nnl = append(nnl, node)
-					}
-					rfControl = capmc.RFControl{
-						SetPoint: &zero,
-					}
-				} else if isHpeApollo6500(node) {
-					powerLimit = capmc.HpeConfigurePowerLimit{
-						PowerLimits: []capmc.HpePowerLimits{
-							{
-								PowerLimitInWatts: &zero,
-								ZoneNumber:        &zero,
-							},
-						},
-					}
-				} else {
-					powerCtl[pc.PwrCtlIndex] = capmc.PowerControl{
-						PowerLimit: &capmc.PowerLimit{
-							LimitInWatts: &zero,
-						},
-					}
-				}
-				powerCtlCnt++
-			}
+		if err != nil {
+			data.Nids = append(data.Nids,
+				newPowerCapNidError(node.Nid, 22, err.Error()))
+			continue
 		}
 
-		if powerCtlCnt < 1 {
+		if len(pGen) == 0 {
 			data.Nids = append(data.Nids,
 				newPowerCapNidError(node.Nid, 22,
 					"No NID supported controls specified"))
 			continue
 		}
 
-		payload, err := generatePayload(node,
-			powerGen{
-				powerCtl:   powerCtl,
-				powerLimit: powerLimit,
-				controls:   rfControl,
-			})
+		// Loop through each of the controls that need their own action to
+		// generate a json payload to add to the bmcCmds map. The index to the
+		// bmcCmds map is the address of a NodeInfo structure.
+		var payload []byte
+		for n, pg := range pGen {
+			payload, err = generatePayload(n, pg)
 
-		if err != nil {
-			log.Printf("Error: %s", err)
-			continue
-		}
+			if err != nil {
+				log.Printf("Error: %s", err)
+				continue
+			}
 
-		if d.debug {
-			log.Printf("Debug: payload=%s", payload)
-		}
-		bmcCmds[node] = bmcCmd{
-			cmd:     bmcCmdSetPowerCap,
-			payload: payload,
+			if d.debug {
+				log.Printf("Debug: payload=%s", payload)
+			}
+
+			newNodes = append(newNodes, n)
+			bmcCmds[n] = bmcCmd{
+				cmd:     bmcCmdSetPowerCap,
+				payload: payload,
+			}
 		}
 	}
 
@@ -742,8 +623,8 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 	// Only set power caps if all the NIDs, controls, and values were 'good'
 	if data.E == 0 {
 		var failed int
-		if len(nnl) > 0 {
-			nodes = append(nodes, nnl...)
+		if len(newNodes) > 0 {
+			nodes = newNodes
 		}
 		waitNum, waitChan := d.queueBmcCmds(bmcCmds, nodes)
 		for i := 0; i < waitNum; i++ {
@@ -770,6 +651,94 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Error encoding JSON response: %s\n", err)
 	}
+}
+
+func generateControls(node *NodeInfo, controls []capmc.PowerCapControl) (map[*NodeInfo]powerGen, error) {
+	powerCtl := make([]capmc.PowerControl, node.RfPwrCtlCnt)
+	seen := make(map[string]bool)
+	pControls := make(map[*NodeInfo]powerGen)
+
+	for _, control := range controls {
+		var targNode *NodeInfo
+		var (
+			min, max int = -1, -1
+			ok       bool
+			pc       PowerCap
+		)
+
+		if pc, ok = node.PowerCaps[control.Name]; !ok {
+			log.Printf("Notice: skipping undefined control for NID: %s", control.Name)
+			continue
+		}
+
+		if _, ok = seen[control.Name]; ok {
+			errStr := fmt.Sprintf("Duplicate control specified: %s", control.Name)
+			return nil, errors.New(errStr)
+		}
+
+		seen[control.Name] = true
+
+		min = pc.Min
+		max = pc.Max
+		// Trick the marshaller to put a 0 into a json payload by using the
+		// address of a variable that contains a 0.
+		zero := 0
+
+		// The vaule of Zero is used by most vendors as a method of turning off
+		// power capping so it is a valid option.
+		if (min != -1) && (*control.Val < min) && (*control.Val != 0) {
+			errStr := fmt.Sprintf("Control (%s) value (%d) is less than minimum (%d)",
+				control.Name, *control.Val, min)
+			return nil, errors.New(errStr)
+		}
+		if (max != -1) && (*control.Val > max) {
+			errStr := fmt.Sprintf("Control (%s) value (%d) is greater than maximum (%d)",
+				control.Name, *control.Val, max)
+			return nil, errors.New(errStr)
+		}
+
+		if node.RfControlsCnt > 0 {
+			path := node.PowerCaps[control.Name].Path
+			if control.Name == "Node Power Limit" {
+				node.RfPowerURL = path
+				targNode = node
+			} else {
+				nni := *node
+				nni.RfPowerURL = path
+				targNode = &nni
+			}
+
+			pControls[targNode] = powerGen{
+				controls: capmc.RFControl{
+					SetPoint: control.Val,
+				},
+			}
+		} else if isHpeApollo6500(node) {
+			pControls[node] = powerGen{
+				powerLimit: capmc.HpeConfigurePowerLimit{
+					PowerLimits: []capmc.HpePowerLimits{
+						{
+							PowerLimitInWatts: control.Val,
+							ZoneNumber:        &zero,
+						},
+					},
+				},
+			}
+		} else {
+			powerCtl[pc.PwrCtlIndex] =
+				capmc.PowerControl{
+					PowerLimit: &capmc.PowerLimit{
+						LimitInWatts: control.Val,
+					},
+				}
+		}
+	}
+
+	if len(powerCtl) > 0 && powerCtl[0].PowerLimit != nil {
+		pControls[node] = powerGen{powerCtl: powerCtl}
+	}
+
+	return pControls, nil
 }
 
 type powerGen struct {
