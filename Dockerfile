@@ -49,6 +49,10 @@ RUN set -ex && go build -v -i -o /usr/local/bin/capmc-service github.com/Cray-HP
 ### Final Stage ###
 
 FROM arti.dev.cray.com/baseos-docker-master-local/alpine:3.13
+
+RUN set -eux \
+    && apk -U upgrade
+
 LABEL maintainer="Hewlett Packard Enterprise"
 EXPOSE 27777
 STOPSIGNAL SIGTERM
