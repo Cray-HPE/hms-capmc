@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.32.0] - 2022-01-05
+
+### Fixed
+
+- Fix docker file to upgrade image to avoid known CVEs
+
 ## [1.31.0] - 2021-11-24
 
 ### Fixed
