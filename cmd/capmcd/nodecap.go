@@ -708,10 +708,19 @@ func generateControls(node *NodeInfo, controls []capmc.PowerCapControl) (map[*No
 				targNode = &nni
 			}
 
-			pControls[targNode] = powerGen{
-				controls: capmc.RFControl{
-					SetPoint: control.Val,
-				},
+			if *control.Val > 0 {
+				pControls[targNode] = powerGen{
+					controls: capmc.RFControl{
+						SetPoint: control.Val,
+						ControlMode: "Automatic",
+					},
+				}
+			} else {
+				pControls[targNode] = powerGen{
+					controls: capmc.RFControl{
+						ControlMode: "Disabled",
+					},
+				}
 			}
 		} else if isHpeApollo6500(node) {
 			pControls[node] = powerGen{
