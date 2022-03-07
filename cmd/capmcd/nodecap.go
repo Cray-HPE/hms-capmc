@@ -614,7 +614,7 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// There were no supported PowerControls
-	if len(bmcCmds) < 0 {
+	if len(bmcCmds) <= 0 {
 		log.Printf("Info: no supported power capping controls for request")
 		data.E = 22 // EINVAL
 		data.ErrMsg = "No supported power capping controls"
@@ -711,7 +711,7 @@ func generateControls(node *NodeInfo, controls []capmc.PowerCapControl) (map[*No
 			if *control.Val > 0 {
 				pControls[targNode] = powerGen{
 					controls: capmc.RFControl{
-						SetPoint: control.Val,
+						SetPoint:    control.Val,
 						ControlMode: "Automatic",
 					},
 				}
@@ -765,7 +765,8 @@ func generatePayload(node *NodeInfo, pGen powerGen) ([]byte, error) {
 	var power interface{} = nil
 
 	if node.RfControlsCnt > 0 {
-		if pGen.controls.SetPoint == nil {
+		if pGen.controls.SetPoint == nil &&
+			pGen.controls.ControlMode != "Disabled" {
 			return nil, errors.New("missing power limit information")
 		}
 		power = pGen.controls
