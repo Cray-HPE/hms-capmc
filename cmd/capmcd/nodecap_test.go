@@ -1,26 +1,26 @@
-/*
- * MIT License
- *
- * (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+//
+// MIT License
+//
+// (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+//
 
 package main
 
@@ -987,11 +987,12 @@ func TestGeneratePayload(t *testing.T) {
 	}
 
 	goodRfCtl = capmc.RFControl{
-		SetPoint: &oneThousand,
+		SetPoint:    &oneThousand,
+		ControlMode: "Automatic",
 	}
 
 	zeroCtl = capmc.RFControl{
-		SetPoint: &zero,
+		ControlMode: "Disabled",
 	}
 
 	type args struct {
@@ -1110,7 +1111,7 @@ func TestGeneratePayload(t *testing.T) {
 				powerLimit: pLimit,
 				rfCtl:      goodRfCtl,
 			},
-			want:    json.RawMessage(`{"SetPoint":1000}`),
+			want:    json.RawMessage(`{"ControlMode":"Automatic","SetPoint":1000}`),
 			wantErr: false,
 		},
 		{
@@ -1121,7 +1122,7 @@ func TestGeneratePayload(t *testing.T) {
 				powerLimit: pLimit,
 				rfCtl:      goodRfCtl,
 			},
-			want:    json.RawMessage(`{"SetPoint":1000}`),
+			want:    json.RawMessage(`{"ControlMode":"Automatic","SetPoint":1000}`),
 			wantErr: false,
 		},
 		{
@@ -1132,7 +1133,7 @@ func TestGeneratePayload(t *testing.T) {
 				powerLimit: pLimit,
 				rfCtl:      zeroCtl,
 			},
-			want:    json.RawMessage(`{"SetPoint":0}`),
+			want:    json.RawMessage(`{"ControlMode":"Disabled"}`),
 			wantErr: false,
 		},
 	}
@@ -1343,7 +1344,7 @@ func TestGenerateControls(t *testing.T) {
 	wantNode4 := make(map[*NodeInfo]powerGen)
 	wantNode4[&node4] = powerGen{
 		controls: capmc.RFControl{
-			SetPoint: &fiveHundred,
+			SetPoint:    &fiveHundred,
 			ControlMode: "Automatic",
 		},
 	}
@@ -1361,7 +1362,7 @@ func TestGenerateControls(t *testing.T) {
 	wantNode5 := make(map[*NodeInfo]powerGen)
 	wantNode5[&node5] = powerGen{
 		controls: capmc.RFControl{
-			SetPoint: &twoHundred,
+			SetPoint:    &twoHundred,
 			ControlMode: "Automatic",
 		},
 	}
