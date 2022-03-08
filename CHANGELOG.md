@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.33.0] - 2022-01-08
+
+### Fixed
+
+- Ability to control Olympus power capping better
+
 ## [1.32.0] - 2022-01-05
 
 ### Fixed
