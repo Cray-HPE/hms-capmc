@@ -1,26 +1,26 @@
-/*
- * MIT License
- *
- * (C) Copyright [2019-2021] Hewlett Packard Enterprise Development LP
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+//
+// MIT License
+//
+// (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+//
 
 package main
 
@@ -614,7 +614,7 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// There were no supported PowerControls
-	if len(bmcCmds) < 0 {
+	if len(bmcCmds) <= 0 {
 		log.Printf("Info: no supported power capping controls for request")
 		data.E = 22 // EINVAL
 		data.ErrMsg = "No supported power capping controls"
@@ -708,10 +708,19 @@ func generateControls(node *NodeInfo, controls []capmc.PowerCapControl) (map[*No
 				targNode = &nni
 			}
 
-			pControls[targNode] = powerGen{
-				controls: capmc.RFControl{
-					SetPoint: control.Val,
-				},
+			if *control.Val > 0 {
+				pControls[targNode] = powerGen{
+					controls: capmc.RFControl{
+						SetPoint:    control.Val,
+						ControlMode: "Automatic",
+					},
+				}
+			} else {
+				pControls[targNode] = powerGen{
+					controls: capmc.RFControl{
+						ControlMode: "Disabled",
+					},
+				}
 			}
 		} else if isHpeApollo6500(node) {
 			pControls[node] = powerGen{
@@ -756,7 +765,8 @@ func generatePayload(node *NodeInfo, pGen powerGen) ([]byte, error) {
 	var power interface{} = nil
 
 	if node.RfControlsCnt > 0 {
-		if pGen.controls.SetPoint == nil {
+		if pGen.controls.SetPoint == nil &&
+			pGen.controls.ControlMode != "Disabled" {
 			return nil, errors.New("missing power limit information")
 		}
 		power = pGen.controls

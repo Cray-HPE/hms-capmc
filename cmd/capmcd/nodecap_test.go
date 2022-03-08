@@ -1,26 +1,26 @@
-/*
- * MIT License
- *
- * (C) Copyright [2019-2021] Hewlett Packard Enterprise Development LP
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+//
+// MIT License
+//
+// (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+//
 
 package main
 
@@ -987,11 +987,12 @@ func TestGeneratePayload(t *testing.T) {
 	}
 
 	goodRfCtl = capmc.RFControl{
-		SetPoint: &oneThousand,
+		SetPoint:    &oneThousand,
+		ControlMode: "Automatic",
 	}
 
 	zeroCtl = capmc.RFControl{
-		SetPoint: &zero,
+		ControlMode: "Disabled",
 	}
 
 	type args struct {
@@ -1110,7 +1111,7 @@ func TestGeneratePayload(t *testing.T) {
 				powerLimit: pLimit,
 				rfCtl:      goodRfCtl,
 			},
-			want:    json.RawMessage(`{"SetPoint":1000}`),
+			want:    json.RawMessage(`{"ControlMode":"Automatic","SetPoint":1000}`),
 			wantErr: false,
 		},
 		{
@@ -1121,7 +1122,7 @@ func TestGeneratePayload(t *testing.T) {
 				powerLimit: pLimit,
 				rfCtl:      goodRfCtl,
 			},
-			want:    json.RawMessage(`{"SetPoint":1000}`),
+			want:    json.RawMessage(`{"ControlMode":"Automatic","SetPoint":1000}`),
 			wantErr: false,
 		},
 		{
@@ -1132,7 +1133,7 @@ func TestGeneratePayload(t *testing.T) {
 				powerLimit: pLimit,
 				rfCtl:      zeroCtl,
 			},
-			want:    json.RawMessage(`{"SetPoint":0}`),
+			want:    json.RawMessage(`{"ControlMode":"Disabled"}`),
 			wantErr: false,
 		},
 	}
@@ -1343,7 +1344,8 @@ func TestGenerateControls(t *testing.T) {
 	wantNode4 := make(map[*NodeInfo]powerGen)
 	wantNode4[&node4] = powerGen{
 		controls: capmc.RFControl{
-			SetPoint: &fiveHundred,
+			SetPoint:    &fiveHundred,
+			ControlMode: "Automatic",
 		},
 	}
 	ctl4 := make([]capmc.PowerCapControl, 1)
@@ -1360,7 +1362,8 @@ func TestGenerateControls(t *testing.T) {
 	wantNode5 := make(map[*NodeInfo]powerGen)
 	wantNode5[&node5] = powerGen{
 		controls: capmc.RFControl{
-			SetPoint: &twoHundred,
+			SetPoint:    &twoHundred,
+			ControlMode: "Automatic",
 		},
 	}
 	ctl5 := make([]capmc.PowerCapControl, 5)
@@ -1403,6 +1406,27 @@ func TestGenerateControls(t *testing.T) {
 	pc7Ctl[0] = capmc.PowerControl{PowerLimit: &capmc.PowerLimit{LimitInWatts: &zero}}
 	ctl7 := make([]capmc.PowerCapControl, 1)
 	ctl7[0] = capmc.PowerCapControl{Name: "Bad control name", Val: &zero}
+
+	// New Redfish controls power capping (Bard Peak), multi control, disable
+	var pc8 = make(map[string]PowerCap)
+	pc8["Node Power Limit"] = PowerCap{Name: "Node Power Limit", Path: "/redfish/v1/Chassis/Node/Controls/NodePowerLimit", Min: 200, Max: 1000, PwrCtlIndex: 0}
+	pc8["GPU0 Power Limit"] = PowerCap{Name: "GPU0 Power Limit", Path: "/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit", Min: 100, Max: 400, PwrCtlIndex: 0}
+	pc8["GPU1 Power Limit"] = PowerCap{Name: "GPU1 Power Limit", Path: "/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit", Min: 100, Max: 400, PwrCtlIndex: 0}
+	pc8["GPU2 Power Limit"] = PowerCap{Name: "GPU2 Power Limit", Path: "/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit", Min: 100, Max: 400, PwrCtlIndex: 0}
+	pc8["GPU3 Power Limit"] = PowerCap{Name: "GPU3 Power Limit", Path: "/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit", Min: 100, Max: 400, PwrCtlIndex: 0}
+	node8 := NodeInfo{RfPowerURL: "/redfish/v1/Chassis/Node/Controls/NodePowerLimit", RfPwrCtlCnt: 0, RfControlsCnt: 5, PowerCaps: pc8}
+	wantNode8 := make(map[*NodeInfo]powerGen)
+	wantNode8[&node8] = powerGen{
+		controls: capmc.RFControl{
+			ControlMode: "Disabled",
+		},
+	}
+	ctl8 := make([]capmc.PowerCapControl, 5)
+	ctl8[0] = capmc.PowerCapControl{Name: "Node Power Limit", Val: &zero}
+	ctl8[1] = capmc.PowerCapControl{Name: "GPU0 Power Limit", Val: &zero}
+	ctl8[2] = capmc.PowerCapControl{Name: "GPU1 Power Limit", Val: &zero}
+	ctl8[3] = capmc.PowerCapControl{Name: "GPU2 Power Limit", Val: &zero}
+	ctl8[4] = capmc.PowerCapControl{Name: "GPU3 Power Limit", Val: &zero}
 
 	type args struct {
 		node     *NodeInfo
@@ -1502,6 +1526,15 @@ func TestGenerateControls(t *testing.T) {
 				controls: ctl7,
 			},
 			want:    wantNode7,
+			wantErr: false,
+		},
+		{
+			name: "disable",
+			args: args{
+				node:     &node8,
+				controls: ctl8,
+			},
+			want:    wantNode8,
 			wantErr: false,
 		},
 	}
