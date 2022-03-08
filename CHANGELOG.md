@@ -28,7 +28,7 @@ Security - in case of vulnerabilities
 
 ### Fixed
 
-- Ability to control Olympus power capping better
+- Enable power capping automatically for Olympus nodes
 
 ## [1.32.0] - 2022-01-05
 
