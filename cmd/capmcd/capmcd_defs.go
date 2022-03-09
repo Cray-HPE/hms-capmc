@@ -33,7 +33,6 @@ import (
 	"time"
 
 	base "github.com/Cray-HPE/hms-base"
-	"github.com/Cray-HPE/hms-capmc/internal/tsdb"
 	"github.com/Cray-HPE/hms-certs/pkg/hms_certs"
 	compcreds "github.com/Cray-HPE/hms-compcredentials"
 	sstorage "github.com/Cray-HPE/hms-securestorage"
@@ -239,7 +238,6 @@ type CapmcD struct {
 	OnUnsupportedAction string
 	ReinitActionSeq     []string
 	WPool               *base.WorkerPool
-	db                  tsdb.TSDB
 	ss                  sstorage.SecureStorage
 	ccs                 *compcreds.CompCredStore
 	reservation         reservation.Production
@@ -299,6 +297,18 @@ type PowerCap struct {
 	// PwrCtlIndex is the zero-based array index in the Redfish
 	// Power.PowerControl array this 'control' corresponds to.
 	PwrCtlIndex int
+}
+
+const unlimited int = -1
+
+// defaultNodeRules can be overriden via config file.
+// TODO Determine appropriate defaults. The values below are guesses.
+var defaultNodeRules = PowerOpRules{
+	MinOffTime: unlimited,
+	MaxOffTime: unlimited,
+	Off:        OpRule{Latency: 60, MaxReq: unlimited},
+	On:         OpRule{Latency: 120, MaxReq: unlimited},
+	Reinit:     OpRule{Latency: 180, MaxReq: unlimited},
 }
 
 // PowerOpRules defines a set of rules that apply to power operations.

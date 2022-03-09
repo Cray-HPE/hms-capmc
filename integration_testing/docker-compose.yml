@@ -1,9 +1,0 @@
-synthetic-hsm:
-  build: ./synthetic-hsm
-  ports:
-   - "5001:5001"
-  volumes:
-   - .:/code
-pmdb-loader:
-  build: ./pmdb-loader
-  

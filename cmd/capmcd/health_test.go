@@ -88,7 +88,7 @@ func TestCapmcdLiveness(t *testing.T) {
 		adapter.LookupNum = 0
 		t.Run(tt.name, func(t *testing.T) {
 			// create the http request
-			req, err := http.NewRequest(tt.method, capmc.Liveness, nil)
+			req, err := http.NewRequest(tt.method, capmc.LivenessV1, nil)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -155,7 +155,7 @@ func TestCapmcdReadiness(t *testing.T) {
 		adapter.LookupNum = 0
 		t.Run(tt.name, func(t *testing.T) {
 			// create the http request
-			req, err := http.NewRequest(tt.method, capmc.Liveness, nil)
+			req, err := http.NewRequest(tt.method, capmc.LivenessV1, nil)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -222,7 +222,7 @@ func TestCapmcdHealth(t *testing.T) {
 		adapter.LookupNum = 0
 		t.Run(tt.name, func(t *testing.T) {
 			// create the http request
-			req, err := http.NewRequest(tt.method, capmc.Liveness, nil)
+			req, err := http.NewRequest(tt.method, capmc.LivenessV1, nil)
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -237,7 +237,7 @@ func TestDoXnameOff(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			req, err := http.NewRequest(http.MethodPost, capmc.XnameOff, tc.body)
+			req, err := http.NewRequest(http.MethodPost, capmc.XnameOffV1, tc.body)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -493,7 +493,7 @@ func TestDoXnameStatus(t *testing.T) {
 	for _, tc := range tests {
 		adapter.LookupNum = 0
 		t.Run(tc.name, func(t *testing.T) {
-			req, err := http.NewRequest(tc.method, capmc.XnameStatus, tc.body)
+			req, err := http.NewRequest(tc.method, capmc.XnameStatusV1, tc.body)
 			if err != nil {
 				t.Fatal(err)
 			}
