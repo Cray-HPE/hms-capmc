@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.33.0] - 2022-01-08
+
+### Fixed
+
+- Enable power capping automatically for Olympus nodes
+
 ## [1.32.0] - 2022-01-05
 
 ### Fixed
