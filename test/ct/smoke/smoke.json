@@ -1,0 +1,41 @@
+{
+  "smoke_test_name": "CAPMC-smoke-tests",
+  "default_base_url": "http://cray-capmc/",
+  "test_paths": [
+    {
+      "path": "capmc/v1/health",
+      "expected_status_code": 200,
+      "method": "GET",
+      "body": null,
+      "headers": {}
+    },
+    {
+      "path": "capmc/v1/readiness",
+      "expected_status_code": 204,
+      "method": "GET",
+      "body": null,
+      "headers": {}
+    },
+    {
+      "path": "capmc/v1/liveness",
+      "expected_status_code": 204,
+      "method": "GET",
+      "body": null,
+      "headers": {}
+    },
+    {
+      "path": "capmc/v1/get_power_cap",
+      "expected_status_code": 200,
+      "method": "POST",
+      "body": null,
+      "headers": {}
+    },
+    {
+      "path": "capmc/v1/get_power_cap_capabilities",
+      "expected_status_code": 200,
+      "method": "POST",
+      "body": null,
+      "headers": {}
+    }
+  ]
+}

@@ -73,6 +73,8 @@ ENV LOG_LEVEL="INFO"
 ENV VAULT_ADDR="http://cray-vault.vault:8200"
 ENV VAULT_SKIP_VERIFY="true"
 
+COPY configs configs
+
 # nobody 65534:65534
 USER 65534:65534
 
