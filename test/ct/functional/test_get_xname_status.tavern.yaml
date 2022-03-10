@@ -1,6 +1,6 @@
 # MIT License
 
-# (C) Copyright [2020-2021] Hewlett Packard Enterprise Development LP
+# (C) Copyright [2020-2022] Hewlett Packard Enterprise Development LP
 
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -35,11 +35,9 @@ stages:
   # 2. POST /get_xname_status empty payload API response body
   - name: Get the status of all xnames
     request:
-      url: "{base_url}/capmc/capmc/v1/get_xname_status"
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
       json: {"source": "hsm"}
       method: POST
-      headers:
-        Authorization: "Bearer {access_token}"
       verify: !bool "{verify}"
     response:
       status_code: 200
