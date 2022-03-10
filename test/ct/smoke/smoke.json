@@ -24,17 +24,24 @@
       "headers": {}
     },
     {
-      "path": "capmc/v1/get_power_cap",
+      "path": "capmc/v1/get_xname_status",
       "expected_status_code": 200,
       "method": "POST",
-      "body": null,
+      "body": "{\"filter\":\"show_all\"}",
       "headers": {}
     },
     {
       "path": "capmc/v1/get_power_cap_capabilities",
       "expected_status_code": 200,
       "method": "POST",
-      "body": null,
+      "body": "{\"nids\":[1]}",
+      "headers": {}
+    },
+    {
+      "path": "capmc/v1/get_power_cap",
+      "expected_status_code": 200,
+      "method": "POST",
+      "body": "{\"nids\":[1]}",
       "headers": {}
     }
   ]

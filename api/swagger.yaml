@@ -1264,19 +1264,14 @@ paths:
                   Manager (HSM).  Any error reported by an attempt to access
                   the HSM will be included in this description.
                 type: string
-              tmdb:
-                description: Status of the connection to the telemetry database.
-                type: string
             example:
               readiness: 'Service Degraded'
               vault: 'No connection established to vault'
               hsm: 'HSM Ready'
-              tmdb: 'Telemetry database connection established'
             required:
               - readiness
               - vault
               - hsm
-              - tmdb
         '405':
           description: >-
             [Method Not Allowed](http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.6)

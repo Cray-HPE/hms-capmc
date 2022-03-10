@@ -33,10 +33,9 @@ import (
 
 // HealthResponse - used to report service health stats
 type HealthResponse struct {
-	Readiness      string `json:"readiness"`
-	Vault          string `json:"vault"`
-	HSMConnection  string `json:"hsm"`
-	TMDBConnection string `json:"tmdb"`
+	Readiness     string `json:"readiness"`
+	Vault         string `json:"vault"`
+	HSMConnection string `json:"hsm"`
 }
 
 // doHealth - returns useful information about the service to the user
@@ -101,7 +100,7 @@ func (d *CapmcD) doHealth(w http.ResponseWriter, r *http.Request) {
 	// good, call it 'Ready', if some are OK and others not, call it
 	// 'Degraded', and if none are ok reply 'Not Ready'
 	const (
-		DependenciesAll  = 3
+		DependenciesAll  = 2
 		DependenciesNone = 0
 	)
 	if numDep == DependenciesAll {

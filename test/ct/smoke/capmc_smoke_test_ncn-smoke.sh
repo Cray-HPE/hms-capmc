@@ -140,9 +140,7 @@ function main()
     for URL_ARGS in \
         "apis/capmc/capmc/v1/health" \
         "apis/capmc/capmc/v1/liveness" \
-        "apis/capmc/capmc/v1/readiness" \
-        "apis/capmc/capmc/v1/get_node_rules" \
-        "apis/capmc/capmc/v1/get_system_parameters"
+        "apis/capmc/capmc/v1/readiness"
     do
         URL=$(url "${URL_ARGS}")
         URL_RET=$?
@@ -158,12 +156,10 @@ function main()
 
     # POST tests
     for URL_ARGS in \
-        "apis/capmc/capmc/v1/get_node_rules" \
-        "apis/capmc/capmc/v1/get_node_status" \
-        "apis/capmc/capmc/v1/get_nid_map" \
+
         "apis/capmc/capmc/v1/get_power_cap" \
         "apis/capmc/capmc/v1/get_power_cap_capabilities" \
-        "apis/capmc/capmc/v1/get_system_parameters"
+        "apis/capmc/capmc/v1/get_xname_status"
     do
         URL=$(url "${URL_ARGS}")
         URL_RET=$?
