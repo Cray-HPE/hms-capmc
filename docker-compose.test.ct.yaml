@@ -19,7 +19,6 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - cray-capmc
-      - cray-smd
     entrypoint: entrypoint.sh functional -c /src/app/tavern_global_config_ct_test.yaml -p /src/app
     networks:
       - capmc
