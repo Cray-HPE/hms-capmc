@@ -1,0 +1,189 @@
+# Copyright 2019-2020 Hewlett Packard Enterprise Development LP
+#
+# This config file describes CAPMC operational configuration parameters.
+#
+
+# The NodeRules section describes rules/guidelines for CAPMC node control.
+# The get_note_rules API returns these values.
+[NodeRules]
+
+# Minimum time, in seconds, which a node must reamin in the off state
+# after a shutdown and power off operation. Use -1 for no limit.
+MinOffTime = -1
+
+# Maximum time, in seconds, which a node may be in the off state. Use -1
+# for no limit.
+MaxOffTime = -1
+
+# The NodeRules.Off subsection describes rules/guidelines for node_off.
+[NodeRules.Off]
+
+# Approximate time, in seconds, for a node cleanly shutdown and power off.
+Latency = 60
+
+# Maximum number of nodes which may be powered off at once. Use -1 for no limit.
+MaxRequest = -1
+
+# The NodeRules.On subsection describes rules/guidelines for node_on.
+[NodeRules.On]
+
+# Approximate time, in seconds, for a node to power on and boot to Ready state.
+Latency = 120
+
+# Maximum number of nodes which may be powered on at once. Use -1 for no limit.
+MaxRequest = -1
+
+# The NodeRules.Reinit subsection describes rules/guidelines for node_reint.
+[NodeRules.Reinit]
+
+# Approximate time, in seconds, for a node cleanly shutdown, power off, power
+# on, and boot to Ready state.
+Latency = 180
+
+# Maximum number of nodes allowed to be included in a node reinit request.
+# Use -1 for no limit.
+MaxRequest = -1
+
+# The PowerControls section describes guidelines/policy/rules applying
+# generally to CAPMC power off (down) / on (up) of hardware. These values
+# should only be edited under direction from Cray service personnel.
+[PowerControls]
+
+# The PowerControls.ForceOff subsection describes guidelines/policy/rules
+# applying to a force off action.
+[PowerControls.ForceOff]
+
+# Block components with these roles from power force off actions.
+# BlockRole = ["Management"]
+
+# An ordered list desribing the power force off sequence for components.
+ComponentSequence = ["Node", "ComputeModule", "HSNBoard", "RouterModule", "Chassis", "CabinetPDUOutlet", "CabinetPDUPowerConnector"]
+
+# Mapping of CAPMC force off to Redfish ResetType.
+ResetType = ["ForceOff"]
+
+# The PowerControls.ForceOn subsection describes guidelines/policy/rules
+# applying to a force on action.
+[PowerControls.ForceOn]
+
+# Block components with these roles from power force on actions.
+# BlockRole = ["Management"]
+
+# An ordered list desribing the power force on sequence for components.
+ComponentSequence = ["CabinetPDUPowerConnector", "CabinetPDUOutlet", "Chassis", "RouterModule", "HSNBoard", "ComputeModule", "Node"]
+
+# Mapping of CAPMC force on to Redfish ResetType.
+ResetType = ["ForceOn"]
+
+# The PowerControls.ForceRestart subsection describes guidelines/policy/rules
+# applying to a force restart (reinit) action.
+[PowerControls.ForceRestart]
+
+# Block components with these roles from power force restart actions.
+# BlockRole = ["Management"]
+
+# An ordered list desribing the power force restart sequence for components.
+ComponentSequence = ["Node"]
+
+# Mapping of CAPMC force restart (reinit) to Redfish ResetType.
+ResetType = ["ForceRestart", "PowerCycle"]
+
+# The PowerControls.off subsection describes guidelines/policy/rules
+# applying to an off action.
+[PowerControls.Off]
+
+# Block components with these roles from power off actions.
+# BlockRole = ["Management"]
+
+# An ordered list desribing the power off sequence for components.
+ComponentSequence = ["Node", "ComputeModule", "HSNBoard", "RouterModule", "Chassis", "CabinetPDUOutlet", "CabinetPDUPowerConnector"]
+
+# Mapping of CAPMC (graceful) off to Redfish ResetType.
+ResetType = ["GracefulShutdown", "PushPowerButton", "Off"]
+
+# The PowerControls.On subsection describes guidelines/policy/rules
+# applying to an on action.
+[PowerControls.On]
+
+# Block components with these roles from power on actions.
+# BlockRole = ["Management"]
+
+# An ordered list desribing the power on sequence for components.
+ComponentSequence = ["CabinetPDUPowerConnector", "CabinetPDUOutlet", "Chassis", "RouterModule", "HSNBoard", "ComputeModule", "Node"]
+
+# Mapping of CAPMC (graceful) on to Redfish ResetType.
+ResetType = ["On"]
+
+# The PowerControls.Resetart subsection describes guidelines/policy/rules
+# applying to a restart (AKA reinit) action.
+[PowerControls.Restart]
+
+# Block components with these roles from power restart actions.
+# BlockRole = ["Management"]
+
+# An ordered list desribing the power restart sequence for components.
+ComponentSequence = ["Node"]
+
+# Mapping of CAPMC (graceful) restart to Redfish ResetType.
+ResetType = ["GracefulRestart"]
+
+# NOTE NMI is a future CAPMC enhancement. Actual configuration TBD.
+[PowerControls.NMI]
+
+# Block components with these roles from a NMI action.
+# NOTE: "" covers any component without an assigned role.
+# BlockRole = ["Management"]
+
+# An ordered list desribing the NMI sequence for components.
+ComponentSequence = ["Node"]
+
+# Mapping of CAPMC NMI to Redfish ResetType.
+ResetType = ["Nmi"]
+
+[SystemParameters]
+
+# Administratively defined upper limit on system power
+PowerCapTarget = 0
+
+# System power level, which if crossed, will result in Cray management software
+# emitting over power budget warnings
+PowerThreshold = 0
+
+# Additional static system wide power overhead which is unreported, specified
+# in watts
+StaticPower = 0
+
+# True if out-of-band HSS power ramp rate limiting features are enabled
+RampLimited = false
+
+# Administratively defined maximum rate of change (increasing or decreasing) in
+# system wide power consumption, specified in watts per minute
+RampLimit = 2000000
+
+# Administratively defined minimum allowable system power consumption,
+# specified in watts
+PowerBandMin = 0
+
+# Administratively defined maximum allowable system power consumption,
+# specified in watts
+PowerBandMax = 0
+
+[CapmcConfiguration]
+
+# Number of workers that are available to execute in parallel for Redfish calls
+# ActionMaxWorkers = 1000
+
+# CAPMC behavior for a power action that target hardware does not support
+# Valid options: simulate, ignore, error
+#   simulate - For components that do not support GracefulRestart or
+#              ForceRestart, simulate will turn the node Off then On again
+#   ignore - Skip the component but notify the user it was ignored
+#   error - Halt the power operation and notify the user
+# OnUnsupportedAction = "simulate"
+
+# CAPMC will check power state of components when an Off request has been
+# issued. CAPMC will return from the Off request when it has verified that the
+# target components are off or if the number of retries have been exceeded.
+# WaitForOffRetries = 4
+# Amount of time to sleep between checks of component power state for Off.
+# WaitForOffSleep = 15

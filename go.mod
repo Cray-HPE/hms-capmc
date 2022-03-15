@@ -9,7 +9,5 @@ require (
 	github.com/Cray-HPE/hms-compcredentials v1.11.2
 	github.com/Cray-HPE/hms-securestorage v1.12.2
 	github.com/Cray-HPE/hms-smd v1.30.16
-	github.com/lib/pq v1.9.0
-	github.com/sirupsen/logrus v1.8.1
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.0 // indirect
 )

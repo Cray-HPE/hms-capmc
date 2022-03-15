@@ -1,6 +1,8 @@
+#!/bin/bash
+
 # MIT License
 #
-# (C) Copyright [2021-2022] Hewlett Packard Enterprise Development LP
+# (C) Copyright [2022] Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -14,27 +16,33 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 # THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
 # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-# Service
-NAME ?= cray-capmc
-VERSION ?= $(shell cat .version)
+# wait-for.sh; used by runCT.sh to make sure HSM has been populated with data before running.
+echo "Initiating..."
+URL="http://cray-smd:27779/hsm/v2/State/Components"
+sentry=1
+limit=200
+while :; do
+  length=$(curl --silent ${URL} | jq '.Components | length')
 
-all : image unittest ct ct_image
+  if [ ! -z "$length" ] && [ "$length" -gt "0" ]; then
+    echo $URL" is available"
+    break
+  fi
 
-image:
-	docker build ${NO_CACHE} --pull ${DOCKER_ARGS} --tag '${NAME}:${VERSION}' .
+  if [ "$sentry" -gt "$limit" ]; then
+    echo "Failed to connect for $limit, exiting"
+    exit 1
+  fi
 
-unittest:
-	./runUnitTest.sh
+  ((sentry++))
 
-ct:
-	./runCT.sh
+  echo $URL" is unavailable - sleeping"
+  sleep 1
 
-
-ct_image:
-	docker build --no-cache -f test/ct/Dockerfile test/ct/ --tag cray-capmc-test:${VERSION}
+done

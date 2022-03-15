@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2021] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -29,16 +29,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/Cray-HPE/hms-capmc/internal/tsdb"
 )
 
 // HealthResponse - used to report service health stats
 type HealthResponse struct {
-	Readiness      string `json:"readiness"`
-	Vault          string `json:"vault"`
-	HSMConnection  string `json:"hsm"`
-	TMDBConnection string `json:"tmdb"`
+	Readiness     string `json:"readiness"`
+	Vault         string `json:"vault"`
+	HSMConnection string `json:"hsm"`
 }
 
 // doHealth - returns useful information about the service to the user
@@ -99,24 +96,11 @@ func (d *CapmcD) doHealth(w http.ResponseWriter, r *http.Request) {
 		numDep++
 	}
 
-	// d.tsdb - query telemetry database connection status
-	if tsdb.DB == nil {
-		stats.TMDBConnection = "Telemetry database connection not initialized"
-	} else {
-		perr := tsdb.DB.Ping()
-		if perr != nil {
-			stats.TMDBConnection = fmt.Sprintf("Telemetry database connection error:%s", perr.Error())
-		} else {
-			stats.TMDBConnection = "Telemetry database connection established"
-			numDep++
-		}
-	}
-
 	// Look at the overall readiness of the service.  If all dependencies are
 	// good, call it 'Ready', if some are OK and others not, call it
 	// 'Degraded', and if none are ok reply 'Not Ready'
 	const (
-		DependenciesAll  = 3
+		DependenciesAll  = 2
 		DependenciesNone = 0
 	)
 	if numDep == DependenciesAll {

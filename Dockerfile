@@ -48,7 +48,7 @@ RUN set -ex && go build -v -i -o /usr/local/bin/capmc-service github.com/Cray-HP
 
 ### Final Stage ###
 
-FROM artifactory.algol60.net/docker.io/library/alpine:3.13
+FROM artifactory.algol60.net/docker.io/library/alpine:3.15
 
 RUN set -eux \
     && apk -U upgrade
@@ -61,20 +61,19 @@ STOPSIGNAL SIGTERM
 # Note: The name used here must match that used in the builder stage.
 COPY --from=builder /usr/local/bin/capmc-service /usr/local/bin
 
-COPY kubernetes/cray-hms-capmc/files/config.toml /usr/local/etc/capmc-service/default/config.toml
+COPY files/config.toml /usr/local/etc/capmc-service/default/config.toml
 
 # Setup environment variables.
 ENV HSM_URL=https://api-gateway.default.svc.cluster.local/apis/smd
 ENV CAPMC_CONFIG=/usr/local/etc/capmc-service/default/config.toml
-ENV CAPMC_CA_URI=
-ENV DB_HOSTNAME="sma-postgres-cluster.sma.svc.cluster.local"
-ENV DB_PORT="5432"
+#ENV CAPMC_CA_URI= #
 ENV LOG_LEVEL="INFO"
-ENV DATA_IMPLEMENTATION="POSTGRES"
 
 # Used by the HMS secure storage pkg
 ENV VAULT_ADDR="http://cray-vault.vault:8200"
 ENV VAULT_SKIP_VERIFY="true"
+
+COPY configs configs
 
 # nobody 65534:65534
 USER 65534:65534

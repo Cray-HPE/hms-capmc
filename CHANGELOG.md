@@ -24,6 +24,38 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [2.0.0] - 2022-03-10
+
+### Changed
+
+- converted builds from Jenkins to Github actions
+- removed test RPM
+- created test container
+- refactored smoke/functional tests
+
+### Removed
+
+- Deprecated all paths that are not part of the go-forward plan for CAPMC.
+
+- /get_node_rules
+- /get_node_status
+- /node_on
+- /node_off
+- /node_reinit
+- /node_status
+- /group_reinit
+- /get_group_status
+- /group_on
+- /group_off
+- /get_node_energy
+- /get_node_energy_stats
+- /get_node_energy_counter
+- /get_system_parameters
+- /get_system_power
+- /get_system_power_details
+- /emergency_power_off
+- /get_nid_map
+
 ## [1.33.0] - 2022-01-08
 
 ### Fixed

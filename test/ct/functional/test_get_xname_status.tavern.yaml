@@ -1,0 +1,120 @@
+# MIT License
+
+# (C) Copyright [2020-2022] Hewlett Packard Enterprise Development LP
+
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+
+# Tavern test cases for the Cray Advanced Platform Monitoring and Control (CAPMC) get_xname_status API.
+# Author: Mitch Schooler
+# Service: Cray Advanced Platform Monitoring and Control
+
+# HMS test metrics test cases: 2
+# 1. POST /get_xname_status empty payload API response code
+# 2. POST /get_xname_status empty payload API response body
+---
+test_name: Verify get_xname_status POST method with empty payload
+
+stages:
+  # 1. POST /get_xname_status empty payload API response code
+  # 2. POST /get_xname_status empty payload API response body
+  - name: Get the status of all xnames
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"source": "hsm"}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "on":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "off":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "halt":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "standby":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "ready":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "disabled":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "flags":
+                type: map
+                required: False
+                mapping:
+                  key:
+                    type: seq
+                    matching: all
+                    required: False
+                    sequence:
+                      - type: int
+                        unique: True
+        function: tavern.testutils.helpers:validate_content
+        extra_kwargs:
+          comparisons:
+            # response body should have at least one node status and not only "e" and "err_msg" keys
+            - jmespath: "length(keys(@))"
+              operator: "gt"
+              expected: 2

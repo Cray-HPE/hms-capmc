@@ -564,47 +564,47 @@ func TestDoPowerCapCapabilities(t *testing.T) {
 		retBody io.Reader
 	}{
 		{
-			"Get", http.MethodGet, capmc.PowerCapCapabilities,
+			"Get", http.MethodGet, capmc.PowerCapCapabilitiesV1,
 			nil,
 			http.StatusMethodNotAllowed,
 			bytes.NewBuffer(json.RawMessage(GetNotAllowedJSON)),
 		}, {
-			"Put", http.MethodPut, capmc.PowerCapCapabilities,
+			"Put", http.MethodPut, capmc.PowerCapCapabilitiesV1,
 			nil,
 			http.StatusMethodNotAllowed,
 			bytes.NewBuffer(json.RawMessage(PutNotAllowedJSON)),
 		}, {
-			"Post empty", http.MethodPost, capmc.PowerCapCapabilities,
+			"Post empty", http.MethodPost, capmc.PowerCapCapabilitiesV1,
 			bytes.NewBufferString(""),
 			http.StatusBadRequest,
 			bytes.NewBuffer(json.RawMessage(`{"e":400,"err_msg":"Bad Request: JSON: EOF"}`)),
 		}, {
-			"Post empty body", http.MethodPost, capmc.PowerCapCapabilities,
+			"Post empty body", http.MethodPost, capmc.PowerCapCapabilitiesV1,
 			bytes.NewBuffer(json.RawMessage(`{"nids":[]}`)),
 			http.StatusOK,
 			bytes.NewBuffer(json.RawMessage(loadTestDataBytes(t, "power_cap_cap_case3.input"))),
 		}, {
-			"Post w/nids", http.MethodPost, capmc.PowerCapCapabilities,
+			"Post w/nids", http.MethodPost, capmc.PowerCapCapabilitiesV1,
 			bytes.NewBuffer(json.RawMessage(`{"nids":[1,2,3,4,9,1002,1003,1004,1005]}`)),
 			http.StatusOK,
 			bytes.NewBuffer(json.RawMessage(loadTestDataBytes(t, "power_cap_cap_case4.input"))),
 		}, {
-			"Post w/ only bad nids", http.MethodPost, capmc.PowerCapCapabilities,
+			"Post w/ only bad nids", http.MethodPost, capmc.PowerCapCapabilitiesV1,
 			bytes.NewBuffer(json.RawMessage(`{"nids":[5,6,7,8,1000,1001,1006,1007]}`)),
 			http.StatusOK,
 			bytes.NewBuffer(json.RawMessage(loadTestDataBytes(t, "power_cap_cap_case5.input"))),
 		}, {
-			"Post w/ mixed good and bad nids", http.MethodPost, capmc.PowerCapCapabilities,
+			"Post w/ mixed good and bad nids", http.MethodPost, capmc.PowerCapCapabilitiesV1,
 			bytes.NewBuffer(json.RawMessage(`{"nids":[1,2,5,6,1002,1003,1006,1007]}`)),
 			http.StatusOK,
 			bytes.NewBuffer(json.RawMessage(loadTestDataBytes(t, "power_cap_cap_case6.input"))),
 		}, {
-			"Delete", http.MethodDelete, capmc.PowerCapCapabilities,
+			"Delete", http.MethodDelete, capmc.PowerCapCapabilitiesV1,
 			nil,
 			http.StatusMethodNotAllowed,
 			bytes.NewBuffer(json.RawMessage(DeleteNotAllowedJSON)),
 		}, {
-			"Connect", http.MethodConnect, capmc.PowerCapCapabilities,
+			"Connect", http.MethodConnect, capmc.PowerCapCapabilitiesV1,
 			nil,
 			http.StatusMethodNotAllowed,
 			bytes.NewBuffer(json.RawMessage(ConnectNotAllowedJSON)),
@@ -664,28 +664,28 @@ func TestDoPowerCapGet(t *testing.T) {
 		{
 			name:    "Get",
 			method:  http.MethodGet,
-			path:    capmc.PowerCapGet,
+			path:    capmc.PowerCapGetV1,
 			body:    nil,
 			ret:     http.StatusMethodNotAllowed,
 			hsmMock: nil,
 		}, {
 			name:    "Put",
 			method:  http.MethodPut,
-			path:    capmc.PowerCapGet,
+			path:    capmc.PowerCapGetV1,
 			body:    nil,
 			ret:     http.StatusMethodNotAllowed,
 			hsmMock: nil,
 		}, {
 			name:    "Post empty",
 			method:  http.MethodPost,
-			path:    capmc.PowerCapGet,
+			path:    capmc.PowerCapGetV1,
 			body:    bytes.NewBufferString(""),
 			ret:     http.StatusBadRequest,
 			hsmMock: nil,
 		}, {
 			name:   "Post empty body",
 			method: http.MethodPost,
-			path:   capmc.PowerCapGet,
+			path:   capmc.PowerCapGetV1,
 			body:   bytes.NewBuffer(json.RawMessage(`{}`)),
 			ret:    http.StatusOK,
 			hsmMock: &hsmMock{
@@ -701,7 +701,7 @@ func TestDoPowerCapGet(t *testing.T) {
 		}, {
 			name:   "Post empty nid list",
 			method: http.MethodPost,
-			path:   capmc.PowerCapGet,
+			path:   capmc.PowerCapGetV1,
 			body:   bytes.NewBuffer(json.RawMessage(`{"nids":[]}`)),
 			ret:    http.StatusOK,
 			hsmMock: &hsmMock{
@@ -717,7 +717,7 @@ func TestDoPowerCapGet(t *testing.T) {
 		}, {
 			name:   "Post w/nids",
 			method: http.MethodPost,
-			path:   capmc.PowerCapGet,
+			path:   capmc.PowerCapGetV1,
 			body:   bytes.NewBuffer(json.RawMessage(`{"nids":[1,2,4,8,16,17,18,19]}`)),
 			ret:    http.StatusOK,
 			hsmMock: &hsmMock{
@@ -733,14 +733,14 @@ func TestDoPowerCapGet(t *testing.T) {
 		}, {
 			name:    "Delete",
 			method:  http.MethodDelete,
-			path:    capmc.PowerCapGet,
+			path:    capmc.PowerCapGetV1,
 			body:    nil,
 			ret:     http.StatusMethodNotAllowed,
 			hsmMock: nil,
 		}, {
 			name:    "Connect",
 			method:  http.MethodConnect,
-			path:    capmc.PowerCapGet,
+			path:    capmc.PowerCapGetV1,
 			body:    nil,
 			ret:     http.StatusMethodNotAllowed,
 			hsmMock: nil,
@@ -801,35 +801,35 @@ func TestDoPowerCapSet(t *testing.T) {
 		{
 			name:    "Get",
 			method:  http.MethodGet,
-			path:    capmc.PowerCapSet,
+			path:    capmc.PowerCapSetV1,
 			body:    nil,
 			ret:     http.StatusMethodNotAllowed,
 			hsmMock: nil,
 		}, {
 			name:    "Put",
 			method:  http.MethodPut,
-			path:    capmc.PowerCapSet,
+			path:    capmc.PowerCapSetV1,
 			body:    nil,
 			ret:     http.StatusMethodNotAllowed,
 			hsmMock: nil,
 		}, {
 			name:    "Post empty",
 			method:  http.MethodPost,
-			path:    capmc.PowerCapSet,
+			path:    capmc.PowerCapSetV1,
 			body:    bytes.NewBufferString(""),
 			ret:     http.StatusBadRequest,
 			hsmMock: nil,
 		}, {
 			name:    "Post empty body",
 			method:  http.MethodPost,
-			path:    capmc.PowerCapSet,
+			path:    capmc.PowerCapSetV1,
 			body:    bytes.NewBuffer(json.RawMessage(`{"nids":[]}`)),
 			ret:     http.StatusBadRequest,
 			hsmMock: nil,
 		}, {
 			name:   "Post w/nids",
 			method: http.MethodPost,
-			path:   capmc.PowerCapSet,
+			path:   capmc.PowerCapSetV1,
 			body:   bytes.NewBuffer(json.RawMessage(`{"nids": [ { "nid": 30, "controls": [ { "name": "node", "val": 42 } ] } ] }`)),
 			ret:    http.StatusOK,
 			hsmMock: &hsmMock{
@@ -845,14 +845,14 @@ func TestDoPowerCapSet(t *testing.T) {
 		}, {
 			name:    "Delete",
 			method:  http.MethodDelete,
-			path:    capmc.PowerCapSet,
+			path:    capmc.PowerCapSetV1,
 			body:    nil,
 			ret:     http.StatusMethodNotAllowed,
 			hsmMock: nil,
 		}, {
 			name:    "Connect",
 			method:  http.MethodConnect,
-			path:    capmc.PowerCapSet,
+			path:    capmc.PowerCapSetV1,
 			body:    nil,
 			ret:     http.StatusMethodNotAllowed,
 			hsmMock: nil,

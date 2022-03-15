@@ -33,528 +33,6 @@ import (
 	sstorage "github.com/Cray-HPE/hms-securestorage"
 )
 
-var getNodeRulesPostHSM = "https://localhost:27779"
-var getNodeRulesPostReplayData = []testData{}
-var getNodeRulesPostSSData = []sstorage.MockLookup{}
-
-func TestGetNodeRulesPost(t *testing.T) {
-	var testReq = testData{"/capmc/get_node_rules",
-		"POST",
-		`{}`,
-		map[string][]string{"Accept": []string{"*/*"}, "Content-Length": []string{"2"}, "Content-Type": []string{"application/x-www-form-urlencoded"}, "User-Agent": []string{"curl/7.47.0"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":0,"err_msg":"","latency_node_off":60,"latency_node_on":120,"latency_node_reinit":180,"max_off_req_count":-1,"max_off_time":-1,"max_on_req_count":-1,"max_reinit_req_count":-1,"min_off_time":-1}
-`}
-	runTest(t, getNodeRulesPostHSM, &testReq, &getNodeRulesPostReplayData, getNodeRulesPostSSData)
-}
-
-var getNodeRulesHSM = "https://localhost:27779"
-var getNodeRulesReplayData = []testData{}
-var getNodeRulesSSData = []sstorage.MockLookup{}
-
-func TestGetNodeRules(t *testing.T) {
-	var testReq = testData{"/capmc/get_node_rules",
-		"GET",
-		``,
-		map[string][]string{"User-Agent": []string{"curl/7.47.0"}, "Accept": []string{"*/*"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":0,"err_msg":"","latency_node_off":60,"latency_node_on":120,"latency_node_reinit":180,"max_off_req_count":-1,"max_off_time":-1,"max_on_req_count":-1,"max_reinit_req_count":-1,"min_off_time":-1}
-`}
-	runTest(t, getNodeRulesHSM, &testReq, &getNodeRulesReplayData, getNodeRulesSSData)
-}
-
-var nodeOffHSM = "https://localhost:27779"
-var nodeOffReplayData = []testData{
-	{"https://localhost:27779/hsm/v1/State/Components?nid=16640",
-		"GET",
-		``,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}, "Content-Length": []string{"689"}},
-		`{"Components":[{"ID":"x0c0s8b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16640,"NetType":"Sling","Arch":"X86"}]}
-`},
-	{"https://localhost:27779/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s8b0n0",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}},
-		`{"ComponentEndpoints":[{"ID":"x0c0s8b0n0","Type":"Node","Domain":"ice.next.cray.com","FQDN":"x0c0s8b0n0.ice.next.cray.com","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"44:a8:42:21:a1:fd","UUID":"4c4c4544-0057-3210-8038-b8c04f463432","OdataID":"/redfish/v1/Systems/System.Embedded.1","RedfishEndpointID":"x0c0s8b0","RedfishEndpointFQDN":"x0c0s8.ice.next.cray.com","RedfishURL":"x0c0s8.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"System","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","GracefulShutdown","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"NIC.Integrated.1-3-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-3-1","Description":"Integrated NIC 1 Port 3 Partition 1","MACAddress":"44:a8:42:21:a1:fd","PermanentMACAddress":"44:a8:42:21:a1:fd"},{"RedfishId":"NIC.Integrated.1-4-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-4-1","Description":"Integrated NIC 1 Port 4 Partition 1","MACAddress":"44:a8:42:21:a1:fe","PermanentMACAddress":"44:a8:42:21:a1:fe"},{"RedfishId":"NIC.Integrated.1-1-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-1-1","Description":"Integrated NIC 1 Port 1 Partition 1","MACAddress":"44:a8:42:21:a1:fb","PermanentMACAddress":"44:a8:42:21:a1:fb"},{"RedfishId":"NIC.Integrated.1-2-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-2-1","Description":"Integrated NIC 1 Port 2 Partition 1","MACAddress":"44:a8:42:21:a1:fc","PermanentMACAddress":"44:a8:42:21:a1:fc"}]}}]}
-`},
-	{"https://x0c0s8.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset",
-		"POST",
-		`{"ResetType": "ForceOff"}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Authorization": []string{"Basic cm9vdDppbml0aWFsMA=="}, "Accept": []string{"*/*"}},
-		"204 No Content", 204,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Cache-Control": []string{"no-cache"}, "Connection": []string{"Keep-Alive"}, "Odata-Version": []string{"4.0"}, "Content-Type": []string{"application/json;odata.metadata=minimal;charset=utf-8"}, "Date": []string{"Wed, 27 Feb 2019 10:30:48 GMT"}, "Content-Length": []string{"0"}, "Access-Control-Allow-Origin": []string{"*"}, "Accept-Ranges": []string{"bytes"}, "Odata-Entityid": []string{"/redfish/v1/Systems/System.Embedded.1"}, "Keep-Alive": []string{"timeout=60, max=199"}, "Server": []string{"Appweb/4.5.4"}},
-		``},
-	{"https://x0c0s8.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-		"GET",
-		``,
-		map[string][]string{"Authorization": []string{"Basic cm9vdDppbml0aWFsMA=="}, "Accept": []string{"*/*"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Length": []string{"3392"}, "Access-Control-Allow-Origin": []string{"*"}, "Accept-Ranges": []string{"bytes"}, "Odata-Version": []string{"4.0"}, "Keep-Alive": []string{"timeout=60, max=199"}, "Content-Type": []string{"application/json;odata.metadata=minimal;charset=utf-8"}, "Server": []string{"Appweb/4.5.4"}, "Date": []string{"Wed, 27 Feb 2019 04:19:40 GMT"}, "Link": []string{"</redfish/v1/Schemas/ComputerSystem.v1_0_2.json>;rel=describedby"}, "Cache-Control": []string{"no-cache"}, "Allow": []string{"POST,PATCH"}, "Connection": []string{"Keep-Alive"}},
-		`{"@odata.context":"/redfish/v1/$metadata#ComputerSystem.ComputerSystem","@odata.id":"/redfish/v1/Systems/System.Embedded.1","@odata.type":"#ComputerSystem.v1_0_2.ComputerSystem","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"AssetTag":"","BiosVersion":"2.1.7","Boot":{"BootSourceOverrideEnabled":"Once","BootSourceOverrideTarget":"None","BootSourceOverrideTarget@Redfish.AllowableValues":["None","Pxe","Cd","Floppy","Hdd","BiosSetup","Utilities","UefiTarget","SDCard"],"UefiTargetBootSourceOverride":""},"Description":"Computer System which represents a machine (physical or virtual) and the local resources such as memory, cpu and other devices that can be accessed from that machine.","EthernetInterfaces":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces"},"HostName":"","Id":"System.Embedded.1","IndicatorLED":"Off","Links":{"Chassis":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1"}],"Chassis@odata.count":1,"CooledBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7B"}],"CooledBy@odata.count":14,"ManagedBy":[{"@odata.id":"/redfish/v1/Managers/iDRAC.Embedded.1"}],"ManagedBy@odata.count":1,"PoweredBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.2"}],"PoweredBy@odata.count":2},"Manufacturer":" ","MemorySummary":{"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"TotalSystemMemoryGiB":128.0},"Model":" ","Name":"System","PartNumber":"0CNCJWA05","PowerState":"Off","ProcessorSummary":{"Count":2,"Model":"Intel(R) Xeon(R) CPU E5-2640 v3 @ 2.60GHz","Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"}},"Processors":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Processors"},"SKU":"8W28F42","SerialNumber":"CN7475153B0564","SimpleStorage":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Storage/Controllers"},"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"SystemType":"Physical","UUID":"4c4c4544-0057-3210-8038-b8c04f463432"}
-`},
-	{"https://localhost:27779/hsm/v1/locks",
-		"POST",
-		`{"reason":"Performing a power Off","owner":"CAPMC","lifetime":180,"xnames":["x0c0s8b0n0"]}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
-		"201 OK", 201,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}, "Content-Length": []string{"62"}},
-		`{"uri":"/hsm/v1/locks/08c2e624-ded3-11e9-8a34-2a2ae2dbcce4"}]}
-`},
-}
-var nodeOffSSData = []sstorage.MockLookup{
-	{
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s8b0n0",
-				URL:      "x0c0s8b0.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	},
-}
-
-func TestNodeOff(t *testing.T) {
-	var testReq = testData{"/capmc/node_off",
-		"POST",
-		`{"nids" : [ 16640]}`,
-		map[string][]string{"User-Agent": []string{"curl/7.47.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"19"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":0,"err_msg":""}
-`}
-	runTest(t, nodeOffHSM, &testReq, &nodeOffReplayData, nodeOffSSData)
-}
-
-var nodeOnHSM = "https://localhost:27779"
-var nodeOnReplayData = []testData{
-	{"https://localhost:27779/hsm/v1/State/Components?nid=16640",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Date": []string{"Wed, 27 Feb 2019 04:33:18 GMT"}, "Content-Length": []string{"689"}, "Content-Type": []string{"application/json"}},
-		`{"Components":[{"ID":"x0c0s8b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16640,"NetType":"Sling","Arch":"X86"}]}
-`},
-	{"https://localhost:27779/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s8b0n0",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:33:18 GMT"}},
-		`{"ComponentEndpoints":[{"ID":"x0c0s8b0n0","Type":"Node","Domain":"ice.next.cray.com","FQDN":"x0c0s8b0n0.ice.next.cray.com","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"44:a8:42:21:a1:fd","UUID":"4c4c4544-0057-3210-8038-b8c04f463432","OdataID":"/redfish/v1/Systems/System.Embedded.1","RedfishEndpointID":"x0c0s8b0","RedfishEndpointFQDN":"x0c0s8.ice.next.cray.com","RedfishURL":"x0c0s8.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"System","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"NIC.Integrated.1-3-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-3-1","Description":"Integrated NIC 1 Port 3 Partition 1","MACAddress":"44:a8:42:21:a1:fd","PermanentMACAddress":"44:a8:42:21:a1:fd"},{"RedfishId":"NIC.Integrated.1-4-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-4-1","Description":"Integrated NIC 1 Port 4 Partition 1","MACAddress":"44:a8:42:21:a1:fe","PermanentMACAddress":"44:a8:42:21:a1:fe"},{"RedfishId":"NIC.Integrated.1-1-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-1-1","Description":"Integrated NIC 1 Port 1 Partition 1","MACAddress":"44:a8:42:21:a1:fb","PermanentMACAddress":"44:a8:42:21:a1:fb"},{"RedfishId":"NIC.Integrated.1-2-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-2-1","Description":"Integrated NIC 1 Port 2 Partition 1","MACAddress":"44:a8:42:21:a1:fc","PermanentMACAddress":"44:a8:42:21:a1:fc"}]}}]}
-`},
-	{"https://x0c0s8.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset",
-		"POST",
-		`{"ResetType": "On"}`,
-		map[string][]string{"Authorization": []string{"Basic cm9vdDppbml0aWFsMA=="}, "Accept": []string{"*/*"}, "Content-Type": []string{"application/json"}},
-		"204 No Content", 204,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Keep-Alive": []string{"timeout=60, max=199"}, "Content-Type": []string{"application/json;odata.metadata=minimal;charset=utf-8"}, "Connection": []string{"Keep-Alive"}, "Access-Control-Allow-Origin": []string{"*"}, "Odata-Version": []string{"4.0"}, "Odata-Entityid": []string{"/redfish/v1/Systems/System.Embedded.1"}, "Server": []string{"Appweb/4.5.4"}, "Date": []string{"Wed, 27 Feb 2019 10:26:53 GMT"}, "Cache-Control": []string{"no-cache"}, "Content-Length": []string{"0"}, "Accept-Ranges": []string{"bytes"}},
-		``},
-	{"https://localhost:27779/hsm/v1/locks",
-		"POST",
-		`{"reason":"Performing a power Off","owner":"CAPMC","lifetime":180,"xnames":["x0c0s8b0n0"]}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
-		"201 OK", 201,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}, "Content-Length": []string{"62"}},
-		`{"uri":"/hsm/v1/locks/08c2e624-ded3-11e9-8a34-2a2ae2dbcce4"}]}
-`},
-}
-var nodeOnSSData = []sstorage.MockLookup{
-	{
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s8b0n0",
-				URL:      "x0c0s8b0.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	},
-}
-
-func TestNodeOn(t *testing.T) {
-	var testReq = testData{"/capmc/node_on",
-		"POST",
-		`{"nids" : [ 16640]}`,
-		map[string][]string{"User-Agent": []string{"curl/7.47.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"19"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":0,"err_msg":""}
-`}
-	runTest(t, nodeOnHSM, &testReq, &nodeOnReplayData, nodeOnSSData)
-}
-
-var nodeReinitHSM = "https://localhost:27779"
-var nodeReinitReplayData = []testData{
-	{"https://localhost:27779/hsm/v1/State/Components?nid=16640",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Date": []string{"Wed, 27 Feb 2019 04:40:30 GMT"}, "Content-Length": []string{"689"}, "Content-Type": []string{"application/json"}},
-		`{"Components":[{"ID":"x0c0s8b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16640,"NetType":"Sling","Arch":"X86"}]}
-`},
-	{"https://localhost:27779/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s8b0n0",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:40:30 GMT"}},
-		`{"ComponentEndpoints":[{"ID":"x0c0s8b0n0","Type":"Node","Domain":"ice.next.cray.com","FQDN":"x0c0s8b0n0.ice.next.cray.com","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"44:a8:42:21:a1:fd","UUID":"4c4c4544-0057-3210-8038-b8c04f463432","OdataID":"/redfish/v1/Systems/System.Embedded.1","RedfishEndpointID":"x0c0s8b0","RedfishEndpointFQDN":"x0c0s8.ice.next.cray.com","RedfishURL":"x0c0s8.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"System","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"NIC.Integrated.1-3-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-3-1","Description":"Integrated NIC 1 Port 3 Partition 1","MACAddress":"44:a8:42:21:a1:fd","PermanentMACAddress":"44:a8:42:21:a1:fd"},{"RedfishId":"NIC.Integrated.1-4-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-4-1","Description":"Integrated NIC 1 Port 4 Partition 1","MACAddress":"44:a8:42:21:a1:fe","PermanentMACAddress":"44:a8:42:21:a1:fe"},{"RedfishId":"NIC.Integrated.1-1-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-1-1","Description":"Integrated NIC 1 Port 1 Partition 1","MACAddress":"44:a8:42:21:a1:fb","PermanentMACAddress":"44:a8:42:21:a1:fb"},{"RedfishId":"NIC.Integrated.1-2-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-2-1","Description":"Integrated NIC 1 Port 2 Partition 1","MACAddress":"44:a8:42:21:a1:fc","PermanentMACAddress":"44:a8:42:21:a1:fc"}]}}]}
-`},
-	{"https://x0c0s8.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset",
-		"POST",
-		`{"ResetType": "GracefulRestart"}`,
-		map[string][]string{"Accept": []string{"*/*"}, "Content-Type": []string{"application/json"}, "Authorization": []string{"Basic cm9vdDppbml0aWFsMA=="}},
-		"204 No Content", 204,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Odata-Version": []string{"4.0"}, "Odata-Entityid": []string{"/redfish/v1/Systems/System.Embedded.1"}, "Keep-Alive": []string{"timeout=60, max=199"}, "Server": []string{"Appweb/4.5.4"}, "Date": []string{"Wed, 27 Feb 2019 10:34:04 GMT"}, "Connection": []string{"Keep-Alive"}, "Accept-Ranges": []string{"bytes"}, "Content-Type": []string{"application/json;odata.metadata=minimal;charset=utf-8"}, "Cache-Control": []string{"no-cache"}, "Content-Length": []string{"0"}, "Access-Control-Allow-Origin": []string{"*"}},
-		``},
-	{"https://localhost:27779/hsm/v1/locks",
-		"POST",
-		`{"reason":"Performing a power Off","owner":"CAPMC","lifetime":180,"xnames":["x0c0s8b0n0"]}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
-		"201 OK", 201,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}, "Content-Length": []string{"62"}},
-		`{"uri":"/hsm/v1/locks/08c2e624-ded3-11e9-8a34-2a2ae2dbcce4"}]}
-`},
-}
-var nodeReinitSSData = []sstorage.MockLookup{
-	{
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s8b0n0",
-				URL:      "x0c0s8b0.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	},
-}
-
-func TestNodeReinit(t *testing.T) {
-	var testReq = testData{"/capmc/node_reinit",
-		"POST",
-		`{"nids" : [ 16640]}`,
-		map[string][]string{"User-Agent": []string{"curl/7.47.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"19"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":0,"err_msg":""}
-`}
-	runTest(t, nodeReinitHSM, &testReq, &nodeReinitReplayData, nodeReinitSSData)
-}
-
-var nodeStatusAllHSM = "https://localhost:27779"
-var nodeStatusAllReplayData = []testData{
-	{"https://localhost:27779/hsm/v1/State/Components?state=%21Empty&state=%21Populated&state=%21Unknown&type=node",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:22:16 GMT"}, "Content-Length": []string{"689"}},
-		`{"Components":[{"ID":"x0c0s10b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16704,"NetType":"Sling","Arch":"X86"},{"ID":"x0c0s12b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16768,"NetType":"Sling","Arch":"X86"},{"ID":"x0c0s7b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16608,"NetType":"Sling","Arch":"X86"},{"ID":"x0c0s8b0n0","Type":"Node","State":"Off","Flag":"OK","Enabled":true,"Role":"Compute","NID":16640,"NetType":"Sling","Arch":"X86"},{"ID":"x0c0s9b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16672,"NetType":"Sling","Arch":"X86"}]}
-`},
-	{"https://localhost:27779/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s10b0n0&id=x0c0s12b0n0&id=x0c0s7b0n0&id=x0c0s8b0n0&id=x0c0s9b0n0",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Date": []string{"Wed, 27 Feb 2019 04:22:16 GMT"}, "Content-Type": []string{"application/json"}},
-		`{"ComponentEndpoints":[{"ID":"x0c0s10b0n0","Type":"Node","Domain":"ice.next.cray.com","FQDN":"x0c0s10b0n0.ice.next.cray.com","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"14:18:77:50:05:93","UUID":"4c4c4544-004c-3710-8043-b9c04f333832","OdataID":"/redfish/v1/Systems/System.Embedded.1","RedfishEndpointID":"x0c0s10b0","RedfishEndpointFQDN":"x0c0s10.ice.next.cray.com","RedfishURL":"x0c0s10.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"System","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"NIC.Integrated.1-1-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-1-1","Description":"Integrated NIC 1 Port 1 Partition 1","MACAddress":"14:18:77:50:05:91","PermanentMACAddress":"14:18:77:50:05:91"},{"RedfishId":"NIC.Integrated.1-2-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-2-1","Description":"Integrated NIC 1 Port 2 Partition 1","MACAddress":"14:18:77:50:05:92","PermanentMACAddress":"14:18:77:50:05:92"},{"RedfishId":"NIC.Integrated.1-3-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-3-1","Description":"Integrated NIC 1 Port 3 Partition 1","MACAddress":"14:18:77:50:05:93","PermanentMACAddress":"14:18:77:50:05:93"},{"RedfishId":"NIC.Integrated.1-4-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-4-1","Description":"Integrated NIC 1 Port 4 Partition 1","MACAddress":"14:18:77:50:05:94","PermanentMACAddress":"14:18:77:50:05:94"}]}},{"ID":"x0c0s12b0n0","Type":"Node","Domain":"ice.next.cray.com","FQDN":"x0c0s12b0n0.ice.next.cray.com","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"24:6e:96:91:62:3a","UUID":"4c4c4544-005a-4c10-8048-b8c04f384d32","OdataID":"/redfish/v1/Systems/System.Embedded.1","RedfishEndpointID":"x0c0s12b0","RedfishEndpointFQDN":"x0c0s12.ice.next.cray.com","RedfishURL":"x0c0s12.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"System","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","GracefulShutdown","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"NIC.Integrated.1-3-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-3-1","Description":"Integrated NIC 1 Port 3 Partition 1","MACAddress":"24:6e:96:91:62:3a","PermanentMACAddress":"24:6e:96:91:62:3a"},{"RedfishId":"NIC.Integrated.1-2-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-2-1","Description":"Integrated NIC 1 Port 2 Partition 1","MACAddress":"24:6e:96:91:62:39","PermanentMACAddress":"24:6e:96:91:62:39"},{"RedfishId":"NIC.Integrated.1-1-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-1-1","Description":"Integrated NIC 1 Port 1 Partition 1","MACAddress":"24:6e:96:91:62:38","PermanentMACAddress":"24:6e:96:91:62:38"},{"RedfishId":"NIC.Integrated.1-4-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-4-1","Description":"Integrated NIC 1 Port 4 Partition 1","MACAddress":"24:6e:96:91:62:3b","PermanentMACAddress":"24:6e:96:91:62:3b"}]}},{"ID":"x0c0s7b0n0","Type":"Node","Domain":"ice.next.cray.com","FQDN":"x0c0s7b0n0.ice.next.cray.com","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"44:a8:42:21:a8:af","UUID":"4c4c4544-0057-3410-8037-b8c04f463432","OdataID":"/redfish/v1/Systems/System.Embedded.1","RedfishEndpointID":"x0c0s7b0","RedfishEndpointFQDN":"x0c0s7.ice.next.cray.com","RedfishURL":"x0c0s7.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"System","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"NIC.Integrated.1-1-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-1-1","Description":"Integrated NIC 1 Port 1 Partition 1","MACAddress":"44:a8:42:21:a8:ad","PermanentMACAddress":"44:a8:42:21:a8:ad"},{"RedfishId":"NIC.Integrated.1-2-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-2-1","Description":"Integrated NIC 1 Port 2 Partition 1","MACAddress":"44:a8:42:21:a8:ae","PermanentMACAddress":"44:a8:42:21:a8:ae"},{"RedfishId":"NIC.Integrated.1-3-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-3-1","Description":"Integrated NIC 1 Port 3 Partition 1","MACAddress":"44:a8:42:21:a8:af","PermanentMACAddress":"44:a8:42:21:a8:af"},{"RedfishId":"NIC.Integrated.1-4-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-4-1","Description":"Integrated NIC 1 Port 4 Partition 1","MACAddress":"44:a8:42:21:a8:b0","PermanentMACAddress":"44:a8:42:21:a8:b0"}]}},{"ID":"x0c0s8b0n0","Type":"Node","Domain":"ice.next.cray.com","FQDN":"x0c0s8b0n0.ice.next.cray.com","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"44:a8:42:21:a1:fd","UUID":"4c4c4544-0057-3210-8038-b8c04f463432","OdataID":"/redfish/v1/Systems/System.Embedded.1","RedfishEndpointID":"x0c0s8b0","RedfishEndpointFQDN":"x0c0s8.ice.next.cray.com","RedfishURL":"x0c0s8.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"System","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"NIC.Integrated.1-3-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-3-1","Description":"Integrated NIC 1 Port 3 Partition 1","MACAddress":"44:a8:42:21:a1:fd","PermanentMACAddress":"44:a8:42:21:a1:fd"},{"RedfishId":"NIC.Integrated.1-4-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-4-1","Description":"Integrated NIC 1 Port 4 Partition 1","MACAddress":"44:a8:42:21:a1:fe","PermanentMACAddress":"44:a8:42:21:a1:fe"},{"RedfishId":"NIC.Integrated.1-1-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-1-1","Description":"Integrated NIC 1 Port 1 Partition 1","MACAddress":"44:a8:42:21:a1:fb","PermanentMACAddress":"44:a8:42:21:a1:fb"},{"RedfishId":"NIC.Integrated.1-2-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-2-1","Description":"Integrated NIC 1 Port 2 Partition 1","MACAddress":"44:a8:42:21:a1:fc","PermanentMACAddress":"44:a8:42:21:a1:fc"}]}},{"ID":"x0c0s9b0n0","Type":"Node","Domain":"ice.next.cray.com","FQDN":"x0c0s9b0n0.ice.next.cray.com","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"f4:8e:38:c0:b1:0e","UUID":"4c4c4544-005a-5610-804a-b6c04f474232","OdataID":"/redfish/v1/Systems/System.Embedded.1","RedfishEndpointID":"x0c0s9b0","RedfishEndpointFQDN":"x0c0s9.ice.next.cray.com","RedfishURL":"x0c0s9.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"System","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"NIC.Integrated.1-4-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-4-1","Description":"Integrated NIC 1 Port 4 Partition 1","MACAddress":"f4:8e:38:c0:b1:0f","PermanentMACAddress":"f4:8e:38:c0:b1:0f"},{"RedfishId":"NIC.Integrated.1-1-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-1-1","Description":"Integrated NIC 1 Port 1 Partition 1","MACAddress":"f4:8e:38:c0:b1:0c","PermanentMACAddress":"f4:8e:38:c0:b1:0c"},{"RedfishId":"NIC.Integrated.1-2-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-2-1","Description":"Integrated NIC 1 Port 2 Partition 1","MACAddress":"f4:8e:38:c0:b1:0d","PermanentMACAddress":"f4:8e:38:c0:b1:0d"},{"RedfishId":"NIC.Integrated.1-3-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-3-1","Description":"Integrated NIC 1 Port 3 Partition 1","MACAddress":"f4:8e:38:c0:b1:0e","PermanentMACAddress":"f4:8e:38:c0:b1:0e"}]}}]}
-`},
-	{"https://x0c0s12.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-		"GET",
-		``,
-		map[string][]string{"Authorization": []string{"Basic cm9vdDppbml0aWFsMA=="}, "Accept": []string{"*/*"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"X-Frame-Options": []string{"DENY"}, "Content-Length": []string{"4036"}, "Content-Type": []string{"application/json;odata.metadata=minimal;charset=utf-8"}, "Date": []string{"Wed, 27 Feb 2019 10:22:58 GMT"}, "Odata-Version": []string{"4.0"}, "Link": []string{"</redfish/v1/Schemas/ComputerSystem.v1_1_0.json>;rel=describedby"}, "Access-Control-Allow-Origin": []string{"*"}, "Cache-Control": []string{"no-cache"}, "Server": []string{"Apache/2.4"}, "Allow": []string{"POST,PATCH"}},
-		`{"@odata.context":"/redfish/v1/$metadata#ComputerSystem.ComputerSystem","@odata.id":"/redfish/v1/Systems/System.Embedded.1","@odata.type":"#ComputerSystem.v1_1_0.ComputerSystem","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","GracefulShutdown","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"AssetTag":"","Bios":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Bios"},"BiosVersion":"1.1.7","Boot":{"BootSourceOverrideEnabled":"Once","BootSourceOverrideMode":"UEFI","BootSourceOverrideTarget":"None","BootSourceOverrideTarget@Redfish.AllowableValues":["None","Pxe","Floppy","Cd","Hdd","BiosSetup","Utilities","UefiTarget","SDCard","UefiHttp"],"UefiTargetBootSourceOverride":""},"Description":"Computer System which represents a machine (physical or virtual) and the local resources such as memory, cpu and other devices that can be accessed from that machine.","EthernetInterfaces":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces"},"HostName":"","Id":"System.Embedded.1","IndicatorLED":"Off","Links":{"Chassis":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1"}],"Chassis@odata.count":1,"CooledBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.8A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.8B"}],"CooledBy@odata.count":16,"ManagedBy":[{"@odata.id":"/redfish/v1/Managers/iDRAC.Embedded.1"}],"ManagedBy@odata.count":1,"Oem":{"Dell":{"@odata.type":"#DellComputerSystem.v1_0_0.DellComputerSystem","BootOrder":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/BootSources"}}},"PoweredBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.2"}],"PoweredBy@odata.count":2},"Manufacturer":" ","MemorySummary":{"MemoryMirroring":"System","Status":{"Health":"OK","HealthRollup":"OK","State":"Enabled"},"TotalSystemMemoryGiB":64.0},"Model":" ","Name":"System","PartNumber":"0CRT1GA03","PowerState":"On","ProcessorSummary":{"Count":2,"Model":"Intel(R) Xeon(R) Silver 4112 CPU @ 2.60GHz","Status":{"Health":"OK","HealthRollup":"OK","State":"Enabled"}},"Processors":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Processors"},"SKU":"8ZLH8M2","SecureBoot":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/SecureBoot"},"SerialNumber":"CNIVC007B60269","SimpleStorage":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Storage/Controllers"},"Status":{"Health":"OK","HealthRollup":"OK","State":"Enabled"},"SystemType":"Physical","TrustedModules":[{"InterfaceType":"TPM1_2","Status":{"State":"Disabled"}}],"UUID":"4c4c4544-005a-4c10-8048-b8c04f384d32"}
-`},
-	{"https://x0c0s8.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-		"GET",
-		``,
-		map[string][]string{"Authorization": []string{"Basic cm9vdDppbml0aWFsMA=="}, "Accept": []string{"*/*"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Date": []string{"Wed, 27 Feb 2019 10:15:50 GMT"}, "Link": []string{"</redfish/v1/Schemas/ComputerSystem.v1_0_2.json>;rel=describedby"}, "Access-Control-Allow-Origin": []string{"*"}, "Accept-Ranges": []string{"bytes"}, "Odata-Version": []string{"4.0"}, "Keep-Alive": []string{"timeout=60, max=199"}, "Content-Type": []string{"application/json;odata.metadata=minimal;charset=utf-8"}, "Server": []string{"Appweb/4.5.4"}, "Cache-Control": []string{"no-cache"}, "Content-Length": []string{"2154"}, "Allow": []string{"POST,PATCH"}, "Connection": []string{"Keep-Alive"}},
-		`{"@odata.context":"/redfish/v1/$metadata#ComputerSystem.ComputerSystem","@odata.id":"/redfish/v1/Systems/System.Embedded.1","@odata.type":"#ComputerSystem.v1_0_2.ComputerSystem","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"AssetTag":"","BiosVersion":"2.1.7","Boot":{"BootSourceOverrideEnabled":"Once","BootSourceOverrideTarget":"None","BootSourceOverrideTarget@Redfish.AllowableValues":["None","Pxe","Cd","Floppy","Hdd","BiosSetup","Utilities","UefiTarget","SDCard"],"UefiTargetBootSourceOverride":""},"Description":"Computer System which represents a machine (physical or virtual) and the local resources such as memory, cpu and other devices that can be accessed from that machine.","EthernetInterfaces":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces"},"HostName":"","Id":"System.Embedded.1","IndicatorLED":"Off","Links":{"Chassis":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1"}],"Chassis@odata.count":1,"CooledBy":[],"CooledBy@odata.count":0,"ManagedBy":[{"@odata.id":"/redfish/v1/Managers/iDRAC.Embedded.1"}],"ManagedBy@odata.count":1,"PoweredBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.2"}],"PoweredBy@odata.count":2},"Manufacturer":" ","MemorySummary":{"Status":{"Health":null,"HealthRollUp":null,"State":"Enabled"},"TotalSystemMemoryGiB":128.0},"Model":" ","Name":"System","PartNumber":"0CNCJWA05","PowerState":"Off","ProcessorSummary":{"Count":2,"Model":"Intel(R) Xeon(R) CPU E5-2640 v3 @ 2.60GHz","Status":{"Health":null,"HealthRollUp":null,"State":"Enabled"}},"Processors":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Processors"},"SKU":"8W28F42","SerialNumber":"CN7475153B0564","SimpleStorage":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Storage/Controllers"},"Status":{"Health":"OK","HealthRollUp":"OK","State":"StandbyOffline"},"SystemType":"Physical","UUID":"4c4c4544-0057-3210-8038-b8c04f463432"}
-`},
-	{"https://x0c0s9.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-		"GET",
-		``,
-		map[string][]string{"Authorization": []string{"Basic cm9vdDppbml0aWFsMA=="}, "Accept": []string{"*/*"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Odata-Version": []string{"4.0"}, "Content-Type": []string{"application/json;odata.metadata=minimal;charset=utf-8"}, "Server": []string{"Appweb/4.5.4"}, "Connection": []string{"Keep-Alive"}, "Keep-Alive": []string{"timeout=60, max=199"}, "Date": []string{"Wed, 27 Feb 2019 05:27:34 GMT"}, "Link": []string{"</redfish/v1/Schemas/ComputerSystem.v1_0_2.json>;rel=describedby"}, "Cache-Control": []string{"no-cache"}, "Content-Length": []string{"3400"}, "Allow": []string{"POST,PATCH"}, "Access-Control-Allow-Origin": []string{"*"}, "Accept-Ranges": []string{"bytes"}},
-		`{"@odata.context":"/redfish/v1/$metadata#ComputerSystem.ComputerSystem","@odata.id":"/redfish/v1/Systems/System.Embedded.1","@odata.type":"#ComputerSystem.v1_0_2.ComputerSystem","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"AssetTag":"","BiosVersion":"2.0.1","Boot":{"BootSourceOverrideEnabled":"Once","BootSourceOverrideTarget":"None","BootSourceOverrideTarget@Redfish.AllowableValues":["None","Pxe","Cd","Floppy","Hdd","BiosSetup","Utilities","UefiTarget","SDCard"],"UefiTargetBootSourceOverride":""},"Description":"Computer System which represents a machine (physical or virtual) and the local resources such as memory, cpu and other devices that can be accessed from that machine.","EthernetInterfaces":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces"},"HostName":"MINWINPC","Id":"System.Embedded.1","IndicatorLED":"Off","Links":{"Chassis":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1"}],"Chassis@odata.count":1,"CooledBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7B"}],"CooledBy@odata.count":14,"ManagedBy":[{"@odata.id":"/redfish/v1/Managers/iDRAC.Embedded.1"}],"ManagedBy@odata.count":1,"PoweredBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.2"}],"PoweredBy@odata.count":2},"Manufacturer":" ","MemorySummary":{"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"TotalSystemMemoryGiB":128.0},"Model":" ","Name":"System","PartNumber":"0CNCJWA10","PowerState":"On","ProcessorSummary":{"Count":2,"Model":"Intel(R) Xeon(R) CPU E5-2640 v3 @ 2.60GHz","Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"}},"Processors":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Processors"},"SKU":"6ZVJGB2","SerialNumber":"CN747515C31036","SimpleStorage":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Storage/Controllers"},"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"SystemType":"Physical","UUID":"4c4c4544-005a-5610-804a-b6c04f474232"}
-`},
-	{"https://x0c0s7.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-		"GET",
-		``,
-		map[string][]string{"Authorization": []string{"Basic cm9vdDppbml0aWFsMA=="}, "Accept": []string{"*/*"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Keep-Alive": []string{"timeout=60, max=199"}, "Link": []string{"</redfish/v1/Schemas/ComputerSystem.v1_0_2.json>;rel=describedby"}, "Cache-Control": []string{"no-cache"}, "Content-Length": []string{"3391"}, "Accept-Ranges": []string{"bytes"}, "Connection": []string{"Keep-Alive"}, "Access-Control-Allow-Origin": []string{"*"}, "Odata-Version": []string{"4.0"}, "Content-Type": []string{"application/json;odata.metadata=minimal;charset=utf-8"}, "Server": []string{"Appweb/4.5.4"}, "Date": []string{"Wed, 27 Feb 2019 10:21:44 GMT"}, "Allow": []string{"POST,PATCH"}},
-		`{"@odata.context":"/redfish/v1/$metadata#ComputerSystem.ComputerSystem","@odata.id":"/redfish/v1/Systems/System.Embedded.1","@odata.type":"#ComputerSystem.v1_0_2.ComputerSystem","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"AssetTag":"","BiosVersion":"2.4.3","Boot":{"BootSourceOverrideEnabled":"Once","BootSourceOverrideTarget":"None","BootSourceOverrideTarget@Redfish.AllowableValues":["None","Pxe","Cd","Floppy","Hdd","BiosSetup","Utilities","UefiTarget","SDCard"],"UefiTargetBootSourceOverride":""},"Description":"Computer System which represents a machine (physical or virtual) and the local resources such as memory, cpu and other devices that can be accessed from that machine.","EthernetInterfaces":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces"},"HostName":"","Id":"System.Embedded.1","IndicatorLED":"Off","Links":{"Chassis":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1"}],"Chassis@odata.count":1,"CooledBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7B"}],"CooledBy@odata.count":14,"ManagedBy":[{"@odata.id":"/redfish/v1/Managers/iDRAC.Embedded.1"}],"ManagedBy@odata.count":1,"PoweredBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.2"}],"PoweredBy@odata.count":2},"Manufacturer":" ","MemorySummary":{"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"TotalSystemMemoryGiB":64.0},"Model":" ","Name":"System","PartNumber":"0CNCJWA05","PowerState":"On","ProcessorSummary":{"Count":2,"Model":"Intel(R) Xeon(R) CPU E5-2623 v3 @ 3.00GHz","Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"}},"Processors":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Processors"},"SKU":"8W47F42","SerialNumber":"CN7475153B0496","SimpleStorage":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Storage/Controllers"},"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"SystemType":"Physical","UUID":"4c4c4544-0057-3410-8037-b8c04f463432"}
-`},
-	{"https://x0c0s10.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-		"GET",
-		``,
-		map[string][]string{"Authorization": []string{"Basic cm9vdDppbml0aWFsMA=="}, "Accept": []string{"*/*"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Length": []string{"3391"}, "Accept-Ranges": []string{"bytes"}, "Odata-Version": []string{"4.0"}, "Keep-Alive": []string{"timeout=60, max=199"}, "Date": []string{"Wed, 27 Feb 2019 10:21:44 GMT"}, "Link": []string{"</redfish/v1/Schemas/ComputerSystem.v1_0_2.json>;rel=describedby"}, "Connection": []string{"Keep-Alive"}, "Access-Control-Allow-Origin": []string{"*"}, "Content-Type": []string{"application/json;odata.metadata=minimal;charset=utf-8"}, "Server": []string{"Appweb/4.5.4"}, "Cache-Control": []string{"no-cache"}, "Allow": []string{"POST,PATCH"}},
-		`{"@odata.context":"/redfish/v1/$metadata#ComputerSystem.ComputerSystem","@odata.id":"/redfish/v1/Systems/System.Embedded.1","@odata.type":"#ComputerSystem.v1_0_2.ComputerSystem","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"AssetTag":"","BiosVersion":"2.4.3","Boot":{"BootSourceOverrideEnabled":"Once","BootSourceOverrideTarget":"None","BootSourceOverrideTarget@Redfish.AllowableValues":["None","Pxe","Cd","Floppy","Hdd","BiosSetup","Utilities","UefiTarget","SDCard"],"UefiTargetBootSourceOverride":""},"Description":"Computer System which represents a machine (physical or virtual) and the local resources such as memory, cpu and other devices that can be accessed from that machine.","EthernetInterfaces":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces"},"HostName":"","Id":"System.Embedded.1","IndicatorLED":"Off","Links":{"Chassis":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1"}],"Chassis@odata.count":1,"CooledBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7B"}],"CooledBy@odata.count":14,"ManagedBy":[{"@odata.id":"/redfish/v1/Managers/iDRAC.Embedded.1"}],"ManagedBy@odata.count":1,"PoweredBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.2"}],"PoweredBy@odata.count":2},"Manufacturer":" ","MemorySummary":{"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"TotalSystemMemoryGiB":64.0},"Model":" ","Name":"System","PartNumber":"0CNCJWA08","PowerState":"On","ProcessorSummary":{"Count":2,"Model":"Intel(R) Xeon(R) CPU E5-2623 v3 @ 3.00GHz","Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"}},"Processors":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Processors"},"SKU":"9L7C382","SerialNumber":"CN7475159F0098","SimpleStorage":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Storage/Controllers"},"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"SystemType":"Physical","UUID":"4c4c4544-004c-3710-8043-b9c04f333832"}
-`},
-}
-var nodeStatusAllSSData = []sstorage.MockLookup{
-	{
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s10b0n0",
-				URL:      "x0c0s10b0.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	}, {
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s12b0n0",
-				URL:      "x0c0s12b0.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	}, {
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s7b0n0",
-				URL:      "x0c0s7b0.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	}, {
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s8b0n0",
-				URL:      "x0c0s8b0.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	}, {
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s9b0n0",
-				URL:      "x0c0s9b0.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	},
-}
-
-func TestNodeStatusAll(t *testing.T) {
-	var testReq = testData{"/capmc/get_node_status",
-		"POST",
-		`{}`,
-		map[string][]string{"User-Agent": []string{"curl/7.47.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"2"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":0,"err_msg":"","on":[16608,16672,16704,16768],"off":[16640]}
-`}
-	runTest(t, nodeStatusAllHSM, &testReq, &nodeStatusAllReplayData, nodeStatusAllSSData)
-}
-
-var nodeStatusError1HSM = "https://localhost:27779"
-var nodeStatusError1ReplayData = []testData{
-	{"https://localhost:27779/hsm/v1/State/Components?nid=16608&nid=16704&nid=18800&state=%21Empty&state=%21Populated&state=%21Unknown",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:26:44 GMT"}, "Content-Length": []string{"689"}},
-		`{"Components":[{"ID":"x0c0s10b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16704,"NetType":"Sling","Arch":"X86"},{"ID":"x0c0s7b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16608,"NetType":"Sling","Arch":"X86"}]}
-`},
-	{"https://localhost:27779/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s10b0n0&id=x0c0s7b0n0",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Date": []string{"Wed, 27 Feb 2019 04:26:44 GMT"}, "Content-Type": []string{"application/json"}},
-		`{"ComponentEndpoints":[{"ID":"x0c0s10b0n0","Type":"Node","Domain":"ice.next.cray.com","FQDN":"x0c0s10b0n0.ice.next.cray.com","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"14:18:77:50:05:93","UUID":"4c4c4544-004c-3710-8043-b9c04f333832","OdataID":"/redfish/v1/Systems/System.Embedded.1","RedfishEndpointID":"x0c0s10b0","RedfishEndpointFQDN":"x0c0s10.ice.next.cray.com","RedfishURL":"x0c0s10.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"System","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"NIC.Integrated.1-1-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-1-1","Description":"Integrated NIC 1 Port 1 Partition 1","MACAddress":"14:18:77:50:05:91","PermanentMACAddress":"14:18:77:50:05:91"},{"RedfishId":"NIC.Integrated.1-2-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-2-1","Description":"Integrated NIC 1 Port 2 Partition 1","MACAddress":"14:18:77:50:05:92","PermanentMACAddress":"14:18:77:50:05:92"},{"RedfishId":"NIC.Integrated.1-3-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-3-1","Description":"Integrated NIC 1 Port 3 Partition 1","MACAddress":"14:18:77:50:05:93","PermanentMACAddress":"14:18:77:50:05:93"},{"RedfishId":"NIC.Integrated.1-4-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-4-1","Description":"Integrated NIC 1 Port 4 Partition 1","MACAddress":"14:18:77:50:05:94","PermanentMACAddress":"14:18:77:50:05:94"}]}},{"ID":"x0c0s7b0n0","Type":"Node","Domain":"ice.next.cray.com","FQDN":"x0c0s7b0n0.ice.next.cray.com","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"44:a8:42:21:a8:af","UUID":"4c4c4544-0057-3410-8037-b8c04f463432","OdataID":"/redfish/v1/Systems/System.Embedded.1","RedfishEndpointID":"x0c0s7b0","RedfishEndpointFQDN":"x0c0s7.ice.next.cray.com","RedfishURL":"x0c0s7.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"System","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"NIC.Integrated.1-1-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-1-1","Description":"Integrated NIC 1 Port 1 Partition 1","MACAddress":"44:a8:42:21:a8:ad","PermanentMACAddress":"44:a8:42:21:a8:ad"},{"RedfishId":"NIC.Integrated.1-2-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-2-1","Description":"Integrated NIC 1 Port 2 Partition 1","MACAddress":"44:a8:42:21:a8:ae","PermanentMACAddress":"44:a8:42:21:a8:ae"},{"RedfishId":"NIC.Integrated.1-3-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-3-1","Description":"Integrated NIC 1 Port 3 Partition 1","MACAddress":"44:a8:42:21:a8:af","PermanentMACAddress":"44:a8:42:21:a8:af"},{"RedfishId":"NIC.Integrated.1-4-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-4-1","Description":"Integrated NIC 1 Port 4 Partition 1","MACAddress":"44:a8:42:21:a8:b0","PermanentMACAddress":"44:a8:42:21:a8:b0"}]}}]}
-`},
-}
-var nodeStatusError1SSData = []sstorage.MockLookup{
-	{
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s10b0n0",
-				URL:      "x0c0s10b0.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	}, {
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s7b0n0",
-				URL:      "x0c0s7b0.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	},
-}
-
-func TestNodeStatusError1(t *testing.T) {
-	var testReq = testData{"/capmc/get_node_status",
-		"POST",
-		`{"nids" : [ 16608, 16704, 18800 ]}`,
-		map[string][]string{"Content-Length": []string{"34"}, "Content-Type": []string{"application/x-www-form-urlencoded"}, "User-Agent": []string{"curl/7.47.0"}, "Accept": []string{"*/*"}},
-		"400 Bad Request", 400,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":400,"err_msg":"nids not found: [18800]"}
-`}
-	runTest(t, nodeStatusError1HSM, &testReq, &nodeStatusError1ReplayData, nodeStatusError1SSData)
-}
-
-var nodeStatusError2HSM = "https://localhost:27779"
-var nodeStatusError2ReplayData = []testData{}
-var nodeStatusError2SSData = []sstorage.MockLookup{}
-
-func TestNodeStatusError2(t *testing.T) {
-	var testReq = testData{"/capmc/get_node_status",
-		"POST",
-		`{"nids" : [ "16608" ]}`,
-		map[string][]string{"Content-Type": []string{"application/x-www-form-urlencoded"}, "User-Agent": []string{"curl/7.47.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"22"}},
-		"400 Bad Request", 400,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":400,"err_msg":"Bad Request: JSON: json: cannot unmarshal string into Go struct field NodeStatusRequest.nids of type int"}
-`}
-	runTest(t, nodeStatusError2HSM, &testReq, &nodeStatusError2ReplayData, nodeStatusError2SSData)
-}
-
-var nodeStatusSomeHSM = "https://localhost:27779"
-var nodeStatusSomeReplayData = []testData{
-	{"https://localhost:27779/hsm/v1/State/Components?nid=16608&nid=16704&state=%21Empty&state=%21Populated&state=%21Unknown",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Length": []string{"689"}, "Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:25:07 GMT"}},
-		`{"Components":[{"ID":"x0c0s10b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16704,"NetType":"Sling","Arch":"X86"},{"ID":"x0c0s7b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16608,"NetType":"Sling","Arch":"X86"}]}
-`},
-	{"https://localhost:27779/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s10b0n0&id=x0c0s7b0n0",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:25:07 GMT"}},
-		`{"ComponentEndpoints":[{"ID":"x0c0s10b0n0","Type":"Node","Domain":"ice.next.cray.com","FQDN":"x0c0s10b0n0.ice.next.cray.com","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"14:18:77:50:05:93","UUID":"4c4c4544-004c-3710-8043-b9c04f333832","OdataID":"/redfish/v1/Systems/System.Embedded.1","RedfishEndpointID":"x0c0s10b0","RedfishEndpointFQDN":"x0c0s10.ice.next.cray.com","RedfishURL":"x0c0s10.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"System","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"NIC.Integrated.1-1-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-1-1","Description":"Integrated NIC 1 Port 1 Partition 1","MACAddress":"14:18:77:50:05:91","PermanentMACAddress":"14:18:77:50:05:91"},{"RedfishId":"NIC.Integrated.1-2-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-2-1","Description":"Integrated NIC 1 Port 2 Partition 1","MACAddress":"14:18:77:50:05:92","PermanentMACAddress":"14:18:77:50:05:92"},{"RedfishId":"NIC.Integrated.1-3-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-3-1","Description":"Integrated NIC 1 Port 3 Partition 1","MACAddress":"14:18:77:50:05:93","PermanentMACAddress":"14:18:77:50:05:93"},{"RedfishId":"NIC.Integrated.1-4-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-4-1","Description":"Integrated NIC 1 Port 4 Partition 1","MACAddress":"14:18:77:50:05:94","PermanentMACAddress":"14:18:77:50:05:94"}]}},{"ID":"x0c0s7b0n0","Type":"Node","Domain":"ice.next.cray.com","FQDN":"x0c0s7b0n0.ice.next.cray.com","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"44:a8:42:21:a8:af","UUID":"4c4c4544-0057-3410-8037-b8c04f463432","OdataID":"/redfish/v1/Systems/System.Embedded.1","RedfishEndpointID":"x0c0s7b0","RedfishEndpointFQDN":"x0c0s7.ice.next.cray.com","RedfishURL":"x0c0s7.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"System","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"NIC.Integrated.1-1-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-1-1","Description":"Integrated NIC 1 Port 1 Partition 1","MACAddress":"44:a8:42:21:a8:ad","PermanentMACAddress":"44:a8:42:21:a8:ad"},{"RedfishId":"NIC.Integrated.1-2-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-2-1","Description":"Integrated NIC 1 Port 2 Partition 1","MACAddress":"44:a8:42:21:a8:ae","PermanentMACAddress":"44:a8:42:21:a8:ae"},{"RedfishId":"NIC.Integrated.1-3-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-3-1","Description":"Integrated NIC 1 Port 3 Partition 1","MACAddress":"44:a8:42:21:a8:af","PermanentMACAddress":"44:a8:42:21:a8:af"},{"RedfishId":"NIC.Integrated.1-4-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-4-1","Description":"Integrated NIC 1 Port 4 Partition 1","MACAddress":"44:a8:42:21:a8:b0","PermanentMACAddress":"44:a8:42:21:a8:b0"}]}}]}
-`},
-	{"https://x0c0s7.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-		"GET",
-		``,
-		map[string][]string{"Authorization": []string{"Basic cm9vdDppbml0aWFsMA=="}, "Accept": []string{"*/*"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json;odata.metadata=minimal;charset=utf-8"}, "Link": []string{"</redfish/v1/Schemas/ComputerSystem.v1_0_2.json>;rel=describedby"}, "Connection": []string{"Keep-Alive"}, "Accept-Ranges": []string{"bytes"}, "Odata-Version": []string{"4.0"}, "Server": []string{"Appweb/4.5.4"}, "Date": []string{"Wed, 27 Feb 2019 10:24:36 GMT"}, "Cache-Control": []string{"no-cache"}, "Content-Length": []string{"3391"}, "Allow": []string{"POST,PATCH"}, "Access-Control-Allow-Origin": []string{"*"}, "Keep-Alive": []string{"timeout=60, max=199"}},
-		`{"@odata.context":"/redfish/v1/$metadata#ComputerSystem.ComputerSystem","@odata.id":"/redfish/v1/Systems/System.Embedded.1","@odata.type":"#ComputerSystem.v1_0_2.ComputerSystem","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"AssetTag":"","BiosVersion":"2.4.3","Boot":{"BootSourceOverrideEnabled":"Once","BootSourceOverrideTarget":"None","BootSourceOverrideTarget@Redfish.AllowableValues":["None","Pxe","Cd","Floppy","Hdd","BiosSetup","Utilities","UefiTarget","SDCard"],"UefiTargetBootSourceOverride":""},"Description":"Computer System which represents a machine (physical or virtual) and the local resources such as memory, cpu and other devices that can be accessed from that machine.","EthernetInterfaces":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces"},"HostName":"","Id":"System.Embedded.1","IndicatorLED":"Off","Links":{"Chassis":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1"}],"Chassis@odata.count":1,"CooledBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7B"}],"CooledBy@odata.count":14,"ManagedBy":[{"@odata.id":"/redfish/v1/Managers/iDRAC.Embedded.1"}],"ManagedBy@odata.count":1,"PoweredBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.2"}],"PoweredBy@odata.count":2},"Manufacturer":" ","MemorySummary":{"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"TotalSystemMemoryGiB":64.0},"Model":" ","Name":"System","PartNumber":"0CNCJWA05","PowerState":"On","ProcessorSummary":{"Count":2,"Model":"Intel(R) Xeon(R) CPU E5-2623 v3 @ 3.00GHz","Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"}},"Processors":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Processors"},"SKU":"8W47F42","SerialNumber":"CN7475153B0496","SimpleStorage":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Storage/Controllers"},"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"SystemType":"Physical","UUID":"4c4c4544-0057-3410-8037-b8c04f463432"}
-`},
-	{"https://x0c0s10.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"*/*"}, "Authorization": []string{"Basic cm9vdDppbml0aWFsMA=="}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Link": []string{"</redfish/v1/Schemas/ComputerSystem.v1_0_2.json>;rel=describedby"}, "Cache-Control": []string{"no-cache"}, "Content-Length": []string{"3391"}, "Allow": []string{"POST,PATCH"}, "Odata-Version": []string{"4.0"}, "Keep-Alive": []string{"timeout=60, max=199"}, "Server": []string{"Appweb/4.5.4"}, "Date": []string{"Wed, 27 Feb 2019 10:24:35 GMT"}, "Access-Control-Allow-Origin": []string{"*"}, "Accept-Ranges": []string{"bytes"}, "Content-Type": []string{"application/json;odata.metadata=minimal;charset=utf-8"}, "Connection": []string{"Keep-Alive"}},
-		`{"@odata.context":"/redfish/v1/$metadata#ComputerSystem.ComputerSystem","@odata.id":"/redfish/v1/Systems/System.Embedded.1","@odata.type":"#ComputerSystem.v1_0_2.ComputerSystem","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"AssetTag":"","BiosVersion":"2.4.3","Boot":{"BootSourceOverrideEnabled":"Once","BootSourceOverrideTarget":"None","BootSourceOverrideTarget@Redfish.AllowableValues":["None","Pxe","Cd","Floppy","Hdd","BiosSetup","Utilities","UefiTarget","SDCard"],"UefiTargetBootSourceOverride":""},"Description":"Computer System which represents a machine (physical or virtual) and the local resources such as memory, cpu and other devices that can be accessed from that machine.","EthernetInterfaces":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces"},"HostName":"","Id":"System.Embedded.1","IndicatorLED":"Off","Links":{"Chassis":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1"}],"Chassis@odata.count":1,"CooledBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7B"}],"CooledBy@odata.count":14,"ManagedBy":[{"@odata.id":"/redfish/v1/Managers/iDRAC.Embedded.1"}],"ManagedBy@odata.count":1,"PoweredBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.2"}],"PoweredBy@odata.count":2},"Manufacturer":" ","MemorySummary":{"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"TotalSystemMemoryGiB":64.0},"Model":" ","Name":"System","PartNumber":"0CNCJWA08","PowerState":"On","ProcessorSummary":{"Count":2,"Model":"Intel(R) Xeon(R) CPU E5-2623 v3 @ 3.00GHz","Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"}},"Processors":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Processors"},"SKU":"9L7C382","SerialNumber":"CN7475159F0098","SimpleStorage":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Storage/Controllers"},"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"SystemType":"Physical","UUID":"4c4c4544-004c-3710-8043-b9c04f333832"}
-`},
-}
-var nodeStatusSomeSSData = []sstorage.MockLookup{
-	{
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s10b0n0",
-				URL:      "x0c0s10b0.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	}, {
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s7b0n0",
-				URL:      "x0c0s7b0.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	},
-}
-
-func TestNodeStatusSome(t *testing.T) {
-	var testReq = testData{"/capmc/get_node_status",
-		"POST",
-		`{"nids" : [ 16608, 16704 ]}`,
-		map[string][]string{"User-Agent": []string{"curl/7.47.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"27"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":0,"err_msg":"","on":[16608,16704]}
-`}
-	runTest(t, nodeStatusSomeHSM, &testReq, &nodeStatusSomeReplayData, nodeStatusSomeSSData)
-}
-
 var xnameOffHSM = "https://localhost:27779"
 var xnameOffReplayData = []testData{
 	{"https://localhost:27779/hsm/v1/State/Components?id=x0c0s8b0n0",
@@ -617,7 +95,7 @@ var xnameOffSSData = []sstorage.MockLookup{
 }
 
 func TestXnameOff(t *testing.T) {
-	var testReq = testData{"/capmc/xname_off",
+	var testReq = testData{"/capmc/v1/xname_off",
 		"POST",
 		`{"xnames" : [ "x0c0s8b0n0" ]}`,
 		map[string][]string{"User-Agent": []string{"curl/7.47.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"29"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
@@ -685,7 +163,7 @@ var xnameOnSSData = []sstorage.MockLookup{
 }
 
 func TestXnameOn(t *testing.T) {
-	var testReq = testData{"/capmc/xname_on",
+	var testReq = testData{"/capmc/v1/xname_on",
 		"POST",
 		`{"xnames" : [ "x0c0s8b0n0" ]}`,
 		map[string][]string{"User-Agent": []string{"curl/7.47.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"29"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
@@ -1008,7 +486,7 @@ var xnameStatusAllSSData = []sstorage.MockLookup{
 }
 
 func TestXnameStatusAll(t *testing.T) {
-	var testReq = testData{"/capmc/get_xname_status",
+	var testReq = testData{"/capmc/v1/get_xname_status",
 		"POST",
 		`{}`,
 		map[string][]string{"Content-Type": []string{"application/x-www-form-urlencoded"}, "User-Agent": []string{"curl/7.47.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"2"}},
@@ -1035,7 +513,7 @@ var xnameStatusError1ReplayData = []testData{
 var xnameStatusError1SSData = []sstorage.MockLookup{}
 
 func TestXnameStatusError1(t *testing.T) {
-	var testReq = testData{"/capmc/get_xname_status",
+	var testReq = testData{"/capmc/v1/get_xname_status",
 		"POST",
 		`{"xnames" : ["x0c0s0b0n0" ]}`,
 		map[string][]string{"Content-Type": []string{"application/x-www-form-urlencoded"}, "User-Agent": []string{"curl/7.47.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"28"}},
@@ -1052,7 +530,7 @@ var xnameStatusError2ReplayData = []testData{}
 var xnameStatusError2SSData = []sstorage.MockLookup{}
 
 func TestXnameStatusError2(t *testing.T) {
-	var testReq = testData{"/capmc/get_xname_status",
+	var testReq = testData{"/capmc/v1/get_xname_status",
 		"POST",
 		`{"xnames" : [ 4 ]}`,
 		map[string][]string{"User-Agent": []string{"curl/7.47.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"18"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
@@ -1147,7 +625,7 @@ var xnameStatusSomeSSData = []sstorage.MockLookup{
 }
 
 func TestXnameStatusSome(t *testing.T) {
-	var testReq = testData{"/capmc/get_xname_status",
+	var testReq = testData{"/capmc/v1/get_xname_status",
 		"POST",
 		`{"xnames" : ["x0c0s7b0n0", "x0c0s8b0n0", "x0c0s12b0n0" ]}`,
 		map[string][]string{"User-Agent": []string{"curl/7.47.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"57"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
@@ -1203,7 +681,7 @@ var statusNotAuthorizedSSData = []sstorage.MockLookup{
 }
 
 func TestStatusNotAuthorized(t *testing.T) {
-	var testReq = testData{"/capmc/get_xname_status",
+	var testReq = testData{"/capmc/v1/get_xname_status",
 		"POST",
 		`{"xnames":["x0c0s7b0n0"]}`,
 		map[string][]string{"User-Agent": []string{"curl/7.60.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"25"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
@@ -1260,7 +738,7 @@ var StatusComponentNotFoundSSData = []sstorage.MockLookup{
 }
 
 func TestStatusComponentNotFound(t *testing.T) {
-	var testReq = testData{"/capmc/get_xname_status",
+	var testReq = testData{"/capmc/v1/get_xname_status",
 		"POST",
 		`{"xnames":["x0c0s21b0n0"]}`,
 		map[string][]string{"User-Agent": []string{"curl/7.37.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"26"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
@@ -1270,177 +748,6 @@ func TestStatusComponentNotFound(t *testing.T) {
 		`{"e":-1,"err_msg":"Errors encountered with 1/1 Xnames for Status","undefined":["x0c0s21b0n0"]}
 `}
 	runTest(t, StatusComponentNotFoundHSM, &testReq, &StatusComponentNotFoundReplayData, StatusComponentNotFoundSSData)
-}
-
-var StatusNodeNotFoundHSM = "https://frosty-sms.us.cray.com:30443/apis/smd"
-var StatusNodeNotFoundReplayData = []testData{
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components?nid=4&state=%21Empty&state=%21Populated&state=%21Unknown",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Content-Length": []string{"553"}, "Connection": []string{"keep-alive"}, "Date": []string{"Wed, 10 Apr 2019 18:05:28 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}},
-		`{"Components":[]}
-`},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"X-Kong-Upstream-Latency": []string{"2"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Connection": []string{"keep-alive"}, "Date": []string{"Wed, 10 Apr 2019 18:05:28 GMT"}},
-		`{"ComponentEndpoints":[{"ID":"x0c0s21b0n0","Type":"Node","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"a4:bf:01:2b:68:7c","UUID":"7f1d0db3-e077-11e7-ab21-a4bf012b687c","OdataID":"/redfish/v1/Systems/QSBP75001594","RedfishEndpointID":"x0c0s21b0","RedfishEndpointFQDN":"10.4.0.8","RedfishURL":"10.4.0.8/redfish/v1/Systems/QSBP75001594","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"S2600BPB","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulShutdown","GracefulRestart","ForceRestart","Nmi"],"target":"/redfish/v1/Systems/QSBP75001594/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"","@odata.id":"","Description":"Missing interface 1, MAC computed via workaround","MACAddress":"a4:bf:01:2b:68:7c"},{"RedfishId":"","@odata.id":"","Description":"Missing interface 2, MAC computed via workaround","MACAddress":"a4:bf:01:2b:68:7d"}]}}]}
-`},
-	{"https://10.4.0.8/redfish/v1/Systems/QSBP75001594bad",
-		"GET",
-		``,
-		map[string][]string{"Authorization": []string{"Basic cm9vdDppbml0aWFsMA=="}, "Accept": []string{"*/*"}},
-		"404 Not Found", 404,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Status": []string{"404"}, "Content-Length": []string{"497"}, "Strict-Transport-Security": []string{"max-age=31536000; includeSubdomains; preload"}, "X-Ua-Compatible": []string{"IE=11"}, "X-Xss-Protection": []string{"1; mode=block"}, "Server": []string{"lighttpd/1.4.45"}, "X-Frame-Options": []string{"SAMEORIGIN"}, "Content-Type": []string{"application/json"}, "Date": []string{"Wed, 10 Apr 2019 18:05:28 GMT"}},
-		`{"error":{"code":"Base.1.1.0.GeneralError","message":"A general error has occurred. See ExtendedInfo for more information.","@Message.ExtendedInfo":[{"@odata.type":"#Message.v1_0_4.Message","MessageId":"Base.1.1.0.ResourceMissingAtURI","Message":"The resource at the URI /redfish/v1/Systems/QSBP75001594bad was not found.","MessageArgs":["/redfish/v1/Systems/QSBP75001594bad"],"Severity":"Critical","Resolution":"Place a valid resource at the URI or correct the URI and resubmit the request."}]}}
-`},
-}
-var StatusNodeNotFoundSSData = []sstorage.MockLookup{
-	{
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s21b0n0",
-				URL:      "10.4.0.8/redfish/v1/Systems/QSBP75001594",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	},
-}
-
-func TestStatusNodeNotFound(t *testing.T) {
-	var testReq = testData{"/capmc/get_node_status",
-		"POST",
-		`{"nids":[4]}`,
-		map[string][]string{"Accept": []string{"*/*"}, "Content-Length": []string{"12"}, "Content-Type": []string{"application/x-www-form-urlencoded"}, "User-Agent": []string{"curl/7.37.0"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":400,"err_msg":"nids not found: [4]"}
-`}
-	runTest(t, StatusNodeNotFoundHSM, &testReq, &StatusNodeNotFoundReplayData, StatusNodeNotFoundSSData)
-}
-
-var PowerNodeNotFoundHSM = "https://frosty-sms.us.cray.com:30443/apis/smd"
-var PowerNodeNotFoundReplayData = []testData{
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components?nid=4",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Connection": []string{"keep-alive"}, "Date": []string{"Wed, 10 Apr 2019 18:14:11 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"553"}},
-		`{"Components":[{"ID":"x0c0s21b0n0","Type":"Node","State":"Ready","Flag":"OK","Enabled":true,"Role":"Compute","NID":4,"NetType":"Sling","Arch":"X86"}]}
-`},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"X-Kong-Proxy-Latency": []string{"0"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Connection": []string{"keep-alive"}, "Date": []string{"Wed, 10 Apr 2019 18:14:11 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}},
-		`{"ComponentEndpoints":[{"ID":"x0c0s21b0n0","Type":"Node","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"a4:bf:01:2b:68:7c","UUID":"7f1d0db3-e077-11e7-ab21-a4bf012b687c","OdataID":"/redfish/v1/Systems/QSBP75001595","RedfishEndpointID":"x0c0s21b0","RedfishEndpointFQDN":"10.4.0.8","RedfishURL":"10.4.0.8/redfish/v1/Systems/QSBP75001595","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"S2600BPB","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulShutdown","GracefulRestart","ForceRestart","Nmi"],"target":"/redfish/v1/Systems/QSBP75001595/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"","@odata.id":"","Description":"Missing interface 1, MAC computed via workaround","MACAddress":"a4:bf:01:2b:68:7c"},{"RedfishId":"","@odata.id":"","Description":"Missing interface 2, MAC computed via workaround","MACAddress":"a4:bf:01:2b:68:7d"}]}}]}
-`},
-	{"https://10.4.0.8/redfish/v1/Systems/QSBP75001595/Actions/ComputerSystem.Reset",
-		"POST",
-		`{"ResetType": "On"}`,
-		map[string][]string{"Authorization": []string{"Basic cm9vdDppbml0aWFsMA=="}, "Accept": []string{"*/*"}, "Content-Type": []string{"application/json"}},
-		"404 Not Found", 404,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Length": []string{"549"}, "Date": []string{"Wed, 10 Apr 2019 18:14:11 GMT"}, "Server": []string{"lighttpd/1.4.45"}, "Strict-Transport-Security": []string{"max-age=31536000; includeSubdomains; preload"}, "X-Frame-Options": []string{"SAMEORIGIN"}, "X-Xss-Protection": []string{"1; mode=block"}, "Content-Type": []string{"application/json"}, "X-Ua-Compatible": []string{"IE=11"}, "Status": []string{"404"}},
-		`{"error":{"code":"Base.1.1.0.GeneralError","message":"A general error has occurred. See ExtendedInfo for more information.","@Message.ExtendedInfo":[{"@odata.type":"#Message.v1_0_4.Message","MessageId":"Base.1.1.0.ResourceMissingAtURI","Message":"The resource at the URI /redfish/v1/Systems/QSBP75001595/Actions/ComputerSystem.Reset was not found.","MessageArgs":["/redfish/v1/Systems/QSBP75001595/Actions/ComputerSystem.Reset"],"Severity":"Critical","Resolution":"Place a valid resource at the URI or correct the URI and resubmit the request."}]}}
-`},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/locks",
-		"POST",
-		`{"reason":"Performing a power Off","owner":"CAPMC","lifetime":180,"xnames":["x0c0s21b0n0"]}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
-		"201 OK", 201,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}, "Content-Length": []string{"62"}},
-		`{"uri":"/hsm/v1/locks/08c2e624-ded3-11e9-8a34-2a2ae2dbcce4"}]}
-`},
-}
-var PowerNodeNotFoundSSData = []sstorage.MockLookup{
-	{
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s21b0n0",
-				URL:      "10.4.0.8/redfish/v1/Systems/QSBP75001595",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	},
-}
-
-func TestPowerNodeNotFound(t *testing.T) {
-	var testReq = testData{"/capmc/node_on",
-		"POST",
-		`{"nids":[4]}`,
-		map[string][]string{"Accept": []string{"*/*"}, "Content-Length": []string{"12"}, "Content-Type": []string{"application/x-www-form-urlencoded"}, "User-Agent": []string{"curl/7.37.0"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":-1,"err_msg":"Errors encountered with 1/1 NIDs","nids":[{"nid":4,"e":404,"err_msg":"NodeBMC 10.4.0.8 HTTP 404 Not Found, Redfish Error Message: A general error has occurred. See ExtendedInfo for more information. ExtendedInfo: Message: The resource at the URI /redfish/v1/Systems/QSBP75001595/Actions/ComputerSystem.Reset was not found. Resolution: Place a valid resource at the URI or correct the URI and resubmit the request."}]}
-`}
-	runTest(t, PowerNodeNotFoundHSM, &testReq, &PowerNodeNotFoundReplayData, PowerNodeNotFoundSSData)
-}
-
-var PowerNodeDisabledHSM = "https://frosty-sms.us.cray.com:30443/apis/smd"
-var PowerNodeDisabledReplayData = []testData{
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components?nid=4",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Connection": []string{"keep-alive"}, "Date": []string{"Wed, 10 Apr 2019 18:14:11 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"553"}},
-		`{"Components":[{"ID":"x0c0s21b0n0","Type":"Node","State":"Ready","Flag":"OK","Enabled":false,"Role":"Compute","NID":4,"NetType":"Sling","Arch":"X86"}]}
-`},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"X-Kong-Proxy-Latency": []string{"0"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Connection": []string{"keep-alive"}, "Date": []string{"Wed, 10 Apr 2019 18:14:11 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}},
-		`{"ComponentEndpoints":[{"ID":"x0c0s21b0n0","Type":"Node","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"a4:bf:01:2b:68:7c","UUID":"7f1d0db3-e077-11e7-ab21-a4bf012b687c","OdataID":"/redfish/v1/Systems/QSBP75001595","RedfishEndpointID":"x0c0s21b0","RedfishEndpointFQDN":"10.4.0.8","RedfishURL":"10.4.0.8/redfish/v1/Systems/QSBP75001595","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"S2600BPB","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulShutdown","GracefulRestart","ForceRestart","Nmi"],"target":"/redfish/v1/Systems/QSBP75001595/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"","@odata.id":"","Description":"Missing interface 1, MAC computed via workaround","MACAddress":"a4:bf:01:2b:68:7c"},{"RedfishId":"","@odata.id":"","Description":"Missing interface 2, MAC computed via workaround","MACAddress":"a4:bf:01:2b:68:7d"}]}}]}
-`},
-}
-var PowerNodeDisabledSSData = []sstorage.MockLookup{
-	{
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s21b0n0",
-				URL:      "10.4.0.8/redfish/v1/Systems/QSBP75001595",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	},
-}
-
-func TestPowerNodeDisabled(t *testing.T) {
-	var testReq = testData{"/capmc/node_on",
-		"POST",
-		`{"nids":[4]}`,
-		map[string][]string{"Accept": []string{"*/*"}, "Content-Length": []string{"12"}, "Content-Type": []string{"application/x-www-form-urlencoded"}, "User-Agent": []string{"curl/7.37.0"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":400,"err_msg":"nodes disabled: [4]"}
-`}
-	runTest(t, PowerNodeDisabledHSM, &testReq, &PowerNodeDisabledReplayData, PowerNodeDisabledSSData)
 }
 
 var PowerComponentNotFoundHSM = "https://frosty-sms.us.cray.com:30443/apis/smd"
@@ -1497,7 +804,7 @@ var PowerComponentNotFoundSSData = []sstorage.MockLookup{
 }
 
 func TestPowerComponentNotFound(t *testing.T) {
-	var testReq = testData{"/capmc/xname_on",
+	var testReq = testData{"/capmc/v1/xname_on",
 		"POST",
 		`{"xnames":["x0c0s21b0n0"]}`,
 		map[string][]string{"User-Agent": []string{"curl/7.37.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"26"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
@@ -1563,7 +870,7 @@ var PowerComponentDisabledSSData = []sstorage.MockLookup{
 }
 
 func TestPowerComponentDisabled(t *testing.T) {
-	var testReq = testData{"/capmc/xname_on",
+	var testReq = testData{"/capmc/v1/xname_on",
 		"POST",
 		`{"xnames":["x0c0s21b0n0"]}`,
 		map[string][]string{"User-Agent": []string{"curl/7.37.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"26"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
@@ -1629,7 +936,7 @@ var PowerComponentNotAuthorizedSSData = []sstorage.MockLookup{
 }
 
 func TestPowerComponentNotAuthorized(t *testing.T) {
-	var testReq = testData{"/capmc/xname_on",
+	var testReq = testData{"/capmc/v1/xname_on",
 		"POST",
 		`{"xnames":["x0c0s21b0n0"]}`,
 		map[string][]string{"User-Agent": []string{"curl/7.37.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"26"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
@@ -1639,81 +946,6 @@ func TestPowerComponentNotAuthorized(t *testing.T) {
 		`{"e":-1,"err_msg":"Errors encountered with 1/1 Xnames issued On","xnames":[{"xname":"x0c0s21b0n0","e":401,"err_msg":"NodeBMC 10.4.0.8 HTTP 401 Unauthorized, Redfish Error Message: A general error has occurred. See ExtendedInfo for more information. ExtendedInfo: Message: There is no valid session established with the implementation. Resolution: Establish as session before attempting any operations. Message: While accessing the resource at /redfish/v1/Systems/QSBP75001594/Actions/ComputerSystem.Reset, the service received an authorization error failed. Resolution: Ensure that the appropriate access is provided for the service in order for it to access the URI."}]}
 `}
 	runTest(t, PowerComponentNotAuthorizedHSM, &testReq, &PowerComponentNotAuthorizedReplayData, PowerComponentNotAuthorizedSSData)
-}
-
-var PowerNodeNotAuthorizedHSM = "https://frosty-sms.us.cray.com:30443/apis/smd"
-var PowerNodeNotAuthorizedReplayData = []testData{
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components?nid=4",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Date": []string{"Wed, 10 Apr 2019 18:47:22 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"553"}, "Connection": []string{"keep-alive"}},
-		`{"Components":[{"ID":"x0c0s21b0n0","Type":"Node","State":"Ready","Flag":"OK","Enabled":true,"Role":"Compute","NID":4,"NetType":"Sling","Arch":"X86"}]}
-`},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Connection": []string{"keep-alive"}, "Date": []string{"Wed, 10 Apr 2019 18:47:22 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}},
-		`{"ComponentEndpoints":[{"ID":"x0c0s21b0n0","Type":"Node","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"a4:bf:01:2b:68:7c","UUID":"7f1d0db3-e077-11e7-ab21-a4bf012b687c","OdataID":"/redfish/v1/Systems/QSBP75001594","RedfishEndpointID":"x0c0s21b0","RedfishEndpointFQDN":"10.4.0.8","RedfishURL":"10.4.0.8/redfish/v1/Systems/QSBP75001594","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"S2600BPB","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulShutdown","GracefulRestart","ForceRestart","Nmi"],"target":"/redfish/v1/Systems/QSBP75001594/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"","@odata.id":"","Description":"Missing interface 1, MAC computed via workaround","MACAddress":"a4:bf:01:2b:68:7c"},{"RedfishId":"","@odata.id":"","Description":"Missing interface 2, MAC computed via workaround","MACAddress":"a4:bf:01:2b:68:7d"}]}}]}
-`},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/Inventory/RedfishEndpoints?id=x0c0s21b0",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"1491"}, "Connection": []string{"keep-alive"}, "Date": []string{"Wed, 10 Apr 2019 18:47:22 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}, "X-Kong-Proxy-Latency": []string{"0"}},
-		`{"RedfishEndpoints":[{"ID":"x0c0s21b0","Type":"NodeBMC","Hostname":"10.4.0.8","Domain":"","FQDN":"10.4.0.8","Enabled":true,"UUID":"d146230d-8b78-4da1-b06a-7363d526757f","User":"root","Password":"********","MACAddr":"a4bf012b6880","RediscoverOnUpdate":true,"DiscoveryInfo":{"LastDiscoveryAttempt":"2019-04-04T21:09:59.136106Z","LastDiscoveryStatus":"DiscoverOK","RedfishVersion":"1.1.0"}}]}
-`},
-	{"https://10.4.0.8/redfish/v1/Systems/QSBP75001594/Actions/ComputerSystem.Reset",
-		"POST",
-		`{"ResetType": "On"}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Authorization": []string{"Basic cm9vdDpiYWRwYXNz"}, "Accept": []string{"*/*"}},
-		"401 Unauthorized", 401,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Status": []string{"401"}, "Www-Authenticate": []string{"Basic realm=\"Redfish\""}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"877"}, "Server": []string{"lighttpd/1.4.45"}, "Strict-Transport-Security": []string{"max-age=31536000; includeSubdomains; preload"}, "X-Ua-Compatible": []string{"IE=11"}, "X-Frame-Options": []string{"SAMEORIGIN"}, "X-Xss-Protection": []string{"1; mode=block"}, "Date": []string{"Wed, 10 Apr 2019 18:47:22 GMT"}},
-		`{"error":{"code":"Base.1.1.0.GeneralError","message":"A general error has occurred. See ExtendedInfo for more information.","@Message.ExtendedInfo":[{"@odata.type":"#Message.v1_0_4.Message","MessageId":"Base.1.1.0.NoValidSession","Message":"There is no valid session established with the implementation.","Severity":"Critical","Resolution":"Establish as session before attempting any operations."},{"@odata.type":"#Message.v1_0_4.Message","MessageId":"Base.1.1.0.ResourceAtUriUnauthorized","Message":"While accessing the resource at /redfish/v1/Systems/QSBP75001594/Actions/ComputerSystem.Reset, the service received an authorization error failed.","MessageArgs":["/redfish/v1/Systems/QSBP75001594/Actions/ComputerSystem.Reset","failed"],"Severity":"Critical","Resolution":"Ensure that the appropriate access is provided for the service in order for it to access the URI."}]}}
-`},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/locks",
-		"POST",
-		`{"reason":"Performing a power Off","owner":"CAPMC","lifetime":180,"xnames":["x0c0s21b0n0"]}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
-		"201 OK", 201,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}, "Content-Length": []string{"62"}},
-		`{"uri":"/hsm/v1/locks/08c2e624-ded3-11e9-8a34-2a2ae2dbcce4"}]}
-`},
-}
-var PowerNodeNotAuthorizedSSData = []sstorage.MockLookup{
-	{
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s21b0n0",
-				URL:      "10.4.0.8/redfish/v1/Systems/QSBP75001594",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	},
-}
-
-func TestPowerNodeNotAuthorized(t *testing.T) {
-	var testReq = testData{"/capmc/node_on",
-		"POST",
-		`{"nids":[4]}`,
-		map[string][]string{"Accept": []string{"*/*"}, "Content-Length": []string{"12"}, "Content-Type": []string{"application/x-www-form-urlencoded"}, "User-Agent": []string{"curl/7.37.0"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":-1,"err_msg":"Errors encountered with 1/1 NIDs","nids":[{"nid":4,"e":401,"err_msg":"NodeBMC 10.4.0.8 HTTP 401 Unauthorized, Redfish Error Message: A general error has occurred. See ExtendedInfo for more information. ExtendedInfo: Message: There is no valid session established with the implementation. Resolution: Establish as session before attempting any operations. Message: While accessing the resource at /redfish/v1/Systems/QSBP75001594/Actions/ComputerSystem.Reset, the service received an authorization error failed. Resolution: Ensure that the appropriate access is provided for the service in order for it to access the URI."}]}
-`}
-	runTest(t, PowerNodeNotAuthorizedHSM, &testReq, &PowerNodeNotAuthorizedReplayData, PowerNodeNotAuthorizedSSData)
 }
 
 var XnameOffRecursiveHSM = "https://slice-sms.us.cray.com:30443/apis/smd"
@@ -1788,7 +1020,7 @@ var XnameOffRecursiveSSData = []sstorage.MockLookup{
 }
 
 func TestXnameOffRecursive(t *testing.T) {
-	var testReq = testData{"/capmc/xname_off",
+	var testReq = testData{"/capmc/v1/xname_off",
 		"POST",
 		`{ "force": false, "recursive": true, "reason": "", "xnames": [ "x0c0s28" ] }`,
 		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}, "Content-Length": []string{"76"}, "User-Agent": []string{"curl/7.37.0"}},
@@ -1866,7 +1098,7 @@ var XnameOnRecursiveSSData = []sstorage.MockLookup{
 }
 
 func TestXnameOnRecursive(t *testing.T) {
-	var testReq = testData{"/capmc/xname_on",
+	var testReq = testData{"/capmc/v1/xname_on",
 		"POST",
 		`{ "force": false, "recursive": true, "reason": "", "xnames": [ "x0c0s28" ] }`,
 		map[string][]string{"User-Agent": []string{"curl/7.37.0"}, "Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}, "Content-Length": []string{"76"}},
@@ -1959,7 +1191,7 @@ var XnameOffRecursiveChassisSSData = []sstorage.MockLookup{
 }
 
 func TestXnameOffRecursiveChassis(t *testing.T) {
-	var testReq = testData{"/capmc/xname_off",
+	var testReq = testData{"/capmc/v1/xname_off",
 		"POST",
 		`{ "force": false, "recursive": true, "reason": "", "xnames": [ "x0c0" ] }`,
 		map[string][]string{"User-Agent": []string{"curl/7.37.0"}, "Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}, "Content-Length": []string{"73"}},
@@ -2043,7 +1275,7 @@ var XnameOnRecursiveChassisSSData = []sstorage.MockLookup{
 }
 
 func TestXnameOnRecursiveChassis(t *testing.T) {
-	var testReq = testData{"/capmc/xname_on",
+	var testReq = testData{"/capmc/v1/xname_on",
 		"POST",
 		`{ "force": false, "recursive": true, "reason": "", "xnames": [ "x0c0" ] }`,
 		map[string][]string{"User-Agent": []string{"curl/7.37.0"}, "Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}, "Content-Length": []string{"73"}},

@@ -44,10 +44,7 @@ import (
 	"time"
 
 	"github.com/Cray-HPE/hms-capmc/internal/capmc"
-	"github.com/Cray-HPE/hms-capmc/internal/logger"
-	"github.com/Cray-HPE/hms-capmc/internal/tsdb"
 	"github.com/Cray-HPE/hms-certs/pkg/hms_certs"
-	"github.com/sirupsen/logrus"
 
 	base "github.com/Cray-HPE/hms-base"
 	compcreds "github.com/Cray-HPE/hms-compcredentials"
@@ -74,109 +71,18 @@ var rfClientLock sync.RWMutex
 
 // TODO Move these to new file router.go
 var capmcAPIs = []APIs{
-	// Default API
+
 	{
-		API{capmc.EmergencyPowerOff, svc.doEmergencyPowerOff},
-		API{capmc.GroupOff, svc.doGroupOff},
-		API{capmc.GroupOn, svc.doGroupOn},
-		API{capmc.GroupReinit, svc.doGroupReinit},
-		API{capmc.GroupStatus, svc.doGroupStatus},
-		API{capmc.Health, svc.doHealth},
-		API{capmc.Liveness, svc.doLiveness},
-		API{capmc.NodeEnergyCounter, svc.doNodeEnergyCounter},
-		API{capmc.NodeEnergyStats, svc.doNodeEnergyStats},
-		API{capmc.NodeEnergy, svc.doNodeEnergy},
-		API{capmc.NodeIDMap, svc.doNidMap},
-		API{capmc.NodeOff, svc.doNodeOff},
-		API{capmc.NodeOn, svc.doNodeOn},
-		API{capmc.NodeReinit, svc.doNodeRestart},
-		API{capmc.NodeRules, svc.doNodeRules},
-		API{capmc.NodeStatus, svc.doNodeStatus},
-		API{capmc.PowerCapCapabilities, svc.doPowerCapCapabilities},
-		API{capmc.PowerCapGet, svc.doPowerCapGet},
-		API{capmc.PowerCapSet, svc.doPowerCapSet},
-		API{capmc.Readiness, svc.doReadiness},
-		API{capmc.SystemParams, svc.doSystemParams},
-		API{capmc.SystemPower, svc.doSystemPower},
-		API{capmc.SystemPowerDetails, svc.doSystemPowerDetails},
-		API{capmc.XnameOff, svc.doXnameOff},
-		API{capmc.XnameOn, svc.doXnameOn},
-		API{capmc.XnameReinit, svc.doXnameReinit},
-		API{capmc.XnameStatus, svc.doXnameStatus},
-		API{capmc.SSDDiagsGet, svc.NotImplemented},
-		API{capmc.SSDEnableClear, svc.NotImplemented},
-		API{capmc.SSDEnableGet, svc.NotImplemented},
-		API{capmc.SSDEnableSet, svc.NotImplemented},
-		API{capmc.SSDSGet, svc.NotImplemented},
-		API{capmc.MCDRAMCapabilities, svc.NotImplemented},
-		API{capmc.MCDRAMConfigClear, svc.NotImplemented},
-		API{capmc.MCDRAMConfigGet, svc.NotImplemented},
-		API{capmc.MCDRAMConfigSet, svc.NotImplemented},
-		API{capmc.NUMACapabilities, svc.NotImplemented},
-		API{capmc.NUMAConfigClear, svc.NotImplemented},
-		API{capmc.NUMAConfigGet, svc.NotImplemented},
-		API{capmc.NUMAConfigSet, svc.NotImplemented},
-	},
-	// V0 API
-	{
-		API{capmc.NodeEnergyCounterV0, svc.doNodeEnergyCounter},
-		API{capmc.NodeEnergyStatsV0, svc.doNodeEnergyStats},
-		API{capmc.NodeEnergyV0, svc.doNodeEnergy},
-		API{capmc.NodeIDMapV0, svc.NotImplemented},
-		API{capmc.NodeOffV0, svc.doNodeOff},
-		API{capmc.NodeOnV0, svc.doNodeOn},
-		API{capmc.NodeReinitV0, svc.doNodeRestart},
-		API{capmc.NodeRulesV0, svc.doNodeRules},
-		API{capmc.NodeStatusV0, svc.doNodeStatus},
-		API{capmc.PowerCapCapabilitiesV0, svc.doPowerCapCapabilities},
-		API{capmc.PowerCapGetV0, svc.doPowerCapGet},
-		API{capmc.PowerCapSetV0, svc.doPowerCapSet},
-		API{capmc.SystemParamsV0, svc.doSystemParams},
-		API{capmc.SystemPowerV0, svc.doSystemPower},
-		API{capmc.SystemPowerDetailsV0, svc.doSystemPowerDetails},
-	},
-	// V1 API
-	{
-		API{capmc.EmergencyPowerOffV1, svc.doEmergencyPowerOff},
-		API{capmc.GroupOffV1, svc.doGroupOff},
-		API{capmc.GroupOnV1, svc.doGroupOn},
-		API{capmc.GroupReinitV1, svc.doGroupReinit},
-		API{capmc.GroupStatusV1, svc.doGroupStatus},
 		API{capmc.HealthV1, svc.doHealth},
 		API{capmc.LivenessV1, svc.doLiveness},
-		API{capmc.NodeEnergyCounterV1, svc.doNodeEnergyCounter},
-		API{capmc.NodeEnergyStatsV1, svc.doNodeEnergyStats},
-		API{capmc.NodeEnergyV1, svc.doNodeEnergy},
-		API{capmc.NodeIDMapV1, svc.doNidMap},
-		API{capmc.NodeOffV1, svc.doNodeOff},
-		API{capmc.NodeOnV1, svc.doNodeOn},
-		API{capmc.NodeReinitV1, svc.doNodeRestart},
-		API{capmc.NodeRulesV1, svc.doNodeRules},
-		API{capmc.NodeStatusV1, svc.doNodeStatus},
 		API{capmc.PowerCapCapabilitiesV1, svc.doPowerCapCapabilities},
 		API{capmc.PowerCapGetV1, svc.doPowerCapGet},
 		API{capmc.PowerCapSetV1, svc.doPowerCapSet},
 		API{capmc.ReadinessV1, svc.doReadiness},
-		API{capmc.SystemParamsV1, svc.doSystemParams},
-		API{capmc.SystemPowerV1, svc.doSystemPower},
-		API{capmc.SystemPowerDetailsV1, svc.doSystemPowerDetails},
 		API{capmc.XnameOffV1, svc.doXnameOff},
 		API{capmc.XnameOnV1, svc.doXnameOn},
 		API{capmc.XnameReinitV1, svc.doXnameReinit},
 		API{capmc.XnameStatusV1, svc.doXnameStatus},
-		API{capmc.SSDDiagsGetV1, svc.NotImplemented},
-		API{capmc.SSDEnableClearV1, svc.NotImplemented},
-		API{capmc.SSDEnableGetV1, svc.NotImplemented},
-		API{capmc.SSDEnableSetV1, svc.NotImplemented},
-		API{capmc.SSDSGetV1, svc.NotImplemented},
-		API{capmc.MCDRAMCapabilitiesV1, svc.NotImplemented},
-		API{capmc.MCDRAMConfigClearV1, svc.NotImplemented},
-		API{capmc.MCDRAMConfigGetV1, svc.NotImplemented},
-		API{capmc.MCDRAMConfigSetV1, svc.NotImplemented},
-		API{capmc.NUMACapabilitiesV1, svc.NotImplemented},
-		API{capmc.NUMAConfigClearV1, svc.NotImplemented},
-		API{capmc.NUMAConfigGetV1, svc.NotImplemented},
-		API{capmc.NUMAConfigSetV1, svc.NotImplemented},
 	},
 }
 
@@ -470,10 +376,6 @@ func main() {
 	//   on real hardware without actually turning systems on and off.
 	flag.BoolVar(&svc.simulationOnly, "simulateOnly", false, "Only log calls to BMC's instead of executing them")
 
-	// LOGGING // SETUP LOGRUS GLOBAL!
-	// using name logrus, as to not override the log stuff.
-	logger.SetupLogging()
-
 	// TODO Add support for specifying http/https with the latter as default
 	//      It might make sense to use the URI format here too.
 	flag.StringVar(&svc.httpListen, "http-listen", "0.0.0.0:27777", "HTTP server IP + port binding")
@@ -607,47 +509,6 @@ func main() {
 	svc.reservation.Init(svc.hsmURL.Scheme+"://"+svc.hsmURL.Host, "", 3, nil)
 	svc.reservationsEnabled = true
 
-	//Configure TSDB connection; MAY USE DUMMY
-	// Spin this in another thread until the connection is successful
-	go func() {
-		const (
-			initBackoff time.Duration = 5
-			maxBackoff  time.Duration = 60
-		)
-
-		backoff := initBackoff
-		for {
-			if err := tsdb.ConfigureDataImplementation(tsdb.UNKNOWN); err != nil {
-				logrus.Warning("DB Failed to connect")
-
-				time.Sleep(backoff * time.Second)
-			} else {
-				logrus.Info("DB Connection established")
-				break
-			}
-			if backoff < maxBackoff {
-				backoff += backoff
-			}
-			if backoff > maxBackoff {
-				backoff = maxBackoff
-			}
-		}
-	}()
-
-	// Create deferred function to close the database connection
-	// This is important if any other 'startup' sections below
-	// fail before entering normal serving mode.
-	defer func() {
-		if tsdb.ImplementedConnection == tsdb.POSTGRES {
-			err = tsdb.DB.Close()
-			if err != nil {
-				logrus.WithField("error", err).Error("Could not cleanly close connection to DB!")
-			} else {
-				logrus.Info("Connection to DB closed.")
-			}
-		}
-	}()
-
 	// Spin a thread for connecting to Vault
 	go func() {
 		const (
@@ -730,9 +591,7 @@ func main() {
 	}
 
 	// Do not log the calls for liveness/readiness
-	suppressLoggingForPath(capmc.Liveness)
 	suppressLoggingForPath(capmc.LivenessV1)
-	suppressLoggingForPath(capmc.Readiness)
 	suppressLoggingForPath(capmc.ReadinessV1)
 
 	// Spin up our global worker goroutine pool.
