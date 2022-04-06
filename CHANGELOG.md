@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [1.31.1] - 2022-04-06
+
+### Fixed
+
+- Don't wait for all power offs to complete, only do that when emulating restart
+
 ## [1.31.0] - 2021-11-24
 
 ### Fixed
