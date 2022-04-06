@@ -282,15 +282,17 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 						doRemoveComp(cmap, t, result.ni.Hostname, d.ReinitActionSeq[actionNum+1:])
 					}
 
-					if (cmd == bmcCmdPowerOff || cmd == bmcCmdPowerForceOff) &&
-						result.rc == 0 {
-						offResult := d.waitForOff(result.ni)
-						if offResult.rc != 0 {
-							failures++
-							xnameErr := capmc.MakeXnameError(offResult.ni.Hostname, offResult.rc, offResult.msg)
-							data.Xnames = append(data.Xnames, xnameErr)
-							// Check any future actions for the same xname and remove it.
-							doRemoveComp(cmap, t, result.ni.Hostname, d.ReinitActionSeq[actionNum+1:])
+					if command == bmcCmdPowerRestart {
+						if (cmd == bmcCmdPowerOff || cmd == bmcCmdPowerForceOff) &&
+							result.rc == 0 {
+							offResult := d.waitForOff(result.ni)
+							if offResult.rc != 0 {
+								failures++
+								xnameErr := capmc.MakeXnameError(offResult.ni.Hostname, offResult.rc, offResult.msg)
+								data.Xnames = append(data.Xnames, xnameErr)
+								// Check any future actions for the same xname and remove it.
+								doRemoveComp(cmap, t, result.ni.Hostname, d.ReinitActionSeq[actionNum+1:])
+							}
 						}
 					}
 				}
