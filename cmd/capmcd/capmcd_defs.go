@@ -115,7 +115,7 @@ var (
 	defaultActionMaxWorkers    = 1000
 	defaultOnUnsupportedAction = actionSimulate
 	defaultReinitActionSeq     = []string{bmcCmdPowerOff, bmcCmdPowerForceOff, bmcCmdPowerRestart, bmcCmdPowerForceRestart, bmcCmdPowerOn, bmcCmdPowerForceOn, bmcCmdNMI}
-	defaultWaitForOffRetries   = 4
+	defaultWaitForOffRetries   = 40
 	defaultWaitForOffSleep     = 15
 	// CompSeq:
 	// The power sequencing list based on comments in CASMHMS-836
