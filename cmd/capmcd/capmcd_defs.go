@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2021] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -114,7 +114,7 @@ var (
 	defaultActionMaxWorkers    = 1000
 	defaultOnUnsupportedAction = actionSimulate
 	defaultReinitActionSeq     = []string{bmcCmdPowerOff, bmcCmdPowerForceOff, bmcCmdPowerRestart, bmcCmdPowerForceRestart, bmcCmdPowerOn, bmcCmdPowerForceOn, bmcCmdNMI}
-	defaultWaitForOffRetries   = 4
+	defaultWaitForOffRetries   = 60
 	defaultWaitForOffSleep     = 15
 	// CompSeq:
 	// The power sequencing list based on comments in CASMHMS-836

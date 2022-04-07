@@ -53,8 +53,6 @@ github.com/hashicorp/vault/sdk/helper/hclutil
 github.com/hashicorp/vault/sdk/helper/jsonutil
 github.com/hashicorp/vault/sdk/helper/parseutil
 github.com/hashicorp/vault/sdk/helper/strutil
-# github.com/lib/pq v1.9.0
-## explicit
 # github.com/mitchellh/go-homedir v1.1.0
 github.com/mitchellh/go-homedir
 # github.com/mitchellh/mapstructure v1.3.0
@@ -65,7 +63,6 @@ github.com/pierrec/lz4/internal/xxh32
 # github.com/ryanuber/go-glob v1.0.0
 github.com/ryanuber/go-glob
 # github.com/sirupsen/logrus v1.8.1
-## explicit
 github.com/sirupsen/logrus
 # github.com/stretchr/testify v1.7.0
 ## explicit
