@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2021] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -282,15 +282,17 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 						doRemoveComp(cmap, t, result.ni.Hostname, d.ReinitActionSeq[actionNum+1:])
 					}
 
-					if (cmd == bmcCmdPowerOff || cmd == bmcCmdPowerForceOff) &&
-						result.rc == 0 {
-						offResult := d.waitForOff(result.ni)
-						if offResult.rc != 0 {
-							failures++
-							xnameErr := capmc.MakeXnameError(offResult.ni.Hostname, offResult.rc, offResult.msg)
-							data.Xnames = append(data.Xnames, xnameErr)
-							// Check any future actions for the same xname and remove it.
-							doRemoveComp(cmap, t, result.ni.Hostname, d.ReinitActionSeq[actionNum+1:])
+					if command == bmcCmdPowerRestart {
+						if (cmd == bmcCmdPowerOff || cmd == bmcCmdPowerForceOff) &&
+							result.rc == 0 {
+							offResult := d.waitForOff(result.ni)
+							if offResult.rc != 0 {
+								failures++
+								xnameErr := capmc.MakeXnameError(offResult.ni.Hostname, offResult.rc, offResult.msg)
+								data.Xnames = append(data.Xnames, xnameErr)
+								// Check any future actions for the same xname and remove it.
+								doRemoveComp(cmap, t, result.ni.Hostname, d.ReinitActionSeq[actionNum+1:])
+							}
 						}
 					}
 				}
