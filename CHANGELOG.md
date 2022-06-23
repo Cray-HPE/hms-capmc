@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [2.2.0] - 2022-06-22
+
+### Changed
+
+- updated CT tests to hms-test:3.1.0 image as part of Helm test coordination
+
 ## [2.1.0] - 2022-04-06
 
 ### Fixed

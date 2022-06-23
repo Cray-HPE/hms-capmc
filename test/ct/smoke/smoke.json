@@ -1,5 +1,5 @@
 {
-  "smoke_test_name": "CAPMC-smoke-tests",
+  "smoke_test_name": "capmc-smoke-tests",
   "default_base_url": "http://cray-capmc/",
   "test_paths": [
     {
