@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2021] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -611,41 +611,6 @@ func TestGetNodes(t *testing.T) {
 				}
 			}
 		})
-	}
-}
-
-const testHSMLockLocked = `
-{
-	"uri":"/hsm/v1/locks/08c2e624-ded3-11e9-8a34-2a2ae2dbcce4"
-}
-`
-
-func HSMLockFunc() RoundTripFunc {
-	return func(req *http.Request) (*http.Response, error) {
-		b, _ := ioutil.ReadAll(req.Body)
-		// Case where the component is already locked
-		if bytes.Contains(b, []byte("x0c0s0b1n0")) {
-			return &http.Response{
-				StatusCode: 409,
-				Body:       ioutil.NopCloser(bytes.NewBufferString(`{"status":409}`)),
-				Header:     make(http.Header),
-			}, nil
-		}
-
-		switch req.URL.String() {
-		case "http://localhost:27779/locks":
-			return &http.Response{
-				StatusCode: 201,
-				Body:       ioutil.NopCloser(bytes.NewBufferString(testHSMLockLocked)),
-				Header:     make(http.Header),
-			}, nil
-		default:
-			return &http.Response{
-				StatusCode: 400,
-				Body:       ioutil.NopCloser(bytes.NewBufferString("")),
-				Header:     make(http.Header),
-			}, nil
-		}
 	}
 }
 

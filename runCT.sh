@@ -25,17 +25,24 @@
 #
 set -x
 
+# Add .exe if running in a WSL environment
+if $(uname -r | grep -q "Microsoft"); then
+    shopt -s expand_aliases
+    alias docker-compose=docker-compose.exe
+fi
 
 # Configure docker compose
 export COMPOSE_PROJECT_NAME=$RANDOM
 export COMPOSE_FILE=docker-compose.test.ct.yaml
+
+args="-f $COMPOSE_FILE -p $COMPOSE_PROJECT_NAME"
 
 echo "COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}"
 echo "COMPOSE_FILE: $COMPOSE_FILE"
 
 
 function cleanup() {
-  docker-compose down
+  docker-compose $args down
   if ! [[ $? -eq 0 ]]; then
     echo "Failed to decompose environment!"
     exit 1
@@ -46,14 +53,14 @@ function cleanup() {
 
 # Get the base containers running
 echo "Starting containers..."
-docker-compose build --no-cache
-docker-compose up  -d cray-capmc #this will stand up everything except for the integration test container
+docker-compose $args build --no-cache
+docker-compose $args up  -d cray-capmc #this will stand up everything except for the integration test container
 
-docker-compose up -d ct-tests-functional-wait-for-smd
+docker-compose $args up -d ct-tests-functional-wait-for-smd
 docker wait ${COMPOSE_PROJECT_NAME}_ct-tests-functional-wait-for-smd_1
 docker logs ${COMPOSE_PROJECT_NAME}_ct-tests-functional-wait-for-smd_1
 
-docker-compose up --exit-code-from ct-tests-smoke ct-tests-smoke
+docker-compose $args up --exit-code-from ct-tests-smoke ct-tests-smoke
 test_result=$?
 echo "Cleaning up containers..."
 if [[ $test_result -ne 0 ]]; then
@@ -62,7 +69,7 @@ if [[ $test_result -ne 0 ]]; then
 fi
 
 
-docker-compose up --exit-code-from ct-tests-functional ct-tests-functional
+docker-compose $args up --exit-code-from ct-tests-functional ct-tests-functional
 test_result=$?
 # Clean up
 echo "Cleaning up containers..."
