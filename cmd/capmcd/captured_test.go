@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2021] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -35,7 +35,7 @@ import (
 
 var xnameOffHSM = "https://localhost:27779"
 var xnameOffReplayData = []testData{
-	{"https://localhost:27779/hsm/v1/State/Components?id=x0c0s8b0n0",
+	{"https://localhost:27779/hsm/v2/State/Components?id=x0c0s8b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -44,7 +44,7 @@ var xnameOffReplayData = []testData{
 		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}, "Content-Length": []string{"1801"}},
 		`{"Components":[{"ID":"x0c0s8b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16640,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://localhost:27779/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s8b0n0",
+	{"https://localhost:27779/hsm/v2/Inventory/ComponentEndpoints?id=x0c0s8b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -69,15 +69,6 @@ var xnameOffReplayData = []testData{
 		"HTTP/1.1", 1, 1,
 		map[string][]string{"Content-Length": []string{"3392"}, "Access-Control-Allow-Origin": []string{"*"}, "Accept-Ranges": []string{"bytes"}, "Odata-Version": []string{"4.0"}, "Keep-Alive": []string{"timeout=60, max=199"}, "Content-Type": []string{"application/json;odata.metadata=minimal;charset=utf-8"}, "Server": []string{"Appweb/4.5.4"}, "Date": []string{"Wed, 27 Feb 2019 04:19:40 GMT"}, "Link": []string{"</redfish/v1/Schemas/ComputerSystem.v1_0_2.json>;rel=describedby"}, "Cache-Control": []string{"no-cache"}, "Allow": []string{"POST,PATCH"}, "Connection": []string{"Keep-Alive"}},
 		`{"@odata.context":"/redfish/v1/$metadata#ComputerSystem.ComputerSystem","@odata.id":"/redfish/v1/Systems/System.Embedded.1","@odata.type":"#ComputerSystem.v1_0_2.ComputerSystem","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"AssetTag":"","BiosVersion":"2.1.7","Boot":{"BootSourceOverrideEnabled":"Once","BootSourceOverrideTarget":"None","BootSourceOverrideTarget@Redfish.AllowableValues":["None","Pxe","Cd","Floppy","Hdd","BiosSetup","Utilities","UefiTarget","SDCard"],"UefiTargetBootSourceOverride":""},"Description":"Computer System which represents a machine (physical or virtual) and the local resources such as memory, cpu and other devices that can be accessed from that machine.","EthernetInterfaces":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces"},"HostName":"","Id":"System.Embedded.1","IndicatorLED":"Off","Links":{"Chassis":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1"}],"Chassis@odata.count":1,"CooledBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7B"}],"CooledBy@odata.count":14,"ManagedBy":[{"@odata.id":"/redfish/v1/Managers/iDRAC.Embedded.1"}],"ManagedBy@odata.count":1,"PoweredBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.2"}],"PoweredBy@odata.count":2},"Manufacturer":" ","MemorySummary":{"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"TotalSystemMemoryGiB":128.0},"Model":" ","Name":"System","PartNumber":"0CNCJWA05","PowerState":"Off","ProcessorSummary":{"Count":2,"Model":"Intel(R) Xeon(R) CPU E5-2640 v3 @ 2.60GHz","Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"}},"Processors":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Processors"},"SKU":"8W28F42","SerialNumber":"CN7475153B0564","SimpleStorage":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Storage/Controllers"},"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"SystemType":"Physical","UUID":"4c4c4544-0057-3210-8038-b8c04f463432"}
-`},
-	{"https://localhost:27779/hsm/v1/locks",
-		"POST",
-		`{"reason":"Performing a power Off","owner":"CAPMC","lifetime":180,"xnames":["x0c0s8b0n0"]}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
-		"201 OK", 201,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}, "Content-Length": []string{"62"}},
-		`{"uri":"/hsm/v1/locks/08c2e624-ded3-11e9-8a34-2a2ae2dbcce4"}]}
 `},
 }
 var xnameOffSSData = []sstorage.MockLookup{
@@ -112,7 +103,7 @@ func TestXnameOff(t *testing.T) {
 
 var xnameOnHSM = "https://localhost:27779"
 var xnameOnReplayData = []testData{
-	{"https://localhost:27779/hsm/v1/State/Components?id=x0c0s8b0n0",
+	{"https://localhost:27779/hsm/v2/State/Components?id=x0c0s8b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -121,7 +112,7 @@ var xnameOnReplayData = []testData{
 		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}, "Content-Length": []string{"1801"}},
 		`{"Components":[{"ID":"x0c0s8b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16640,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://localhost:27779/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s8b0n0",
+	{"https://localhost:27779/hsm/v2/Inventory/ComponentEndpoints?id=x0c0s8b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -138,15 +129,6 @@ var xnameOnReplayData = []testData{
 		"HTTP/1.1", 1, 1,
 		map[string][]string{"Connection": []string{"Keep-Alive"}, "Accept-Ranges": []string{"bytes"}, "Odata-Entityid": []string{"/redfish/v1/Systems/System.Embedded.1"}, "Cache-Control": []string{"no-cache"}, "Content-Type": []string{"application/json;odata.metadata=minimal;charset=utf-8"}, "Server": []string{"Appweb/4.5.4"}, "Date": []string{"Wed, 27 Feb 2019 09:48:13 GMT"}, "Content-Length": []string{"0"}, "Access-Control-Allow-Origin": []string{"*"}, "Odata-Version": []string{"4.0"}, "Keep-Alive": []string{"timeout=60, max=199"}},
 		``},
-	{"https://localhost:27779/hsm/v1/locks",
-		"POST",
-		`{"reason":"Performing a power Off","owner":"CAPMC","lifetime":180,"xnames":["x0c0s8b0n0"]}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
-		"201 OK", 201,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}, "Content-Length": []string{"62"}},
-		`{"uri":"/hsm/v1/locks/08c2e624-ded3-11e9-8a34-2a2ae2dbcce4"}]}
-`},
 }
 var xnameOnSSData = []sstorage.MockLookup{
 	{
@@ -177,7 +159,7 @@ func TestXnameOn(t *testing.T) {
 
 var xnameStatusAllHSM = "https://localhost:27779"
 var xnameStatusAllReplayData = []testData{
-	{"https://localhost:27779/hsm/v1/State/Components?type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
+	{"https://localhost:27779/hsm/v2/State/Components?type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -186,7 +168,7 @@ var xnameStatusAllReplayData = []testData{
 		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Tue, 26 Feb 2019 22:24:37 GMT"}, "Content-Length": []string{"1801"}},
 		`{"Components":[{"ID":"x0c0s10b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16704,"NetType":"Sling","Arch":"X86"},{"ID":"x0c0s12b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16768,"NetType":"Sling","Arch":"X86"},{"ID":"x0c0s7b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16608,"NetType":"Sling","Arch":"X86"},{"ID":"x0c0s8b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16640,"NetType":"Sling","Arch":"X86"},{"ID":"x0c0s9b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16672,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://localhost:27779/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s10b0n0&id=x0c0s12b0n0&id=x0c0s7b0n0&id=x0c0s8b0n0&id=x0c0s9b0n0",
+	{"https://localhost:27779/hsm/v2/Inventory/ComponentEndpoints?id=x0c0s10b0n0&id=x0c0s12b0n0&id=x0c0s7b0n0&id=x0c0s8b0n0&id=x0c0s9b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -500,7 +482,7 @@ func TestXnameStatusAll(t *testing.T) {
 
 var xnameStatusError1HSM = "https://localhost:27779"
 var xnameStatusError1ReplayData = []testData{
-	{"https://localhost:27779/hsm/v1/State/Components?id=x0c0s0b0n0&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
+	{"https://localhost:27779/hsm/v2/State/Components?id=x0c0s0b0n0&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -544,7 +526,7 @@ func TestXnameStatusError2(t *testing.T) {
 
 var xnameStatusSomeHSM = "https://localhost:27779"
 var xnameStatusSomeReplayData = []testData{
-	{"https://localhost:27779/hsm/v1/State/Components?id=x0c0s7b0n0&id=x0c0s8b0n0&id=x0c0s12b0n0&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
+	{"https://localhost:27779/hsm/v2/State/Components?id=x0c0s7b0n0&id=x0c0s8b0n0&id=x0c0s12b0n0&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -553,7 +535,7 @@ var xnameStatusSomeReplayData = []testData{
 		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Tue, 26 Feb 2019 22:26:11 GMT"}, "Content-Length": []string{"1801"}},
 		`{"Components":[{"ID":"x0c0s12b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16768,"NetType":"Sling","Arch":"X86"},{"ID":"x0c0s7b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16608,"NetType":"Sling","Arch":"X86"},{"ID":"x0c0s8b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16640,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://localhost:27779/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s7b0n0&id=x0c0s8b0n0&id=x0c0s12b0n0&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
+	{"https://localhost:27779/hsm/v2/Inventory/ComponentEndpoints?id=x0c0s7b0n0&id=x0c0s8b0n0&id=x0c0s12b0n0&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -639,7 +621,7 @@ func TestXnameStatusSome(t *testing.T) {
 
 var statusNotAuthorizedHSM = "https://localhost:27779"
 var statusNotAuthorizedReplayData = []testData{
-	{"https://localhost:27779/hsm/v1/State/Components?id=x0c0s7b0n0&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
+	{"https://localhost:27779/hsm/v2/State/Components?id=x0c0s7b0n0&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -648,7 +630,7 @@ var statusNotAuthorizedReplayData = []testData{
 		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Thu, 04 Apr 2019 20:30:12 GMT"}, "Content-Length": []string{"1801"}},
 		`{"Components":[{"ID":"x0c0s7b0n0","Type":"Node","State":"On","Flag":"OK","Enabled":true,"Role":"Compute","NID":16608,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://localhost:27779/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s7b0n0&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
+	{"https://localhost:27779/hsm/v2/Inventory/ComponentEndpoints?id=x0c0s7b0n0&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -695,7 +677,7 @@ func TestStatusNotAuthorized(t *testing.T) {
 
 var StatusComponentNotFoundHSM = "https://frosty-sms.us.cray.com:30443/apis/smd"
 var StatusComponentNotFoundReplayData = []testData{
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components?id=x0c0s21b0n0&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
+	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components?id=x0c0s21b0n0&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -704,7 +686,7 @@ var StatusComponentNotFoundReplayData = []testData{
 		map[string][]string{"Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"1457"}, "Connection": []string{"keep-alive"}, "Date": []string{"Wed, 10 Apr 2019 18:05:11 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}, "X-Kong-Proxy-Latency": []string{"1"}},
 		`{"Components":[{"ID":"x0c0s21b0n0","Type":"Node","State":"Ready","Flag":"OK","Enabled":true,"Role":"Compute","NID":4,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s21b0n0&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
+	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v2/Inventory/ComponentEndpoints?id=x0c0s21b0n0&type=CabinetPDUPowerConnector&type=CabinetPDUOutlet&type=Chassis&type=RouterModule&type=HSNBoard&type=ComputeModule&type=Node",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -752,7 +734,7 @@ func TestStatusComponentNotFound(t *testing.T) {
 
 var PowerComponentNotFoundHSM = "https://frosty-sms.us.cray.com:30443/apis/smd"
 var PowerComponentNotFoundReplayData = []testData{
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components?id=x0c0s21b0n0",
+	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components?id=x0c0s21b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -761,7 +743,7 @@ var PowerComponentNotFoundReplayData = []testData{
 		map[string][]string{"Date": []string{"Wed, 10 Apr 2019 18:15:42 GMT"}, "X-Kong-Upstream-Latency": []string{"3"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"1457"}, "Connection": []string{"keep-alive"}},
 		`{"Components":[{"ID":"x0c0s21b0n0","Type":"Node","State":"Ready","Flag":"OK","Enabled":true,"Role":"Compute","NID":4,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
+	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v2/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -778,15 +760,6 @@ var PowerComponentNotFoundReplayData = []testData{
 		"HTTP/1.1", 1, 1,
 		map[string][]string{"X-Frame-Options": []string{"SAMEORIGIN"}, "X-Xss-Protection": []string{"1; mode=block"}, "Status": []string{"404"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"549"}, "Server": []string{"lighttpd/1.4.45"}, "Strict-Transport-Security": []string{"max-age=31536000; includeSubdomains; preload"}, "X-Ua-Compatible": []string{"IE=11"}, "Date": []string{"Wed, 10 Apr 2019 18:15:42 GMT"}},
 		`{"error":{"code":"Base.1.1.0.GeneralError","message":"A general error has occurred. See ExtendedInfo for more information.","@Message.ExtendedInfo":[{"@odata.type":"#Message.v1_0_4.Message","MessageId":"Base.1.1.0.ResourceMissingAtURI","Message":"The resource at the URI /redfish/v1/Systems/QSBP75001595/Actions/ComputerSystem.Reset was not found.","MessageArgs":["/redfish/v1/Systems/QSBP75001595/Actions/ComputerSystem.Reset"],"Severity":"Critical","Resolution":"Place a valid resource at the URI or correct the URI and resubmit the request."}]}}
-`},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/locks",
-		"POST",
-		`{"reason":"Performing a power Off","owner":"CAPMC","lifetime":180,"xnames":["x0c0s21b0n0"]}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
-		"201 OK", 201,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}, "Content-Length": []string{"62"}},
-		`{"uri":"/hsm/v1/locks/08c2e624-ded3-11e9-8a34-2a2ae2dbcce4"}]}
 `},
 }
 var PowerComponentNotFoundSSData = []sstorage.MockLookup{
@@ -818,7 +791,7 @@ func TestPowerComponentNotFound(t *testing.T) {
 
 var PowerComponentDisabledHSM = "https://frosty-sms.us.cray.com:30443/apis/smd"
 var PowerComponentDisabledReplayData = []testData{
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components?id=x0c0s21b0n0",
+	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components?id=x0c0s21b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -827,7 +800,7 @@ var PowerComponentDisabledReplayData = []testData{
 		map[string][]string{"Date": []string{"Wed, 10 Apr 2019 18:15:42 GMT"}, "X-Kong-Upstream-Latency": []string{"3"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"1457"}, "Connection": []string{"keep-alive"}},
 		`{"Components":[{"ID":"x0c0s21b0n0","Type":"Node","State":"Ready","Flag":"OK","Enabled":false,"Role":"Compute","NID":4,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
+	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v2/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -844,15 +817,6 @@ var PowerComponentDisabledReplayData = []testData{
 		"HTTP/1.1", 1, 1,
 		map[string][]string{"X-Frame-Options": []string{"SAMEORIGIN"}, "X-Xss-Protection": []string{"1; mode=block"}, "Status": []string{"404"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"549"}, "Server": []string{"lighttpd/1.4.45"}, "Strict-Transport-Security": []string{"max-age=31536000; includeSubdomains; preload"}, "X-Ua-Compatible": []string{"IE=11"}, "Date": []string{"Wed, 10 Apr 2019 18:15:42 GMT"}},
 		`{"error":{"code":"Base.1.1.0.GeneralError","message":"A general error has occurred. See ExtendedInfo for more information.","@Message.ExtendedInfo":[{"@odata.type":"#Message.v1_0_4.Message","MessageId":"Base.1.1.0.ResourceMissingAtURI","Message":"The resource at the URI /redfish/v1/Systems/QSBP75001595/Actions/ComputerSystem.Reset was not found.","MessageArgs":["/redfish/v1/Systems/QSBP75001595/Actions/ComputerSystem.Reset"],"Severity":"Critical","Resolution":"Place a valid resource at the URI or correct the URI and resubmit the request."}]}}
-`},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/locks",
-		"POST",
-		`{"reason":"Performing a power Off","owner":"CAPMC","lifetime":180,"xnames":["x0c0s21b0n0"]}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
-		"201 OK", 201,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}, "Content-Length": []string{"62"}},
-		`{"uri":"/hsm/v1/locks/08c2e624-ded3-11e9-8a34-2a2ae2dbcce4"}]}
 `},
 }
 var PowerComponentDisabledSSData = []sstorage.MockLookup{
@@ -884,7 +848,7 @@ func TestPowerComponentDisabled(t *testing.T) {
 
 var PowerComponentNotAuthorizedHSM = "https://frosty-sms.us.cray.com:30443/apis/smd"
 var PowerComponentNotAuthorizedReplayData = []testData{
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components?id=x0c0s21b0n0",
+	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components?id=x0c0s21b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -893,7 +857,7 @@ var PowerComponentNotAuthorizedReplayData = []testData{
 		map[string][]string{"Date": []string{"Wed, 10 Apr 2019 18:47:06 GMT"}, "X-Kong-Upstream-Latency": []string{"3"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"1457"}, "Connection": []string{"keep-alive"}},
 		`{"Components":[{"ID":"x0c0s21b0n0","Type":"Node","State":"Ready","Flag":"OK","Enabled":true,"Role":"Compute","NID":4,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
+	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v2/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -910,15 +874,6 @@ var PowerComponentNotAuthorizedReplayData = []testData{
 		"HTTP/1.1", 1, 1,
 		map[string][]string{"X-Ua-Compatible": []string{"IE=11"}, "X-Frame-Options": []string{"SAMEORIGIN"}, "X-Xss-Protection": []string{"1; mode=block"}, "Date": []string{"Wed, 10 Apr 2019 18:47:06 GMT"}, "Server": []string{"lighttpd/1.4.45"}, "Strict-Transport-Security": []string{"max-age=31536000; includeSubdomains; preload"}, "Status": []string{"401"}, "Www-Authenticate": []string{"Basic realm=\"Redfish\""}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"877"}},
 		`{"error":{"code":"Base.1.1.0.GeneralError","message":"A general error has occurred. See ExtendedInfo for more information.","@Message.ExtendedInfo":[{"@odata.type":"#Message.v1_0_4.Message","MessageId":"Base.1.1.0.NoValidSession","Message":"There is no valid session established with the implementation.","Severity":"Critical","Resolution":"Establish as session before attempting any operations."},{"@odata.type":"#Message.v1_0_4.Message","MessageId":"Base.1.1.0.ResourceAtUriUnauthorized","Message":"While accessing the resource at /redfish/v1/Systems/QSBP75001594/Actions/ComputerSystem.Reset, the service received an authorization error failed.","MessageArgs":["/redfish/v1/Systems/QSBP75001594/Actions/ComputerSystem.Reset","failed"],"Severity":"Critical","Resolution":"Ensure that the appropriate access is provided for the service in order for it to access the URI."}]}}
-`},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v1/locks",
-		"POST",
-		`{"reason":"Performing a power Off","owner":"CAPMC","lifetime":180,"xnames":["x0c0s21b0n0"]}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
-		"201 OK", 201,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}, "Content-Length": []string{"62"}},
-		`{"uri":"/hsm/v1/locks/08c2e624-ded3-11e9-8a34-2a2ae2dbcce4"}]}
 `},
 }
 var PowerComponentNotAuthorizedSSData = []sstorage.MockLookup{
@@ -950,7 +905,7 @@ func TestPowerComponentNotAuthorized(t *testing.T) {
 
 var XnameOffRecursiveHSM = "https://slice-sms.us.cray.com:30443/apis/smd"
 var XnameOffRecursiveReplayData = []testData{
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components/Query/x0c0s28?state=%21Empty&type=chassis&type=cabinetpdu&type=routermodule&type=hsnboard&type=computemodule&type=node",
+	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components/Query/x0c0s28?state=%21Empty&type=chassis&type=cabinetpdu&type=routermodule&type=hsnboard&type=computemodule&type=node",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -959,7 +914,7 @@ var XnameOffRecursiveReplayData = []testData{
 		map[string][]string{"Date": []string{"Tue, 14 May 2019 11:38:17 GMT"}, "X-Kong-Upstream-Latency": []string{"3"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"156"}, "Connection": []string{"keep-alive"}},
 		`{"Components":[{"ID":"x0c0s28b0n0","Type":"Node","State":"Standby","Flag":"Alert","Enabled":true,"Role":"Compute","NID":1,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components?id=x0c0s28b0n0",
+	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components?id=x0c0s28b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -968,7 +923,7 @@ var XnameOffRecursiveReplayData = []testData{
 		map[string][]string{"Content-Length": []string{"1465"}, "Connection": []string{"keep-alive"}, "Date": []string{"Tue, 14 May 2019 11:38:17 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}},
 		`{"Components":[{"ID":"x0c0s28b0n0","Type":"Node","State":"Standby","Flag":"Alert","Enabled":true,"Role":"Compute","NID":1,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s28b0n0",
+	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v2/Inventory/ComponentEndpoints?id=x0c0s28b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -994,15 +949,6 @@ var XnameOffRecursiveReplayData = []testData{
 		"HTTP/1.1", 1, 1,
 		map[string][]string{"Content-Length": []string{"3392"}, "Access-Control-Allow-Origin": []string{"*"}, "Accept-Ranges": []string{"bytes"}, "Odata-Version": []string{"4.0"}, "Keep-Alive": []string{"timeout=60, max=199"}, "Content-Type": []string{"application/json;odata.metadata=minimal;charset=utf-8"}, "Server": []string{"Appweb/4.5.4"}, "Date": []string{"Wed, 27 Feb 2019 04:19:40 GMT"}, "Link": []string{"</redfish/v1/Schemas/ComputerSystem.v1_0_2.json>;rel=describedby"}, "Cache-Control": []string{"no-cache"}, "Allow": []string{"POST,PATCH"}, "Connection": []string{"Keep-Alive"}},
 		`{"@odata.context":"/redfish/v1/$metadata#ComputerSystem.ComputerSystem","@odata.id":"/redfish/v1/Systems/System.Embedded.1","@odata.type":"#ComputerSystem.v1_0_2.ComputerSystem","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"AssetTag":"","BiosVersion":"2.1.7","Boot":{"BootSourceOverrideEnabled":"Once","BootSourceOverrideTarget":"None","BootSourceOverrideTarget@Redfish.AllowableValues":["None","Pxe","Cd","Floppy","Hdd","BiosSetup","Utilities","UefiTarget","SDCard"],"UefiTargetBootSourceOverride":""},"Description":"Computer System which represents a machine (physical or virtual) and the local resources such as memory, cpu and other devices that can be accessed from that machine.","EthernetInterfaces":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces"},"HostName":"","Id":"System.Embedded.1","IndicatorLED":"Off","Links":{"Chassis":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1"}],"Chassis@odata.count":1,"CooledBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7B"}],"CooledBy@odata.count":14,"ManagedBy":[{"@odata.id":"/redfish/v1/Managers/iDRAC.Embedded.1"}],"ManagedBy@odata.count":1,"PoweredBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.2"}],"PoweredBy@odata.count":2},"Manufacturer":" ","MemorySummary":{"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"TotalSystemMemoryGiB":128.0},"Model":" ","Name":"System","PartNumber":"0CNCJWA05","PowerState":"Off","ProcessorSummary":{"Count":2,"Model":"Intel(R) Xeon(R) CPU E5-2640 v3 @ 2.60GHz","Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"}},"Processors":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Processors"},"SKU":"8W28F42","SerialNumber":"CN7475153B0564","SimpleStorage":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Storage/Controllers"},"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"SystemType":"Physical","UUID":"4c4c4544-0057-3210-8038-b8c04f463432"}
-`},
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/locks",
-		"POST",
-		`{"reason":"Performing a power Off","owner":"CAPMC","lifetime":180,"xnames":["x0c0s28b0n0"]}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
-		"201 OK", 201,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}, "Content-Length": []string{"62"}},
-		`{"uri":"/hsm/v1/locks/08c2e624-ded3-11e9-8a34-2a2ae2dbcce4"}]}
 `},
 }
 var XnameOffRecursiveSSData = []sstorage.MockLookup{
@@ -1037,7 +983,7 @@ func TestXnameOffRecursive(t *testing.T) {
 
 var XnameOnRecursiveHSM = "https://slice-sms.us.cray.com:30443/apis/smd"
 var XnameOnRecursiveReplayData = []testData{
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components/Query/x0c0s28?state=%21Empty&type=chassis&type=cabinetpdu&type=routermodule&type=hsnboard&type=computemodule&type=node",
+	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components/Query/x0c0s28?state=%21Empty&type=chassis&type=cabinetpdu&type=routermodule&type=hsnboard&type=computemodule&type=node",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -1046,7 +992,7 @@ var XnameOnRecursiveReplayData = []testData{
 		map[string][]string{"Content-Length": []string{"156"}, "Connection": []string{"keep-alive"}, "Date": []string{"Tue, 14 May 2019 11:44:45 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}},
 		`{"Components":[{"ID":"x0c0s28b0n0","Type":"Node","State":"Standby","Flag":"Alert","Enabled":true,"Role":"Compute","NID":1,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components?id=x0c0s28b0n0",
+	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components?id=x0c0s28b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -1055,7 +1001,7 @@ var XnameOnRecursiveReplayData = []testData{
 		map[string][]string{"Content-Type": []string{"application/json"}, "Content-Length": []string{"1465"}, "Connection": []string{"keep-alive"}, "Date": []string{"Tue, 14 May 2019 11:44:45 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}},
 		`{"Components":[{"ID":"x0c0s28b0n0","Type":"Node","State":"Standby","Flag":"Alert","Enabled":true,"Role":"Compute","NID":1,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s28b0n0",
+	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v2/Inventory/ComponentEndpoints?id=x0c0s28b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -1072,15 +1018,6 @@ var XnameOnRecursiveReplayData = []testData{
 		"HTTP/1.1", 1, 1,
 		map[string][]string{"Strict-Transport-Security": []string{"max-age=31536000; includeSubdomains; preload"}, "X-Ua-Compatible": []string{"IE=11"}, "X-Frame-Options": []string{"SAMEORIGIN"}, "X-Xss-Protection": []string{"1; mode=block"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"154"}, "Date": []string{"Tue, 14 May 2019 11:44:54 GMT"}, "Server": []string{"lighttpd/1.4.45"}},
 		`{"@odata.type":"#Message.v1_0_4.Message","MessageId":"Base.1.1.0.Success","Message":"Successfully Completed Request","Severity":"OK","Resolution":"None"}
-`},
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/locks",
-		"POST",
-		`{"reason":"Performing a power Off","owner":"CAPMC","lifetime":180,"xnames":["x0c0s28b0n0"]}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
-		"201 OK", 201,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}, "Content-Length": []string{"62"}},
-		`{"uri":"/hsm/v1/locks/08c2e624-ded3-11e9-8a34-2a2ae2dbcce4"}]}
 `},
 }
 var XnameOnRecursiveSSData = []sstorage.MockLookup{
@@ -1112,7 +1049,7 @@ func TestXnameOnRecursive(t *testing.T) {
 
 var XnameOffRecursiveChassisHSM = "https://slice-sms.us.cray.com:30443/apis/smd"
 var XnameOffRecursiveChassisReplayData = []testData{
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components/Query/x0c0?state=%21Empty&type=chassis&type=cabinetpdu&type=routermodule&type=hsnboard&type=computemodule&type=node",
+	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components/Query/x0c0?state=%21Empty&type=chassis&type=cabinetpdu&type=routermodule&type=hsnboard&type=computemodule&type=node",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -1121,7 +1058,7 @@ var XnameOffRecursiveChassisReplayData = []testData{
 		map[string][]string{"X-Kong-Upstream-Latency": []string{"1"}, "X-Kong-Proxy-Latency": []string{"2"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"573"}, "Connection": []string{"keep-alive"}, "Date": []string{"Tue, 14 May 2019 13:12:22 GMT"}},
 		`{"Components":[{"ID":"x0c0s21b0n0","Type":"Node","State":"Standby","Flag":"Alert","Enabled":true,"Role":"Compute","NID":4,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components?id=x0c0s21b0n0",
+	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components?id=x0c0s21b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -1130,7 +1067,7 @@ var XnameOffRecursiveChassisReplayData = []testData{
 		map[string][]string{"Connection": []string{"keep-alive"}, "Date": []string{"Tue, 14 May 2019 13:12:22 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}, "X-Kong-Proxy-Latency": []string{"0"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"1465"}},
 		`{"Components":[{"ID":"x0c0s21b0n0","Type":"Node","State":"Standby","Flag":"Alert","Enabled":true,"Role":"Compute","NID":4,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
+	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v2/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
 		"GET",
 		``,
 		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
@@ -1139,7 +1076,7 @@ var XnameOffRecursiveChassisReplayData = []testData{
 		map[string][]string{"X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Connection": []string{"keep-alive"}, "Date": []string{"Tue, 14 May 2019 13:12:22 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}},
 		`{"ComponentEndpoints":[{"ID":"x0c0s21b0n0","Type":"Node","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"a4:bf:01:2c:f8:19","UUID":"f5f9d054-bb10-11e7-ab21-a4bf012cf819","OdataID":"/redfish/v1/Systems/QSBP74304730","RedfishEndpointID":"x0c0s21b0","RedfishEndpointFQDN":"10.4.0.8","RedfishURL":"10.4.0.8/redfish/v1/Systems/QSBP74304730","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"S2600BPB","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulShutdown","GracefulRestart","ForceRestart","Nmi"],"target":"/redfish/v1/Systems/QSBP74304730/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"","@odata.id":"","Description":"Missing interface 1, MAC computed via workaround","MACAddress":"a4:bf:01:2c:f8:19"},{"RedfishId":"","@odata.id":"","Description":"Missing interface 2, MAC computed via workaround","MACAddress":"a4:bf:01:2c:f8:1a"}]}}]}
 `},
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/Inventory/RedfishEndpoints?id=x0c0s21b0",
+	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v2/Inventory/RedfishEndpoints?id=x0c0s21b0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -1165,15 +1102,6 @@ var XnameOffRecursiveChassisReplayData = []testData{
 		"HTTP/1.1", 1, 1,
 		map[string][]string{"Content-Length": []string{"3392"}, "Access-Control-Allow-Origin": []string{"*"}, "Accept-Ranges": []string{"bytes"}, "Odata-Version": []string{"4.0"}, "Keep-Alive": []string{"timeout=60, max=199"}, "Content-Type": []string{"application/json;odata.metadata=minimal;charset=utf-8"}, "Server": []string{"Appweb/4.5.4"}, "Date": []string{"Wed, 27 Feb 2019 04:19:40 GMT"}, "Link": []string{"</redfish/v1/Schemas/ComputerSystem.v1_0_2.json>;rel=describedby"}, "Cache-Control": []string{"no-cache"}, "Allow": []string{"POST,PATCH"}, "Connection": []string{"Keep-Alive"}},
 		`{"@odata.context":"/redfish/v1/$metadata#ComputerSystem.ComputerSystem","@odata.id":"/redfish/v1/Systems/System.Embedded.1","@odata.type":"#ComputerSystem.v1_0_2.ComputerSystem","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"AssetTag":"","BiosVersion":"2.1.7","Boot":{"BootSourceOverrideEnabled":"Once","BootSourceOverrideTarget":"None","BootSourceOverrideTarget@Redfish.AllowableValues":["None","Pxe","Cd","Floppy","Hdd","BiosSetup","Utilities","UefiTarget","SDCard"],"UefiTargetBootSourceOverride":""},"Description":"Computer System which represents a machine (physical or virtual) and the local resources such as memory, cpu and other devices that can be accessed from that machine.","EthernetInterfaces":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces"},"HostName":"","Id":"System.Embedded.1","IndicatorLED":"Off","Links":{"Chassis":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1"}],"Chassis@odata.count":1,"CooledBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7A"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6B"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7B"}],"CooledBy@odata.count":14,"ManagedBy":[{"@odata.id":"/redfish/v1/Managers/iDRAC.Embedded.1"}],"ManagedBy@odata.count":1,"PoweredBy":[{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1"},{"@odata.id":"/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.2"}],"PoweredBy@odata.count":2},"Manufacturer":" ","MemorySummary":{"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"TotalSystemMemoryGiB":128.0},"Model":" ","Name":"System","PartNumber":"0CNCJWA05","PowerState":"Off","ProcessorSummary":{"Count":2,"Model":"Intel(R) Xeon(R) CPU E5-2640 v3 @ 2.60GHz","Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"}},"Processors":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Processors"},"SKU":"8W28F42","SerialNumber":"CN7475153B0564","SimpleStorage":{"@odata.id":"/redfish/v1/Systems/System.Embedded.1/Storage/Controllers"},"Status":{"Health":"OK","HealthRollUp":"OK","State":"Enabled"},"SystemType":"Physical","UUID":"4c4c4544-0057-3210-8038-b8c04f463432"}
-`},
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/locks",
-		"POST",
-		`{"reason":"Performing a power Off","owner":"CAPMC","lifetime":180,"xnames":["x0c0s21b0n0"]}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
-		"201 OK", 201,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}, "Content-Length": []string{"62"}},
-		`{"uri":"/hsm/v1/locks/08c2e624-ded3-11e9-8a34-2a2ae2dbcce4"}]}
 `},
 }
 var XnameOffRecursiveChassisSSData = []sstorage.MockLookup{
@@ -1205,7 +1133,7 @@ func TestXnameOffRecursiveChassis(t *testing.T) {
 
 var XnameOnRecursiveChassisHSM = "https://slice-sms.us.cray.com:30443/apis/smd"
 var XnameOnRecursiveChassisReplayData = []testData{
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components/Query/x0c0?state=%21Empty&type=chassis&type=cabinetpdu&type=routermodule&type=hsnboard&type=computemodule&type=node",
+	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components/Query/x0c0?state=%21Empty&type=chassis&type=cabinetpdu&type=routermodule&type=hsnboard&type=computemodule&type=node",
 		"GET",
 		``,
 		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
@@ -1214,7 +1142,7 @@ var XnameOnRecursiveChassisReplayData = []testData{
 		map[string][]string{"Connection": []string{"keep-alive"}, "Date": []string{"Tue, 14 May 2019 13:15:23 GMT"}, "X-Kong-Upstream-Latency": []string{"7"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"573"}},
 		`{"Components":[{"ID":"x0c0s21b0n0","Type":"Node","State":"Standby","Flag":"Alert","Enabled":true,"Role":"Compute","NID":4,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/State/Components?id=x0c0s21b0n0",
+	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components?id=x0c0s21b0n0",
 		"GET",
 		``,
 		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
@@ -1223,7 +1151,7 @@ var XnameOnRecursiveChassisReplayData = []testData{
 		map[string][]string{"Content-Length": []string{"1465"}, "Connection": []string{"keep-alive"}, "Date": []string{"Tue, 14 May 2019 13:15:23 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}},
 		`{"Components":[{"ID":"x0c0s21b0n0","Type":"Node","State":"Standby","Flag":"Alert","Enabled":true,"Role":"Compute","NID":4,"NetType":"Sling","Arch":"X86"}]}
 `},
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
+	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v2/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -1232,7 +1160,7 @@ var XnameOnRecursiveChassisReplayData = []testData{
 		map[string][]string{"Connection": []string{"keep-alive"}, "Date": []string{"Tue, 14 May 2019 13:15:23 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}},
 		`{"ComponentEndpoints":[{"ID":"x0c0s21b0n0","Type":"Node","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"a4:bf:01:2c:f8:19","UUID":"f5f9d054-bb10-11e7-ab21-a4bf012cf819","OdataID":"/redfish/v1/Systems/QSBP74304730","RedfishEndpointID":"x0c0s21b0","RedfishEndpointFQDN":"10.4.0.8","RedfishURL":"10.4.0.8/redfish/v1/Systems/QSBP74304730","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"S2600BPB","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulShutdown","GracefulRestart","ForceRestart","Nmi"],"target":"/redfish/v1/Systems/QSBP74304730/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"","@odata.id":"","Description":"Missing interface 1, MAC computed via workaround","MACAddress":"a4:bf:01:2c:f8:19"},{"RedfishId":"","@odata.id":"","Description":"Missing interface 2, MAC computed via workaround","MACAddress":"a4:bf:01:2c:f8:1a"}]}}]}
 `},
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/Inventory/RedfishEndpoints?id=x0c0s21b0",
+	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v2/Inventory/RedfishEndpoints?id=x0c0s21b0",
 		"GET",
 		``,
 		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
@@ -1249,15 +1177,6 @@ var XnameOnRecursiveChassisReplayData = []testData{
 		"HTTP/1.1", 1, 1,
 		map[string][]string{"X-Ua-Compatible": []string{"IE=11"}, "X-Frame-Options": []string{"SAMEORIGIN"}, "X-Xss-Protection": []string{"1; mode=block"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"154"}, "Date": []string{"Tue, 14 May 2019 13:15:23 GMT"}, "Server": []string{"lighttpd/1.4.45"}, "Strict-Transport-Security": []string{"max-age=31536000; includeSubdomains; preload"}},
 		`{"@odata.type":"#Message.v1_0_4.Message","MessageId":"Base.1.1.0.Success","Message":"Successfully Completed Request","Severity":"OK","Resolution":"None"}
-`},
-	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v1/locks",
-		"POST",
-		`{"reason":"Performing a power Off","owner":"CAPMC","lifetime":180,"xnames":["x0c0s21b0n0"]}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Accept": []string{"application/json"}},
-		"201 OK", 201,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:37:13 GMT"}, "Content-Length": []string{"62"}},
-		`{"uri":"/hsm/v1/locks/08c2e624-ded3-11e9-8a34-2a2ae2dbcce4"}]}
 `},
 }
 var XnameOnRecursiveChassisSSData = []sstorage.MockLookup{
