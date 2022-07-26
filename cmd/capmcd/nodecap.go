@@ -697,18 +697,18 @@ func generateControls(node *NodeInfo, controls []capmc.PowerCapControl) (map[*No
 		}
 
 		if node.RfControlsCnt > 0 {
-			path := node.PowerCaps[control.Name].Path
+			pcPath := node.PowerCaps[control.Name].Path
 
 			ctl := capmc.RFControl{}
 			if *control.Val > 0 {
 				ctl = capmc.RFControl{
-					Oid:         path,
+					Oid:         pcPath,
 					SetPoint:    control.Val,
 					ControlMode: "Automatic",
 				}
 			} else {
 				ctl = capmc.RFControl{
-					Oid:         path,
+					Oid:         pcPath,
 					ControlMode: "Disabled",
 				}
 			}

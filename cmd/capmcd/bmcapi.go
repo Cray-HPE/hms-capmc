@@ -534,28 +534,30 @@ func (d *CapmcD) doBmcPatchCall(call bmcCall) bmcPowerRc {
 		return res
 	}
 
-	// Query the BMC to get the etag for the PATCH call
-	pcRes := d.doBmcGetCall(pcCall)
-
-	if pcRes.rc >= http.StatusBadRequest {
-		return pcRes
-	}
-
-	var rfPower capmc.Power
-	err := json.Unmarshal([]byte(pcRes.msg), &rfPower)
-	if err != nil {
-		res.msg = fmt.Sprintf("%s unable to unmarshal status request",
-			call.bmcCmd)
-		log.Printf(res.msg)
-		return res
-	}
-
 	// create the request
 	req, err := http.NewRequest("PATCH", bmcURI, bytes.NewBuffer(call.payload))
 	req.SetBasicAuth(call.ni.BmcUser, call.ni.BmcPass)
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("If-Match", rfPower.Oetag)
+
+	if strings.Index(oid, "Controls.Deep") < 0 {
+		// Query the BMC to get the etag for the PATCH call
+		pcRes := d.doBmcGetCall(pcCall)
+
+		if pcRes.rc >= http.StatusBadRequest {
+			return pcRes
+		}
+
+		var rfPower capmc.Power
+		err := json.Unmarshal([]byte(pcRes.msg), &rfPower)
+		if err != nil {
+			res.msg = fmt.Sprintf("%s unable to unmarshal status request",
+				call.bmcCmd)
+			log.Printf(res.msg)
+			return res
+		}
+		req.Header.Set("If-Match", rfPower.Oetag)
+	}
 
 	// execute the request
 	rfClientLock.RLock()
