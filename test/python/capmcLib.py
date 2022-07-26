@@ -65,7 +65,7 @@ from time import sleep
             string state  - State of the xname: on, off, halt, etc. Default: ""
 """
 def getXnameState(xname):
-    #command = "curl -k -X GET https://slice-sms.us.cray.com/apis/smd/hsm/v1/State/Components/"+xname
+    #command = "curl -k -X GET https://slice-sms.us.cray.com/apis/smd/hsm/v2/State/Components/"+xname
     command = "cray hsm State Components describe "+xname
     proc = Popen(split(command), stdout=PIPE, stderr=PIPE)
     proc.wait()

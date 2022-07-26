@@ -24,17 +24,29 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
-## [2.3.0] - 2022-07-26
+## [2.5.0] - 2022-07-26
 
 ### Changed
 
 - Converted Olympus power capping to use the Controls Deep PATCH
 
+## [2.4.0] - 2022-07-19
+
+### Changed
+
+- Updated CT tests to hms-test:3.2.0 image to pick up Helm test enhancements and CVE fixes
+
+## [2.3.0] - 2022-07-01
+
+### Changed
+
+- Changed HSM v1 API references to v2
+
 ## [2.2.0] - 2022-06-22
 
 ### Changed
 
-- updated CT tests to hms-test:3.1.0 image as part of Helm test coordination
+- Updated CT tests to hms-test:3.1.0 image as part of Helm test coordination
 
 ## [2.1.0] - 2022-04-06
 

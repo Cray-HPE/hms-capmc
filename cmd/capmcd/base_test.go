@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2021] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -254,7 +254,7 @@ func runTest(t *testing.T, hsm string, testReq *testData, rlist *[]testData, vau
 	replayList = rlist
 	var err error
 	// Set the HSM URL for this test.
-	if svc.hsmURL, err = url.Parse(hsm + "/hsm/v1"); err != nil {
+	if svc.hsmURL, err = url.Parse(hsm + "/hsm/v2"); err != nil {
 		log.Fatalf("Invalid HSM URI specified: %s", err)
 	}
 	svc.config = loadConfig("")
@@ -303,7 +303,7 @@ func TestMain(m *testing.M) {
 	svc.ccs = ccs
 	svc.debug = debug
 	mockVault = adapter
-	hsm := "https://localhost:27779/hsm/v1"
+	hsm := "https://localhost:27779/hsm/v2"
 	if svc.hsmURL, err = url.Parse(hsm); err != nil {
 		log.Fatalf("Invalid HSM URI specified: %s", err)
 	}

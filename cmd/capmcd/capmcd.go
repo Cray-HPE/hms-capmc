@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2021] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -456,12 +456,12 @@ func main() {
 		// XXX Should the HSM API (default) version be configurable?
 		switch svc.hsmURL.Path {
 		case "":
-			svc.hsmURL.Path = "/hsm/v1"
-		case "/hsm/v1":
+			svc.hsmURL.Path = "/hsm/v2"
+		case "/hsm/v2":
 			// do nothing
 		default:
-			if !strings.HasSuffix(svc.hsmURL.Path, "/hsm/v1") {
-				svc.hsmURL.Path += "/hsm/v1"
+			if !strings.HasSuffix(svc.hsmURL.Path, "/hsm/v2") {
+				svc.hsmURL.Path += "/hsm/v2"
 			}
 		}
 	default:
