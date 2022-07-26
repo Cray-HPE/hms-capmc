@@ -310,8 +310,6 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 	// Only get power caps if all the NIDs were 'good'.
 	if data.E == 0 {
 		var failed int
-		// Expand nodes list for new power control structure
-		nodes = expandNodeListForControlStruct(nodes)
 		cmd := bmcCmd{cmd: bmcCmdGetPowerCap}
 		waitNum, waitChan := d.queueBmcCmd(cmd, nodes)
 		var controlMap = make(map[int][]capmc.PowerCapControl)
@@ -657,9 +655,9 @@ func generateControls(node *NodeInfo, controls []capmc.PowerCapControl) (map[*No
 	powerCtl := make([]capmc.PowerControl, node.RfPwrCtlCnt)
 	seen := make(map[string]bool)
 	pControls := make(map[*NodeInfo]powerGen)
+	nControls := []capmc.RFControl{}
 
 	for _, control := range controls {
-		var targNode *NodeInfo
 		var (
 			min, max int = -1, -1
 			ok       bool
@@ -699,29 +697,21 @@ func generateControls(node *NodeInfo, controls []capmc.PowerCapControl) (map[*No
 
 		if node.RfControlsCnt > 0 {
 			path := node.PowerCaps[control.Name].Path
-			if control.Name == "Node Power Limit" {
-				node.RfPowerURL = path
-				targNode = node
-			} else {
-				nni := *node
-				nni.RfPowerURL = path
-				targNode = &nni
-			}
 
+			ctl := capmc.RFControl{}
 			if *control.Val > 0 {
-				pControls[targNode] = powerGen{
-					controls: capmc.RFControl{
-						SetPoint:    control.Val,
-						ControlMode: "Automatic",
-					},
+				ctl = capmc.RFControl{
+					Oid:         path,
+					SetPoint:    control.Val,
+					ControlMode: "Automatic",
 				}
 			} else {
-				pControls[targNode] = powerGen{
-					controls: capmc.RFControl{
-						ControlMode: "Disabled",
-					},
+				ctl = capmc.RFControl{
+					Oid:         path,
+					ControlMode: "Disabled",
 				}
 			}
+			nControls = append(nControls, ctl)
 		} else if isHpeApollo6500(node) {
 			pControls[node] = powerGen{
 				powerLimit: capmc.HpeConfigurePowerLimit{
@@ -747,13 +737,19 @@ func generateControls(node *NodeInfo, controls []capmc.PowerCapControl) (map[*No
 		pControls[node] = powerGen{powerCtl: powerCtl}
 	}
 
+	if len(nControls) > 0 {
+		deepCtl := capmc.RFControlsDeep{Members: nControls}
+		pControls[node] = powerGen{controls: deepCtl}
+		node.RfPowerURL = node.BmcPath + "/Controls.Deep"
+	}
+
 	return pControls, nil
 }
 
 type powerGen struct {
 	powerCtl   []capmc.PowerControl
 	powerLimit capmc.HpeConfigurePowerLimit
-	controls   capmc.RFControl
+	controls   capmc.RFControlsDeep
 }
 
 // generatePayload - take a standard Redfish power cap structure or the
@@ -765,8 +761,7 @@ func generatePayload(node *NodeInfo, pGen powerGen) ([]byte, error) {
 	var power interface{} = nil
 
 	if node.RfControlsCnt > 0 {
-		if pGen.controls.SetPoint == nil &&
-			pGen.controls.ControlMode != "Disabled" {
+		if len(pGen.controls.Members) == 0 {
 			return nil, errors.New("missing power limit information")
 		}
 		power = pGen.controls
@@ -787,31 +782,6 @@ func generatePayload(node *NodeInfo, pGen powerGen) ([]byte, error) {
 	payload, err = json.Marshal(power)
 
 	return payload, err
-}
-
-// expandNodeListForControlStruct - creates additional node entries for nodes
-// that are using the new Redfish Power Control structure.
-func expandNodeListForControlStruct(nl []*NodeInfo) []*NodeInfo {
-	var nnl []*NodeInfo
-	for _, ni := range nl {
-		if ni.RfControlsCnt > 0 {
-			for i, pc := range ni.PowerCaps {
-				if i == "Node Power Limit" {
-					ni.RfPowerURL = pc.Path
-					continue
-				}
-				nni := *ni
-				nni.RfPowerURL = pc.Path
-				nnl = append(nnl, &nni)
-			}
-		}
-	}
-
-	if len(nnl) > 0 {
-		nl = append(nl, nnl...)
-	}
-
-	return nl
 }
 
 //buildPowerCapCapabilitiesGroup - build a PowerCapGroup

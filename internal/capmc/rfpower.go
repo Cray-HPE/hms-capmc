@@ -106,8 +106,14 @@ type StatusRF struct {
 	State        string `json:"State,omitempty"`
 }
 
+// Member array of RFControl structs for Deep Patch with Olympus hardare
+type RFControlsDeep struct {
+	Members []RFControl `json:"Members"`
+}
+
 // RFControl struct used to unmarshal the Redfish Control.v1_0_0.Control data
 type RFControl struct {
+	Oid                 string    `json:"@odata.id,omitempty"`
 	ControlDelaySeconds *int      `json:"ControlDelaySeconds,omitempty"`
 	ControlMode         string    `json:"ControlMode,omitempty"`
 	ControlType         string    `json:"ControlType,omitempty"`

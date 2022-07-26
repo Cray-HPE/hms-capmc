@@ -950,13 +950,10 @@ func TestConvertSystemHWInventoryToUniqueMonikerGroups(t *testing.T) {
 
 func TestGeneratePayload(t *testing.T) {
 	var (
-		pCtl       []capmc.PowerControl
 		goodPwrCtl []capmc.PowerControl
-		pLimit     capmc.HpeConfigurePowerLimit
 		goodPwrLim capmc.HpeConfigurePowerLimit
-		rfCtl      capmc.RFControl
-		goodRfCtl  capmc.RFControl
-		zeroCtl    capmc.RFControl
+		goodRfCtl  capmc.RFControlsDeep
+		zeroCtl    capmc.RFControlsDeep
 	)
 
 	var fiveHundred int = 500
@@ -986,20 +983,66 @@ func TestGeneratePayload(t *testing.T) {
 		},
 	}
 
-	goodRfCtl = capmc.RFControl{
-		SetPoint:    &oneThousand,
-		ControlMode: "Automatic",
+	goodRfCtl = capmc.RFControlsDeep{
+		Members: []capmc.RFControl{
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/NodePowerLimit",
+				SetPoint:    &fiveHundred,
+				ControlMode: "Automatic",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit",
+				SetPoint:    &fiveHundred,
+				ControlMode: "Automatic",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit",
+				SetPoint:    &fiveHundred,
+				ControlMode: "Automatic",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit",
+				SetPoint:    &fiveHundred,
+				ControlMode: "Automatic",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit",
+				SetPoint:    &fiveHundred,
+				ControlMode: "Automatic",
+			},
+		},
 	}
 
-	zeroCtl = capmc.RFControl{
-		ControlMode: "Disabled",
+	zeroCtl = capmc.RFControlsDeep{
+		Members: []capmc.RFControl{
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/NodePowerLimit",
+				ControlMode: "Disabled",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit",
+				ControlMode: "Disabled",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit",
+				ControlMode: "Disabled",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit",
+				ControlMode: "Disabled",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit",
+				ControlMode: "Disabled",
+			},
+		},
 	}
 
 	type args struct {
 		node       *NodeInfo
 		powerCtl   []capmc.PowerControl
 		powerLimit capmc.HpeConfigurePowerLimit
-		rfCtl      capmc.RFControl
+		rfDeep     capmc.RFControlsDeep
 	}
 
 	mtnNode := NodeInfo{
@@ -1029,10 +1072,7 @@ func TestGeneratePayload(t *testing.T) {
 		{
 			name: "bad mtnNode",
 			args: args{
-				node:       &mtnNode,
-				powerCtl:   pCtl,
-				powerLimit: pLimit,
-				rfCtl:      rfCtl,
+				node: &mtnNode,
 			},
 			want:    nil,
 			wantErr: true,
@@ -1040,10 +1080,7 @@ func TestGeneratePayload(t *testing.T) {
 		{
 			name: "bad stdNode",
 			args: args{
-				node:       &stdNode,
-				powerCtl:   pCtl,
-				powerLimit: pLimit,
-				rfCtl:      rfCtl,
+				node: &stdNode,
 			},
 			want:    nil,
 			wantErr: true,
@@ -1051,10 +1088,7 @@ func TestGeneratePayload(t *testing.T) {
 		{
 			name: "bad A6500Node",
 			args: args{
-				node:       &A6500Node,
-				powerCtl:   pCtl,
-				powerLimit: pLimit,
-				rfCtl:      rfCtl,
+				node: &A6500Node,
 			},
 			want:    nil,
 			wantErr: true,
@@ -1062,10 +1096,7 @@ func TestGeneratePayload(t *testing.T) {
 		{
 			name: "bad bard node",
 			args: args{
-				node:       &bardNode,
-				powerCtl:   pCtl,
-				powerLimit: pLimit,
-				rfCtl:      rfCtl,
+				node: &bardNode,
 			},
 			want:    nil,
 			wantErr: true,
@@ -1073,10 +1104,8 @@ func TestGeneratePayload(t *testing.T) {
 		{
 			name: "good mtnNode",
 			args: args{
-				node:       &mtnNode,
-				powerCtl:   goodPwrCtl,
-				powerLimit: pLimit,
-				rfCtl:      rfCtl,
+				node:     &mtnNode,
+				powerCtl: goodPwrCtl,
 			},
 			want:    json.RawMessage(`{"PowerControl":[{"PowerLimit":{"LimitInWatts":1000}},{"PowerLimit":{"LimitInWatts":500}}]}`),
 			wantErr: false,
@@ -1084,10 +1113,8 @@ func TestGeneratePayload(t *testing.T) {
 		{
 			name: "good stdNode",
 			args: args{
-				node:       &stdNode,
-				powerCtl:   goodPwrCtl,
-				powerLimit: pLimit,
-				rfCtl:      rfCtl,
+				node:     &stdNode,
+				powerCtl: goodPwrCtl,
 			},
 			want:    json.RawMessage(`{"PowerControl":[{"PowerLimit":{"LimitInWatts":1000}},{"PowerLimit":{"LimitInWatts":500}}]}`),
 			wantErr: false,
@@ -1096,9 +1123,7 @@ func TestGeneratePayload(t *testing.T) {
 			name: "good A6500Node",
 			args: args{
 				node:       &A6500Node,
-				powerCtl:   pCtl,
 				powerLimit: goodPwrLim,
-				rfCtl:      rfCtl,
 			},
 			want:    json.RawMessage(`{"PowerLimits":[{"PowerLimitInWatts":1000,"ZoneNumber":0}]}`),
 			wantErr: false,
@@ -1106,34 +1131,28 @@ func TestGeneratePayload(t *testing.T) {
 		{
 			name: "good mtnNode node",
 			args: args{
-				node:       &bardNode,
-				powerCtl:   pCtl,
-				powerLimit: pLimit,
-				rfCtl:      goodRfCtl,
+				node:   &bardNode,
+				rfDeep: goodRfCtl,
 			},
-			want:    json.RawMessage(`{"ControlMode":"Automatic","SetPoint":1000}`),
+			want:    json.RawMessage(`{"Members":[{"@odata.id":"/redfish/v1/Chassis/Node/Controls/NodePowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit","ControlMode":"Automatic","SetPoint":500}]}`),
 			wantErr: false,
 		},
 		{
 			name: "good mtnNode GPU",
 			args: args{
-				node:       &GPU0Node,
-				powerCtl:   pCtl,
-				powerLimit: pLimit,
-				rfCtl:      goodRfCtl,
+				node:   &GPU0Node,
+				rfDeep: goodRfCtl,
 			},
-			want:    json.RawMessage(`{"ControlMode":"Automatic","SetPoint":1000}`),
+			want:    json.RawMessage(`{"Members":[{"@odata.id":"/redfish/v1/Chassis/Node/Controls/NodePowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit","ControlMode":"Automatic","SetPoint":500}]}`),
 			wantErr: false,
 		},
 		{
 			name: "good mtnNode zero",
 			args: args{
-				node:       &bardNode,
-				powerCtl:   pCtl,
-				powerLimit: pLimit,
-				rfCtl:      zeroCtl,
+				node:   &bardNode,
+				rfDeep: zeroCtl,
 			},
-			want:    json.RawMessage(`{"ControlMode":"Disabled"}`),
+			want:    json.RawMessage(`{"Members":[{"@odata.id":"/redfish/v1/Chassis/Node/Controls/NodePowerLimit","ControlMode":"Disabled"},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit","ControlMode":"Disabled"},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit","ControlMode":"Disabled"},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit","ControlMode":"Disabled"},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit","ControlMode":"Disabled"}]}`),
 			wantErr: false,
 		},
 	}
@@ -1144,7 +1163,7 @@ func TestGeneratePayload(t *testing.T) {
 				powerGen{
 					powerCtl:   tt.args.powerCtl,
 					powerLimit: tt.args.powerLimit,
-					controls:   tt.args.rfCtl,
+					controls:   tt.args.rfDeep,
 				})
 			if (err != nil) != tt.wantErr {
 				t.Errorf("generatePayload() error = %v, wantErr %v", err, tt.wantErr)
@@ -1152,132 +1171,6 @@ func TestGeneratePayload(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("generatePayload() = %s, want %s", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestExpandNodeListForControlStruct(t *testing.T) {
-	var pc1 = make(map[string]PowerCap)
-	pc1["Node Power Limit"] = PowerCap{
-		Name:        "Node Power Limit",
-		Path:        "/redfish/v1/Chassis/Node0/Power",
-		Min:         200,
-		Max:         1000,
-		PwrCtlIndex: 0,
-	}
-
-	var node1 = NodeInfo{
-		Hostname:      "x1000c0s0b0n0",
-		RfPowerURL:    "/redfish/v1/Chassis/Node0/Power",
-		RfControlsCnt: 0,
-		RfPwrCtlCnt:   1,
-		PowerCaps:     pc1,
-	}
-
-	wantNode1 := []string{"/redfish/v1/Chassis/Node0/Power"}
-
-	var pc2 = make(map[string]PowerCap)
-	pc2["Node Power Limit"] = PowerCap{
-		Name:        "Node Power Limit",
-		Path:        "/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
-		Min:         200,
-		Max:         1000,
-		PwrCtlIndex: 0,
-	}
-	pc2["GPU0 Power Limit"] = PowerCap{
-		Name:        "GPU0 Power Limit",
-		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU0PowerLimit",
-		Min:         100,
-		Max:         200,
-		PwrCtlIndex: 1,
-	}
-	pc2["GPU1 Power Limit"] = PowerCap{
-		Name:        "GPU1 Power Limit",
-		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU1PowerLimit",
-		Min:         100,
-		Max:         200,
-		PwrCtlIndex: 2,
-	}
-	pc2["GPU2 Power Limit"] = PowerCap{
-		Name:        "GPU2 Power Limit",
-		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU2PowerLimit",
-		Min:         100,
-		Max:         200,
-		PwrCtlIndex: 3,
-	}
-	pc2["GPU3 Power Limit"] = PowerCap{
-		Name:        "GPU3 Power Limit",
-		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU3PowerLimit",
-		Min:         100,
-		Max:         200,
-		PwrCtlIndex: 4,
-	}
-
-	var node2 = NodeInfo{
-		Hostname:      "x1000c0s0b0n0",
-		RfPowerURL:    "/redfish/v1/Chassis/Node0/Power",
-		RfControlsCnt: 5,
-		RfPwrCtlCnt:   0,
-		PowerCaps:     pc2,
-	}
-
-	wantNode2 := []string{
-		"/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
-		"/redfish/v1/Chassis/Node0/Controls/GPU0PowerLimit",
-		"/redfish/v1/Chassis/Node0/Controls/GPU1PowerLimit",
-		"/redfish/v1/Chassis/Node0/Controls/GPU2PowerLimit",
-		"/redfish/v1/Chassis/Node0/Controls/GPU3PowerLimit",
-	}
-
-	var nlNoExpand []*NodeInfo
-	var nlExpand []*NodeInfo
-
-	nlNoExpand = append(nlNoExpand, &node1)
-	nlExpand = append(nlExpand, &node2)
-
-	tests := []struct {
-		name string
-		nl   []*NodeInfo
-		want []string
-	}{
-		{
-			"No expand",
-			nlNoExpand,
-			wantNode1,
-		},
-		{
-			"Expand",
-			nlExpand,
-			wantNode2,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := expandNodeListForControlStruct(tt.nl)
-			if len(got) != len(tt.want) {
-				var paths []string
-				for _, e := range got {
-					paths = append(paths, e.RfPowerURL)
-				}
-				t.Errorf("List different length than expected, got %v, want %v",
-					paths, tt.want)
-			}
-			found := 0
-			for _, g := range got {
-				for _, w := range tt.want {
-					if g.RfPowerURL == w {
-						found += 1
-						continue
-					}
-				}
-			}
-			if found != got[0].RfControlsCnt && found != got[0].RfPwrCtlCnt {
-				var paths []string
-				for _, e := range got {
-					paths = append(paths, e.RfPowerURL)
-				}
-				t.Errorf("List mismatch, got %v, want %v", paths, tt.want)
 			}
 		})
 	}
@@ -1343,9 +1236,14 @@ func TestGenerateControls(t *testing.T) {
 	node4 := NodeInfo{RfPowerURL: "/redfish/v1/Chassis/Node/Controls/NodePowerLimit", RfPwrCtlCnt: 0, RfControlsCnt: 5, PowerCaps: pc4}
 	wantNode4 := make(map[*NodeInfo]powerGen)
 	wantNode4[&node4] = powerGen{
-		controls: capmc.RFControl{
-			SetPoint:    &fiveHundred,
-			ControlMode: "Automatic",
+		controls: capmc.RFControlsDeep{
+			Members: []capmc.RFControl{
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/NodePowerLimit",
+					SetPoint:    &fiveHundred,
+					ControlMode: "Automatic",
+				},
+			},
 		},
 	}
 	ctl4 := make([]capmc.PowerCapControl, 1)
@@ -1361,13 +1259,38 @@ func TestGenerateControls(t *testing.T) {
 	node5 := NodeInfo{RfPowerURL: "/redfish/v1/Chassis/Node/Controls/NodePowerLimit", RfPwrCtlCnt: 0, RfControlsCnt: 5, PowerCaps: pc5}
 	wantNode5 := make(map[*NodeInfo]powerGen)
 	wantNode5[&node5] = powerGen{
-		controls: capmc.RFControl{
-			SetPoint:    &twoHundred,
-			ControlMode: "Automatic",
+		controls: capmc.RFControlsDeep{
+			Members: []capmc.RFControl{
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/NodePowerLimit",
+					SetPoint:    &fiveHundred,
+					ControlMode: "Automatic",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit",
+					SetPoint:    &twoHundred,
+					ControlMode: "Automatic",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit",
+					SetPoint:    &twoHundred,
+					ControlMode: "Automatic",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit",
+					SetPoint:    &twoHundred,
+					ControlMode: "Automatic",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit",
+					SetPoint:    &twoHundred,
+					ControlMode: "Automatic",
+				},
+			},
 		},
 	}
 	ctl5 := make([]capmc.PowerCapControl, 5)
-	ctl5[0] = capmc.PowerCapControl{Name: "Node Power Limit", Val: &twoHundred}
+	ctl5[0] = capmc.PowerCapControl{Name: "Node Power Limit", Val: &fiveHundred}
 	ctl5[1] = capmc.PowerCapControl{Name: "GPU0 Power Limit", Val: &twoHundred}
 	ctl5[2] = capmc.PowerCapControl{Name: "GPU1 Power Limit", Val: &twoHundred}
 	ctl5[3] = capmc.PowerCapControl{Name: "GPU2 Power Limit", Val: &twoHundred}
@@ -1417,8 +1340,29 @@ func TestGenerateControls(t *testing.T) {
 	node8 := NodeInfo{RfPowerURL: "/redfish/v1/Chassis/Node/Controls/NodePowerLimit", RfPwrCtlCnt: 0, RfControlsCnt: 5, PowerCaps: pc8}
 	wantNode8 := make(map[*NodeInfo]powerGen)
 	wantNode8[&node8] = powerGen{
-		controls: capmc.RFControl{
-			ControlMode: "Disabled",
+		controls: capmc.RFControlsDeep{
+			Members: []capmc.RFControl{
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/NodePowerLimit",
+					ControlMode: "Disabled",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit",
+					ControlMode: "Disabled",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit",
+					ControlMode: "Disabled",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit",
+					ControlMode: "Disabled",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit",
+					ControlMode: "Disabled",
+				},
+			},
 		},
 	}
 	ctl8 := make([]capmc.PowerCapControl, 5)
