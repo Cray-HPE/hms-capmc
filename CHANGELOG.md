@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [2.3.0] - 2022-07-26
+
+### Changed
+
+- Converted Olympus power capping to use the Controls Deep PATCH
+
 ## [2.2.0] - 2022-06-22
 
 ### Changed
