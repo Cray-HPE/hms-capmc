@@ -535,7 +535,7 @@ func (d *CapmcD) doBmcPatchCall(call bmcCall) bmcPowerRc {
 	}
 
 	// create the request
-	fmt.Printf("PAYLOAD: %+v\n", call.payload)
+	fmt.Printf("PAYLOAD: %+v\n", bytes.NewBuffer(call.payload))
 	req, err := http.NewRequest("PATCH", bmcURI, bytes.NewBuffer(call.payload))
 	req.SetBasicAuth(call.ni.BmcUser, call.ni.BmcPass)
 	req.Header.Set("Accept", "*/*")
