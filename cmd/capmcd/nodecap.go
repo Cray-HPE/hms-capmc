@@ -31,6 +31,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"path"
 	"strings"
 
 	base "github.com/Cray-HPE/hms-base"
@@ -740,7 +741,12 @@ func generateControls(node *NodeInfo, controls []capmc.PowerCapControl) (map[*No
 	if len(nControls) > 0 {
 		deepCtl := capmc.RFControlsDeep{Members: nControls}
 		pControls[node] = powerGen{controls: deepCtl}
-		node.RfPowerURL = node.BmcPath + "/Controls.Deep"
+		fullPath := nControls[0].Oid
+		// Use the control URL as the basis for the deep patch URL. Chop the
+		// last 2 components from the path. It does not matter which control
+		// is the first element in the array, the URLs are of the same format.
+		url := path.Dir(path.Dir(fullPath))
+		node.RfPowerURL = url + "/Controls.Deep"
 	}
 
 	return pControls, nil
