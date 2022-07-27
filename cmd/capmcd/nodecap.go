@@ -308,6 +308,28 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Olympus power control can have more than 1 target URL to gather power
+	// information from. Create additional node entries, one for each power
+	// URL that is needed.
+	var newNodes []*NodeInfo
+	for _, node := range nodes {
+		if node.RfControlsCnt > 0 {
+			for _, cap := range node.PowerCaps {
+				if cap.Name == "Node Power Limit" {
+					node.RfPowerURL = cap.Path
+				} else {
+					nni := *node
+					nni.RfPowerURL = cap.Path
+					newNodes = append(newNodes, &nni)
+				}
+			}
+		}
+	}
+
+	if len(newNodes) > 0 {
+		nodes = append(nodes, newNodes...)
+	}
+
 	// Only get power caps if all the NIDs were 'good'.
 	if data.E == 0 {
 		var failed int
