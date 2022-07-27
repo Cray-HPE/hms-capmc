@@ -308,31 +308,11 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Olympus power control can have more than 1 target URL to gather power
-	// information from. Create additional node entries, one for each power
-	// URL that is needed.
-	var newNodes []*NodeInfo
-	for _, node := range nodes {
-		if node.RfControlsCnt > 0 {
-			for _, cap := range node.PowerCaps {
-				if cap.Name == "Node Power Limit" {
-					node.RfPowerURL = cap.Path
-				} else {
-					nni := *node
-					nni.RfPowerURL = cap.Path
-					newNodes = append(newNodes, &nni)
-				}
-			}
-		}
-	}
-
-	if len(newNodes) > 0 {
-		nodes = append(nodes, newNodes...)
-	}
-
 	// Only get power caps if all the NIDs were 'good'.
 	if data.E == 0 {
 		var failed int
+		// Expand nodes list for new power control structure
+		nodes = expandNodeListForControlStruct(nodes)
 		cmd := bmcCmd{cmd: bmcCmdGetPowerCap}
 		waitNum, waitChan := d.queueBmcCmd(cmd, nodes)
 		var controlMap = make(map[int][]capmc.PowerCapControl)
@@ -810,6 +790,31 @@ func generatePayload(node *NodeInfo, pGen powerGen) ([]byte, error) {
 	payload, err = json.Marshal(power)
 
 	return payload, err
+}
+
+// expandNodeListForControlStruct - creates additional node entries for nodes
+// that are using the new Redfish Power Control structure.
+func expandNodeListForControlStruct(nl []*NodeInfo) []*NodeInfo {
+	var nnl []*NodeInfo
+	for _, ni := range nl {
+		if ni.RfControlsCnt > 0 {
+			for i, pc := range ni.PowerCaps {
+				if i == "Node Power Limit" {
+					ni.RfPowerURL = pc.Path
+					continue
+				}
+				nni := *ni
+				nni.RfPowerURL = pc.Path
+				nnl = append(nnl, &nni)
+			}
+		}
+	}
+
+	if len(nnl) > 0 {
+		nl = append(nl, nnl...)
+	}
+
+	return nl
 }
 
 //buildPowerCapCapabilitiesGroup - build a PowerCapGroup
