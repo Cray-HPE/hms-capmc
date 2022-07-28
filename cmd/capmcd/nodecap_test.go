@@ -1822,6 +1822,132 @@ func TestGeneratePayload(t *testing.T) {
 	}
 }
 
+func TestExpandNodeListForControlStruct(t *testing.T) {
+	var pc1 = make(map[string]PowerCap)
+	pc1["Node Power Limit"] = PowerCap{
+		Name:        "Node Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Power",
+		Min:         200,
+		Max:         1000,
+		PwrCtlIndex: 0,
+	}
+
+	var node1 = NodeInfo{
+		Hostname:      "x1000c0s0b0n0",
+		RfPowerURL:    "/redfish/v1/Chassis/Node0/Power",
+		RfControlsCnt: 0,
+		RfPwrCtlCnt:   1,
+		PowerCaps:     pc1,
+	}
+
+	wantNode1 := []string{"/redfish/v1/Chassis/Node0/Power"}
+
+	var pc2 = make(map[string]PowerCap)
+	pc2["Node Power Limit"] = PowerCap{
+		Name:        "Node Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
+		Min:         200,
+		Max:         1000,
+		PwrCtlIndex: 0,
+	}
+	pc2["GPU0 Power Limit"] = PowerCap{
+		Name:        "GPU0 Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU0PowerLimit",
+		Min:         100,
+		Max:         200,
+		PwrCtlIndex: 1,
+	}
+	pc2["GPU1 Power Limit"] = PowerCap{
+		Name:        "GPU1 Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU1PowerLimit",
+		Min:         100,
+		Max:         200,
+		PwrCtlIndex: 2,
+	}
+	pc2["GPU2 Power Limit"] = PowerCap{
+		Name:        "GPU2 Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU2PowerLimit",
+		Min:         100,
+		Max:         200,
+		PwrCtlIndex: 3,
+	}
+	pc2["GPU3 Power Limit"] = PowerCap{
+		Name:        "GPU3 Power Limit",
+		Path:        "/redfish/v1/Chassis/Node0/Controls/GPU3PowerLimit",
+		Min:         100,
+		Max:         200,
+		PwrCtlIndex: 4,
+	}
+
+	var node2 = NodeInfo{
+		Hostname:      "x1000c0s0b0n0",
+		RfPowerURL:    "/redfish/v1/Chassis/Node0/Power",
+		RfControlsCnt: 5,
+		RfPwrCtlCnt:   0,
+		PowerCaps:     pc2,
+	}
+
+	wantNode2 := []string{
+		"/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
+		"/redfish/v1/Chassis/Node0/Controls/GPU0PowerLimit",
+		"/redfish/v1/Chassis/Node0/Controls/GPU1PowerLimit",
+		"/redfish/v1/Chassis/Node0/Controls/GPU2PowerLimit",
+		"/redfish/v1/Chassis/Node0/Controls/GPU3PowerLimit",
+	}
+
+	var nlNoExpand []*NodeInfo
+	var nlExpand []*NodeInfo
+
+	nlNoExpand = append(nlNoExpand, &node1)
+	nlExpand = append(nlExpand, &node2)
+
+	tests := []struct {
+		name string
+		nl   []*NodeInfo
+		want []string
+	}{
+		{
+			"No expand",
+			nlNoExpand,
+			wantNode1,
+		},
+		{
+			"Expand",
+			nlExpand,
+			wantNode2,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := expandNodeListForControlStruct(tt.nl)
+			if len(got) != len(tt.want) {
+				var paths []string
+				for _, e := range got {
+					paths = append(paths, e.RfPowerURL)
+				}
+				t.Errorf("List different length than expected, got %v, want %v",
+					paths, tt.want)
+			}
+			found := 0
+			for _, g := range got {
+				for _, w := range tt.want {
+					if g.RfPowerURL == w {
+						found += 1
+						continue
+					}
+				}
+			}
+			if found != got[0].RfControlsCnt && found != got[0].RfPwrCtlCnt {
+				var paths []string
+				for _, e := range got {
+					paths = append(paths, e.RfPowerURL)
+				}
+				t.Errorf("List mismatch, got %v, want %v", paths, tt.want)
+			}
+		})
+	}
+}
+
 func TestGenerateControls(t *testing.T) {
 	var fiveHundred int = 500
 	var twoHundred int = 200
