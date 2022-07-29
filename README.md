@@ -73,16 +73,17 @@ On target system, delete the running pod and the one pushed will get started.
 
 ## CAPMC CT Testing
 
-This repository builds and publishes hms-capmc-ct-test RPMs along with the service itself containing tests that verify CAPMC on
-the NCNs of live Shasta systems. The tests require the hms-ct-test-base RPM to also be installed on the NCNs in order to execute.
-The version of the test RPM installed on the NCNs should always match the version of CAPMC deployed on the system.
+In addition to the service itself, this repository builds and publishes cray-capmc-test images containing tests that verify CAPMC
+on live Shasta systems. The tests are invoked via helm test as part of the Continuous Test (CT) framework during CSM installs and
+upgrades. The version of the cray-capmc-test image (vX.Y.Z) should match the version of the cray-capmc image being tested, both of
+which are specified in the helm chart for the service.
 
 ## API Map
 
 When the different APIs will be supported:
 
 | Equivalent XC | v1 now | v1 future |
-| --- | --- | --- | --- |
+| --- | --- | --- |
 | get_nid_map | get_nid_map | - |
 | get_node_rules | get_node_rules | - |
 | get_node_status | get_node_status | - |
