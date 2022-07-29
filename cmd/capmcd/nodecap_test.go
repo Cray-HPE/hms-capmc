@@ -377,8 +377,70 @@ type hsmMock struct {
 	ComponentEndpoints clientMock
 }
 
+type rfMock struct {
+	PowerControl []clientMock
+}
+
 // hsmTestMock is a RoundTripper that mocks HMS API calls
 func hsmTestMock(m *hsmMock) RoundTripFunc {
+	return func(r *http.Request) (*http.Response, error) {
+		var (
+			statusCode    int
+			body          io.ReadCloser
+			foundByString bool
+		)
+
+		if m != nil {
+			//fmt.Printf("hsmTestMock URL %s\n", r.URL)
+			switch r.URL.String() {
+			case "http://localhost/State/Components?nid=1008":
+				statusCode = m.Components.StatusCode
+				body = ioutil.NopCloser(bytes.NewBuffer(m.Components.Body))
+				foundByString = true
+			case "http://localhost/State/ComponentEndpoints?id=x9000c1s2b0n0":
+				statusCode = m.ComponentEndpoints.StatusCode
+				body = ioutil.NopCloser(bytes.NewBuffer(m.ComponentEndpoints.Body))
+				foundByString = true
+			}
+			if foundByString != true {
+				switch path.Base(r.URL.Path) {
+				case "Components":
+					statusCode = m.Components.StatusCode
+					body = ioutil.NopCloser(bytes.NewBuffer(m.Components.Body))
+				case "ComponentEndpoints":
+					statusCode = m.ComponentEndpoints.StatusCode
+					body = ioutil.NopCloser(bytes.NewBuffer(m.ComponentEndpoints.Body))
+				default:
+					statusCode = http.StatusInternalServerError
+					body = ioutil.NopCloser(bytes.NewBuffer([]byte{}))
+				}
+			}
+
+			return &http.Response{
+				Status: fmt.Sprintf("%d %s",
+					statusCode,
+					http.StatusText(statusCode)),
+				StatusCode: statusCode,
+				Body:       body,
+				Header:     make(http.Header),
+				Request:    r,
+			}, nil
+		} else {
+			return &http.Response{
+				Status: fmt.Sprintf("%d %s",
+					http.StatusNotFound,
+					http.StatusText(http.StatusNotFound)),
+				StatusCode: http.StatusNotFound,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(`{"e": 2, "err_msg": "path not found"}`)),
+				Header:     make(http.Header),
+				Request:    r,
+			}, nil
+		}
+	}
+}
+
+// rfTestMock is a RoundTripper that mocks Redfish API calls
+func rfTestMock(m *rfMock) RoundTripFunc {
 	return func(r *http.Request) (*http.Response, error) {
 		var (
 			statusCode int
@@ -386,13 +448,24 @@ func hsmTestMock(m *hsmMock) RoundTripFunc {
 		)
 
 		if m != nil {
-			switch path.Base(r.URL.Path) {
-			case "Components":
-				statusCode = m.Components.StatusCode
-				body = ioutil.NopCloser(bytes.NewBuffer(m.Components.Body))
-			case "ComponentEndpoints":
-				statusCode = m.ComponentEndpoints.StatusCode
-				body = ioutil.NopCloser(bytes.NewBuffer(m.ComponentEndpoints.Body))
+			//fmt.Printf("rfTestMock URL %s\n", r.URL)
+			switch r.URL.String() {
+			case "https://x9000c1s2b0/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
+				"https://x9000c3s3b0/redfish/v1/Chassis/Node0/Controls/NodePowerLimit":
+				statusCode = m.PowerControl[0].StatusCode
+				body = ioutil.NopCloser(bytes.NewBuffer(m.PowerControl[0].Body))
+			case "https://x9000c3s3b0/redfish/v1/Chassis/Node0/Controls/Accelerator0PowerLimit":
+				statusCode = m.PowerControl[1].StatusCode
+				body = ioutil.NopCloser(bytes.NewBuffer(m.PowerControl[1].Body))
+			case "https://x9000c3s3b0/redfish/v1/Chassis/Node0/Controls/Accelerator1PowerLimit":
+				statusCode = m.PowerControl[2].StatusCode
+				body = ioutil.NopCloser(bytes.NewBuffer(m.PowerControl[2].Body))
+			case "https://x9000c3s3b0/redfish/v1/Chassis/Node0/Controls/Accelerator2PowerLimit":
+				statusCode = m.PowerControl[3].StatusCode
+				body = ioutil.NopCloser(bytes.NewBuffer(m.PowerControl[3].Body))
+			case "https://x9000c3s3b0/redfish/v1/Chassis/Node0/Controls/Accelerator3PowerLimit":
+				statusCode = m.PowerControl[4].StatusCode
+				body = ioutil.NopCloser(bytes.NewBuffer(m.PowerControl[4].Body))
 			default:
 				statusCode = http.StatusInternalServerError
 				body = ioutil.NopCloser(bytes.NewBuffer([]byte{}))
@@ -647,6 +720,458 @@ func TestDoPowerCapCapabilities(t *testing.T) {
 	}
 }
 
+const olympusComponent = `
+{
+	"Components": [
+	  {
+		"ID": "x9000c1s2b0n0",
+		"Type": "Node",
+		"State": "Ready",
+		"Flag": "OK",
+		"Enabled": true,
+		"SoftwareStatus": "DvsAvailable",
+		"Role": "Compute",
+		"NID": 1008,
+		"NetType": "Sling",
+		"Arch": "X86",
+		"Class": "Hill"
+	  }
+	]
+  }
+`
+
+const olympusComponentEndpoint = `
+{
+	"ComponentEndpoints": [
+		{
+  "ID": "x9000c1s2b0n0",
+  "Type": "Node",
+  "RedfishType": "ComputerSystem",
+  "RedfishSubtype": "Physical",
+  "MACAddr": "00:40:a6:84:d8:42",
+  "OdataID": "/redfish/v1/Systems/Node0",
+  "RedfishEndpointID": "x9000c1s2b0",
+  "Enabled": true,
+  "RedfishEndpointFQDN": "x9000c1s2b0",
+  "RedfishURL": "x9000c1s2b0/redfish/v1/Systems/Node0",
+  "ComponentEndpointType": "ComponentEndpointComputerSystem",
+  "RedfishSystemInfo": {
+    "Name": "Node0",
+    "Actions": {
+      "#ComputerSystem.Reset": {
+        "ResetType@Redfish.AllowableValues": [
+          "Off",
+          "ForceOff",
+          "On"
+        ],
+        "@Redfish.ActionInfo": "/redfish/v1/Systems/Node0/ResetActionInfo",
+        "target": "/redfish/v1/Systems/Node0/Actions/ComputerSystem.Reset"
+      }
+    },
+    "EthernetNICInfo": [
+      {
+        "RedfishId": "ManagementEthernet",
+        "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/ManagementEthernet",
+        "Description": "Node Maintenance Network",
+        "MACAddress": "00:40:a6:84:d8:42",
+        "PermanentMACAddress": "00:40:a6:84:d8:42"
+      }
+    ],
+    "PowerURL": "/redfish/v1/Chassis/Node0/Power",
+    "Controls": [
+      {
+        "URL": "/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
+        "Control": {
+          "ControlDelaySeconds": 6,
+          "ControlMode": "Disabled",
+          "ControlType": "Power",
+          "Id": "NodePowerLimit",
+          "Name": "Node Power Limit",
+          "PhysicalContext": "Chassis",
+          "SetPoint": 0,
+          "SetPointUnits": "",
+          "SettingRangeMax": 1200,
+          "SettingRangeMin": 400,
+          "Status": {
+            "Health": "OK"
+          }
+        }
+      }
+    ]
+  }
+}
+]
+}`
+
+const olympusPowerControl = `
+{
+	"@odata.etag": "W/\"1658441493\"",
+	"@odata.id": "/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
+	"@odata.type": "#Control.v1_0_0.Control",
+	"ControlDelaySeconds": 6,
+	"ControlMode": "Automatic",
+	"ControlType": "Power",
+	"Id": "NodePowerLimit",
+	"Name": "Node Power Limit",
+	"Oem": {
+	  "Hpe": {
+		"LimitException": "NoAction",
+		"PowerAllocatedWatts": "1200",
+		"PowerIdleWatts": "0",
+		"PowerLimitFactor": "1.000000",
+		"PowerResetWatts": "0"
+	  }
+	},
+	"PhysicalContext": "Chassis",
+	"Sensor": {
+	  "DataSourceUri": "/redfish/v1/Chassis/Node0/Sensors/ChassisVoltageRegulator0InputPower",
+	  "Reading": 485
+	},
+	"SetPoint": 750,
+	"SettingRangeMax": 1200,
+	"SettingRangeMin": 400,
+	"Status": {
+	  "Health": "OK"
+	}
+  }
+`
+
+const olympusComponentGPU = `
+{
+	"Components": [
+		{
+			"ID": "x9000c3s3b0n0",
+			"Type": "Node",
+			"State": "Ready",
+			"Flag": "OK",
+			"Enabled": true,
+			"SoftwareStatus": "DvsAvailable",
+			"Role": "Compute",
+			"NID": 1044,
+			"NetType": "Sling",
+			"Arch": "X86",
+			"Class": "Hill"
+		  }
+	]
+}
+`
+
+const olympusComponentEndpointGPU = `
+{
+	"ComponentEndpoints": [
+		{
+			"ID": "x9000c3s3b0n0",
+			"Type": "Node",
+			"RedfishType": "ComputerSystem",
+			"RedfishSubtype": "Physical",
+			"OdataID": "/redfish/v1/Systems/Node0",
+			"RedfishEndpointID": "x9000c3s3b0",
+			"Enabled": true,
+			"RedfishEndpointFQDN": "x9000c3s3b0",
+			"RedfishURL": "x9000c3s3b0/redfish/v1/Systems/Node0",
+			"ComponentEndpointType": "ComponentEndpointComputerSystem",
+			"RedfishSystemInfo": {
+			  "Name": "Node0",
+			  "Actions": {
+				"#ComputerSystem.Reset": {
+				  "ResetType@Redfish.AllowableValues": [
+					"On",
+					"ForceOff",
+					"Off"
+				  ],
+				  "@Redfish.ActionInfo": "/redfish/v1/Systems/Node0/ResetActionInfo",
+				  "target": "/redfish/v1/Systems/Node0/Actions/ComputerSystem.Reset"
+				}
+			  },
+			  "EthernetNICInfo": [
+				{
+				  "RedfishId": "HPCNet0",
+				  "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/HPCNet0",
+				  "Description": "SS11 200Gb 2P NIC Mezz REV02 (HSN)",
+				  "MACAddress": "Not Available"
+				},
+				{
+				  "RedfishId": "HPCNet1",
+				  "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/HPCNet1",
+				  "Description": "SS11 200Gb 2P NIC Mezz REV02 (HSN)",
+				  "MACAddress": "Not Available"
+				},
+				{
+				  "RedfishId": "HPCNet2",
+				  "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/HPCNet2",
+				  "Description": "SS11 200Gb 2P NIC Mezz REV02 (HSN)",
+				  "MACAddress": "Not Available"
+				},
+				{
+				  "RedfishId": "HPCNet3",
+				  "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/HPCNet3",
+				  "Description": "SS11 200Gb 2P NIC Mezz REV02 (HSN)",
+				  "MACAddress": "Not Available"
+				},
+				{
+				  "RedfishId": "ManagementEthernet",
+				  "@odata.id": "/redfish/v1/Systems/Node0/EthernetInterfaces/ManagementEthernet",
+				  "Description": "Node Maintenance Network",
+				  "MACAddress": "00:40:a6:83:3a:52",
+				  "PermanentMACAddress": "00:40:a6:83:3a:52"
+				}
+			  ],
+			  "PowerURL": "/redfish/v1/Chassis/Node0/Power",
+			  "Controls": [
+				{
+				  "URL": "/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
+				  "Control": {
+					"ControlDelaySeconds": 6,
+					"ControlMode": "Disabled",
+					"ControlType": "Power",
+					"Id": "NodePowerLimit",
+					"Name": "Node Power Limit",
+					"PhysicalContext": "Chassis",
+					"SetPoint": 0,
+					"SetPointUnits": "",
+					"SettingRangeMax": 2754,
+					"SettingRangeMin": 764,
+					"Status": {
+					  "Health": "OK"
+					}
+				  }
+				},
+				{
+				  "URL": "/redfish/v1/Chassis/Node0/Controls/Accelerator0PowerLimit",
+				  "Control": {
+					"ControlDelaySeconds": 6,
+					"ControlMode": "Disabled",
+					"ControlType": "Power",
+					"Id": "Accelerator0PowerLimit",
+					"Name": "Accelerator0 Power Limit",
+					"PhysicalContext": "Accelerator",
+					"SetPoint": 0,
+					"SetPointUnits": "",
+					"SettingRangeMax": 560,
+					"SettingRangeMin": 100,
+					"Status": {
+					  "Health": "OK"
+					}
+				  }
+				},
+				{
+				  "URL": "/redfish/v1/Chassis/Node0/Controls/Accelerator1PowerLimit",
+				  "Control": {
+					"ControlDelaySeconds": 6,
+					"ControlMode": "Disabled",
+					"ControlType": "Power",
+					"Id": "Accelerator1PowerLimit",
+					"Name": "Accelerator1 Power Limit",
+					"PhysicalContext": "Accelerator",
+					"SetPoint": 0,
+					"SetPointUnits": "",
+					"SettingRangeMax": 560,
+					"SettingRangeMin": 100,
+					"Status": {
+					  "Health": "OK"
+					}
+				  }
+				},
+				{
+				  "URL": "/redfish/v1/Chassis/Node0/Controls/Accelerator2PowerLimit",
+				  "Control": {
+					"ControlDelaySeconds": 6,
+					"ControlMode": "Disabled",
+					"ControlType": "Power",
+					"Id": "Accelerator2PowerLimit",
+					"Name": "Accelerator2 Power Limit",
+					"PhysicalContext": "Accelerator",
+					"SetPoint": 0,
+					"SetPointUnits": "",
+					"SettingRangeMax": 560,
+					"SettingRangeMin": 100,
+					"Status": {
+					  "Health": "OK"
+					}
+				  }
+				},
+				{
+				  "URL": "/redfish/v1/Chassis/Node0/Controls/Accelerator3PowerLimit",
+				  "Control": {
+					"ControlDelaySeconds": 6,
+					"ControlMode": "Disabled",
+					"ControlType": "Power",
+					"Id": "Accelerator3PowerLimit",
+					"Name": "Accelerator3 Power Limit",
+					"PhysicalContext": "Accelerator",
+					"SetPoint": 0,
+					"SetPointUnits": "",
+					"SettingRangeMax": 560,
+					"SettingRangeMin": 100,
+					"Status": {
+					  "Health": "OK"
+					}
+				  }
+				}
+			  ]
+			}
+		  }
+	]
+}
+`
+
+const olympusPowerControlNode = `
+{
+	"@odata.etag": "W/\"1658356738\"",
+	"@odata.id": "/redfish/v1/Chassis/Node0/Controls/NodePowerLimit",
+	"@odata.type": "#Control.v1_0_0.Control",
+	"ControlDelaySeconds": 6,
+	"ControlMode": "Automatic",
+	"ControlType": "Power",
+	"Id": "NodePowerLimit",
+	"Name": "Node Power Limit",
+	"Oem": {
+	  "Hpe": {
+		"LimitException": "NoAction",
+		"PowerAllocatedWatts": "2754",
+		"PowerIdleWatts": "0",
+		"PowerLimitFactor": "1.000000",
+		"PowerResetWatts": "0"
+	  }
+	},
+	"PhysicalContext": "Chassis",
+	"Sensor": {
+	  "DataSourceUri": "/redfish/v1/Chassis/Node0/Sensors/ChassisVoltageRegulator0InputPower",
+	  "Reading": 731
+	},
+	"SetPoint": 2000,
+	"SettingRangeMax": 2754,
+	"SettingRangeMin": 764,
+	"Status": {
+	  "Health": "OK"
+	}
+  }
+ `
+
+const olympusPowerControlGPU0 = `
+{
+	"@odata.etag": "W/\"1658356738\"",
+	"@odata.id": "/redfish/v1/Chassis/Node0/Controls/Accelerator0PowerLimit",
+	"@odata.type": "#Control.v1_0_0.Control",
+	"ControlDelaySeconds": 6,
+	"ControlMode": "Automatic",
+	"ControlType": "Power",
+	"Id": "Accelerator0PowerLimit",
+	"Name": "Accelerator0 Power Limit",
+	"Oem": {
+	  "Hpe": {
+		"LimitException": "NoAction",
+		"PowerLimitFactor": "1.000000"
+	  }
+	},
+	"PhysicalContext": "Accelerator",
+	"Sensor": {
+	  "DataSourceUri": "/redfish/v1/Chassis/Node0/Sensors/GPUSubsystemAccelerator0Power",
+	  "Reading": 115
+	},
+	"SetPoint": 500,
+	"SettingRangeMax": 560,
+	"SettingRangeMin": 100,
+	"Status": {
+	  "Health": "OK"
+	}
+  }
+`
+
+const olympusPowerControlGPU1 = `
+{
+	"@odata.etag": "W/\"1658356738\"",
+	"@odata.id": "/redfish/v1/Chassis/Node0/Controls/Accelerator1PowerLimit",
+	"@odata.type": "#Control.v1_0_0.Control",
+	"ControlDelaySeconds": 6,
+	"ControlMode": "Automatic",
+	"ControlType": "Power",
+	"Id": "Accelerator1PowerLimit",
+	"Name": "Accelerator1 Power Limit",
+	"Oem": {
+	  "Hpe": {
+		"LimitException": "NoAction",
+		"PowerLimitFactor": "1.000000"
+	  }
+	},
+	"PhysicalContext": "Accelerator",
+	"Sensor": {
+	  "DataSourceUri": "/redfish/v1/Chassis/Node0/Sensors/GPUSubsystemAccelerator1Power",
+	  "Reading": 116
+	},
+	"SetPoint": 500,
+	"SettingRangeMax": 560,
+	"SettingRangeMin": 100,
+	"Status": {
+	  "Health": "OK"
+	}
+  }
+`
+
+const olympusPowerControlGPU2 = `
+{
+	"@odata.etag": "W/\"1658356738\"",
+	"@odata.id": "/redfish/v1/Chassis/Node0/Controls/Accelerator2PowerLimit",
+	"@odata.type": "#Control.v1_0_0.Control",
+	"ControlDelaySeconds": 6,
+	"ControlMode": "Automatic",
+	"ControlType": "Power",
+	"Id": "Accelerator2PowerLimit",
+	"Name": "Accelerator2 Power Limit",
+	"Oem": {
+	  "Hpe": {
+		"LimitException": "NoAction",
+		"PowerLimitFactor": "1.000000"
+	  }
+	},
+	"PhysicalContext": "Accelerator",
+	"Sensor": {
+	  "DataSourceUri": "/redfish/v1/Chassis/Node0/Sensors/GPUSubsystemAccelerator2Power",
+	  "Reading": 117
+	},
+	"SetPoint": 500,
+	"SettingRangeMax": 560,
+	"SettingRangeMin": 100,
+	"Status": {
+	  "Health": "OK"
+	}
+  }
+`
+
+const olympusPowerControlGPU3 = `
+{
+	"@odata.etag": "W/\"1658356738\"",
+	"@odata.id": "/redfish/v1/Chassis/Node0/Controls/Accelerator3PowerLimit",
+	"@odata.type": "#Control.v1_0_0.Control",
+	"ControlDelaySeconds": 6,
+	"ControlMode": "Automatic",
+	"ControlType": "Power",
+	"Id": "Accelerator3PowerLimit",
+	"Name": "Accelerator3 Power Limit",
+	"Oem": {
+	  "Hpe": {
+		"LimitException": "NoAction",
+		"PowerLimitFactor": "1.000000"
+	  }
+	},
+	"PhysicalContext": "Accelerator",
+	"Sensor": {
+	  "DataSourceUri": "/redfish/v1/Chassis/Node0/Sensors/GPUSubsystemAccelerator3Power",
+	  "Reading": 114
+	},
+	"SetPoint": 500,
+	"SettingRangeMax": 560,
+	"SettingRangeMin": 100,
+	"Status": {
+	  "Health": "OK"
+	}
+  }
+`
+
+var fiveHundred int = 500
+var sevenFifty int = 750
+var twoThousand int = 2000
+
 func TestDoPowerCapGet(t *testing.T) {
 	testQueryAllComponents := loadTestDataBytes(t,
 		"components-nodes-only-one-chassis.input")
@@ -660,6 +1185,8 @@ func TestDoPowerCapGet(t *testing.T) {
 		body   io.Reader
 		ret    int
 		*hsmMock
+		*rfMock
+		controls []capmc.PowerCapControl
 	}{
 		{
 			name:    "Get",
@@ -744,6 +1271,98 @@ func TestDoPowerCapGet(t *testing.T) {
 			body:    nil,
 			ret:     http.StatusMethodNotAllowed,
 			hsmMock: nil,
+		}, {
+			name:   "Olympus",
+			method: http.MethodPost,
+			path:   capmc.PowerCapGetV1,
+			body:   bytes.NewBuffer(json.RawMessage(`{"nids":[1008]}`)),
+			ret:    http.StatusOK,
+			hsmMock: &hsmMock{
+				Components: clientMock{
+					Body:       []byte(olympusComponent),
+					StatusCode: http.StatusOK,
+				},
+				ComponentEndpoints: clientMock{
+					Body:       []byte(olympusComponentEndpoint),
+					StatusCode: http.StatusOK,
+				},
+			},
+			rfMock: &rfMock{
+				PowerControl: []clientMock{
+					{
+						Body:       []byte(olympusPowerControl),
+						StatusCode: http.StatusOK,
+					},
+				},
+			},
+			controls: []capmc.PowerCapControl{
+				{
+					Name: "Node Power Limit",
+					Val:  &sevenFifty,
+				},
+			},
+		}, {
+			name:   "OlympusGPU",
+			method: http.MethodPost,
+			path:   capmc.PowerCapGetV1,
+			body:   bytes.NewBuffer(json.RawMessage(`{"nids":[1044]}`)),
+			ret:    http.StatusOK,
+			hsmMock: &hsmMock{
+				Components: clientMock{
+					Body:       []byte(olympusComponentGPU),
+					StatusCode: http.StatusOK,
+				},
+				ComponentEndpoints: clientMock{
+					Body:       []byte(olympusComponentEndpointGPU),
+					StatusCode: http.StatusOK,
+				},
+			},
+			rfMock: &rfMock{
+				PowerControl: []clientMock{
+					{
+						Body:       []byte(olympusPowerControlNode),
+						StatusCode: http.StatusOK,
+					},
+					{
+						Body:       []byte(olympusPowerControlGPU0),
+						StatusCode: http.StatusOK,
+					},
+					{
+						Body:       []byte(olympusPowerControlGPU1),
+						StatusCode: http.StatusOK,
+					},
+					{
+						Body:       []byte(olympusPowerControlGPU2),
+						StatusCode: http.StatusOK,
+					},
+					{
+						Body:       []byte(olympusPowerControlGPU3),
+						StatusCode: http.StatusOK,
+					},
+				},
+			},
+			controls: []capmc.PowerCapControl{
+				{
+					Name: "Node Power Limit",
+					Val:  &twoThousand,
+				},
+				{
+					Name: "Accelerator0 Power Limit",
+					Val:  &fiveHundred,
+				},
+				{
+					Name: "Accelerator1 Power Limit",
+					Val:  &fiveHundred,
+				},
+				{
+					Name: "Accelerator2 Power Limit",
+					Val:  &fiveHundred,
+				},
+				{
+					Name: "Accelerator3 Power Limit",
+					Val:  &fiveHundred,
+				},
+			},
 		},
 	}
 
@@ -757,7 +1376,7 @@ func TestDoPowerCapGet(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			svc := CapmcD{
 				smClient: NewTestClient(hsmTestMock(test.hsmMock)),
-				rfClient: NewTestClient(hsmTestMock(test.hsmMock)),
+				rfClient: NewTestClient(rfTestMock(test.rfMock)),
 				config:   loadConfig(""),
 				ss:       ss,
 				ccs:      ccs,
@@ -779,7 +1398,34 @@ func TestDoPowerCapGet(t *testing.T) {
 				t.Errorf("Returned wrong status code: got %v want %v",
 					w.Code, test.ret)
 			}
-			// TODO add data validation here
+			var response capmc.PowerCapResponse
+			err = json.Unmarshal(w.Body.Bytes(), &response)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if test.controls != nil {
+				var found bool
+				for _, nid := range response.Nids {
+					for _, ctl := range nid.Controls {
+						found = false
+						for _, tCtl := range test.controls {
+							if ctl.Name == tCtl.Name &&
+								*ctl.Val == *tCtl.Val {
+								found = true
+								break
+							}
+						}
+						if !found {
+							t.Errorf("Unexpected return of: %s %d", ctl.Name, *ctl.Val)
+							t.Errorf("Expected one of the following:")
+							for _, tCtl := range test.controls {
+								t.Errorf("%s %d", tCtl.Name, *tCtl.Val)
+							}
+						}
+					}
+				}
+			}
 		})
 	}
 }
@@ -950,13 +1596,10 @@ func TestConvertSystemHWInventoryToUniqueMonikerGroups(t *testing.T) {
 
 func TestGeneratePayload(t *testing.T) {
 	var (
-		pCtl       []capmc.PowerControl
 		goodPwrCtl []capmc.PowerControl
-		pLimit     capmc.HpeConfigurePowerLimit
 		goodPwrLim capmc.HpeConfigurePowerLimit
-		rfCtl      capmc.RFControl
-		goodRfCtl  capmc.RFControl
-		zeroCtl    capmc.RFControl
+		goodRfCtl  capmc.RFControlsDeep
+		zeroCtl    capmc.RFControlsDeep
 	)
 
 	var fiveHundred int = 500
@@ -986,20 +1629,66 @@ func TestGeneratePayload(t *testing.T) {
 		},
 	}
 
-	goodRfCtl = capmc.RFControl{
-		SetPoint:    &oneThousand,
-		ControlMode: "Automatic",
+	goodRfCtl = capmc.RFControlsDeep{
+		Members: []capmc.RFControl{
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/NodePowerLimit",
+				SetPoint:    &fiveHundred,
+				ControlMode: "Automatic",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit",
+				SetPoint:    &fiveHundred,
+				ControlMode: "Automatic",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit",
+				SetPoint:    &fiveHundred,
+				ControlMode: "Automatic",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit",
+				SetPoint:    &fiveHundred,
+				ControlMode: "Automatic",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit",
+				SetPoint:    &fiveHundred,
+				ControlMode: "Automatic",
+			},
+		},
 	}
 
-	zeroCtl = capmc.RFControl{
-		ControlMode: "Disabled",
+	zeroCtl = capmc.RFControlsDeep{
+		Members: []capmc.RFControl{
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/NodePowerLimit",
+				ControlMode: "Disabled",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit",
+				ControlMode: "Disabled",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit",
+				ControlMode: "Disabled",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit",
+				ControlMode: "Disabled",
+			},
+			{
+				Oid:         "/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit",
+				ControlMode: "Disabled",
+			},
+		},
 	}
 
 	type args struct {
 		node       *NodeInfo
 		powerCtl   []capmc.PowerControl
 		powerLimit capmc.HpeConfigurePowerLimit
-		rfCtl      capmc.RFControl
+		rfDeep     capmc.RFControlsDeep
 	}
 
 	mtnNode := NodeInfo{
@@ -1029,10 +1718,7 @@ func TestGeneratePayload(t *testing.T) {
 		{
 			name: "bad mtnNode",
 			args: args{
-				node:       &mtnNode,
-				powerCtl:   pCtl,
-				powerLimit: pLimit,
-				rfCtl:      rfCtl,
+				node: &mtnNode,
 			},
 			want:    nil,
 			wantErr: true,
@@ -1040,10 +1726,7 @@ func TestGeneratePayload(t *testing.T) {
 		{
 			name: "bad stdNode",
 			args: args{
-				node:       &stdNode,
-				powerCtl:   pCtl,
-				powerLimit: pLimit,
-				rfCtl:      rfCtl,
+				node: &stdNode,
 			},
 			want:    nil,
 			wantErr: true,
@@ -1051,10 +1734,7 @@ func TestGeneratePayload(t *testing.T) {
 		{
 			name: "bad A6500Node",
 			args: args{
-				node:       &A6500Node,
-				powerCtl:   pCtl,
-				powerLimit: pLimit,
-				rfCtl:      rfCtl,
+				node: &A6500Node,
 			},
 			want:    nil,
 			wantErr: true,
@@ -1062,10 +1742,7 @@ func TestGeneratePayload(t *testing.T) {
 		{
 			name: "bad bard node",
 			args: args{
-				node:       &bardNode,
-				powerCtl:   pCtl,
-				powerLimit: pLimit,
-				rfCtl:      rfCtl,
+				node: &bardNode,
 			},
 			want:    nil,
 			wantErr: true,
@@ -1073,10 +1750,8 @@ func TestGeneratePayload(t *testing.T) {
 		{
 			name: "good mtnNode",
 			args: args{
-				node:       &mtnNode,
-				powerCtl:   goodPwrCtl,
-				powerLimit: pLimit,
-				rfCtl:      rfCtl,
+				node:     &mtnNode,
+				powerCtl: goodPwrCtl,
 			},
 			want:    json.RawMessage(`{"PowerControl":[{"PowerLimit":{"LimitInWatts":1000}},{"PowerLimit":{"LimitInWatts":500}}]}`),
 			wantErr: false,
@@ -1084,10 +1759,8 @@ func TestGeneratePayload(t *testing.T) {
 		{
 			name: "good stdNode",
 			args: args{
-				node:       &stdNode,
-				powerCtl:   goodPwrCtl,
-				powerLimit: pLimit,
-				rfCtl:      rfCtl,
+				node:     &stdNode,
+				powerCtl: goodPwrCtl,
 			},
 			want:    json.RawMessage(`{"PowerControl":[{"PowerLimit":{"LimitInWatts":1000}},{"PowerLimit":{"LimitInWatts":500}}]}`),
 			wantErr: false,
@@ -1096,9 +1769,7 @@ func TestGeneratePayload(t *testing.T) {
 			name: "good A6500Node",
 			args: args{
 				node:       &A6500Node,
-				powerCtl:   pCtl,
 				powerLimit: goodPwrLim,
-				rfCtl:      rfCtl,
 			},
 			want:    json.RawMessage(`{"PowerLimits":[{"PowerLimitInWatts":1000,"ZoneNumber":0}]}`),
 			wantErr: false,
@@ -1106,34 +1777,28 @@ func TestGeneratePayload(t *testing.T) {
 		{
 			name: "good mtnNode node",
 			args: args{
-				node:       &bardNode,
-				powerCtl:   pCtl,
-				powerLimit: pLimit,
-				rfCtl:      goodRfCtl,
+				node:   &bardNode,
+				rfDeep: goodRfCtl,
 			},
-			want:    json.RawMessage(`{"ControlMode":"Automatic","SetPoint":1000}`),
+			want:    json.RawMessage(`{"Members":[{"@odata.id":"/redfish/v1/Chassis/Node/Controls/NodePowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit","ControlMode":"Automatic","SetPoint":500}]}`),
 			wantErr: false,
 		},
 		{
 			name: "good mtnNode GPU",
 			args: args{
-				node:       &GPU0Node,
-				powerCtl:   pCtl,
-				powerLimit: pLimit,
-				rfCtl:      goodRfCtl,
+				node:   &GPU0Node,
+				rfDeep: goodRfCtl,
 			},
-			want:    json.RawMessage(`{"ControlMode":"Automatic","SetPoint":1000}`),
+			want:    json.RawMessage(`{"Members":[{"@odata.id":"/redfish/v1/Chassis/Node/Controls/NodePowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit","ControlMode":"Automatic","SetPoint":500},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit","ControlMode":"Automatic","SetPoint":500}]}`),
 			wantErr: false,
 		},
 		{
 			name: "good mtnNode zero",
 			args: args{
-				node:       &bardNode,
-				powerCtl:   pCtl,
-				powerLimit: pLimit,
-				rfCtl:      zeroCtl,
+				node:   &bardNode,
+				rfDeep: zeroCtl,
 			},
-			want:    json.RawMessage(`{"ControlMode":"Disabled"}`),
+			want:    json.RawMessage(`{"Members":[{"@odata.id":"/redfish/v1/Chassis/Node/Controls/NodePowerLimit","ControlMode":"Disabled"},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit","ControlMode":"Disabled"},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit","ControlMode":"Disabled"},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit","ControlMode":"Disabled"},{"@odata.id":"/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit","ControlMode":"Disabled"}]}`),
 			wantErr: false,
 		},
 	}
@@ -1144,7 +1809,7 @@ func TestGeneratePayload(t *testing.T) {
 				powerGen{
 					powerCtl:   tt.args.powerCtl,
 					powerLimit: tt.args.powerLimit,
-					controls:   tt.args.rfCtl,
+					controls:   tt.args.rfDeep,
 				})
 			if (err != nil) != tt.wantErr {
 				t.Errorf("generatePayload() error = %v, wantErr %v", err, tt.wantErr)
@@ -1343,9 +2008,14 @@ func TestGenerateControls(t *testing.T) {
 	node4 := NodeInfo{RfPowerURL: "/redfish/v1/Chassis/Node/Controls/NodePowerLimit", RfPwrCtlCnt: 0, RfControlsCnt: 5, PowerCaps: pc4}
 	wantNode4 := make(map[*NodeInfo]powerGen)
 	wantNode4[&node4] = powerGen{
-		controls: capmc.RFControl{
-			SetPoint:    &fiveHundred,
-			ControlMode: "Automatic",
+		controls: capmc.RFControlsDeep{
+			Members: []capmc.RFControl{
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/NodePowerLimit",
+					SetPoint:    &fiveHundred,
+					ControlMode: "Automatic",
+				},
+			},
 		},
 	}
 	ctl4 := make([]capmc.PowerCapControl, 1)
@@ -1361,13 +2031,38 @@ func TestGenerateControls(t *testing.T) {
 	node5 := NodeInfo{RfPowerURL: "/redfish/v1/Chassis/Node/Controls/NodePowerLimit", RfPwrCtlCnt: 0, RfControlsCnt: 5, PowerCaps: pc5}
 	wantNode5 := make(map[*NodeInfo]powerGen)
 	wantNode5[&node5] = powerGen{
-		controls: capmc.RFControl{
-			SetPoint:    &twoHundred,
-			ControlMode: "Automatic",
+		controls: capmc.RFControlsDeep{
+			Members: []capmc.RFControl{
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/NodePowerLimit",
+					SetPoint:    &fiveHundred,
+					ControlMode: "Automatic",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit",
+					SetPoint:    &twoHundred,
+					ControlMode: "Automatic",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit",
+					SetPoint:    &twoHundred,
+					ControlMode: "Automatic",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit",
+					SetPoint:    &twoHundred,
+					ControlMode: "Automatic",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit",
+					SetPoint:    &twoHundred,
+					ControlMode: "Automatic",
+				},
+			},
 		},
 	}
 	ctl5 := make([]capmc.PowerCapControl, 5)
-	ctl5[0] = capmc.PowerCapControl{Name: "Node Power Limit", Val: &twoHundred}
+	ctl5[0] = capmc.PowerCapControl{Name: "Node Power Limit", Val: &fiveHundred}
 	ctl5[1] = capmc.PowerCapControl{Name: "GPU0 Power Limit", Val: &twoHundred}
 	ctl5[2] = capmc.PowerCapControl{Name: "GPU1 Power Limit", Val: &twoHundred}
 	ctl5[3] = capmc.PowerCapControl{Name: "GPU2 Power Limit", Val: &twoHundred}
@@ -1417,8 +2112,29 @@ func TestGenerateControls(t *testing.T) {
 	node8 := NodeInfo{RfPowerURL: "/redfish/v1/Chassis/Node/Controls/NodePowerLimit", RfPwrCtlCnt: 0, RfControlsCnt: 5, PowerCaps: pc8}
 	wantNode8 := make(map[*NodeInfo]powerGen)
 	wantNode8[&node8] = powerGen{
-		controls: capmc.RFControl{
-			ControlMode: "Disabled",
+		controls: capmc.RFControlsDeep{
+			Members: []capmc.RFControl{
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/NodePowerLimit",
+					ControlMode: "Disabled",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU0PowerLimit",
+					ControlMode: "Disabled",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU1PowerLimit",
+					ControlMode: "Disabled",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU2PowerLimit",
+					ControlMode: "Disabled",
+				},
+				{
+					Oid:         "/redfish/v1/Chassis/Node/Controls/GPU3PowerLimit",
+					ControlMode: "Disabled",
+				},
+			},
 		},
 	}
 	ctl8 := make([]capmc.PowerCapControl, 5)

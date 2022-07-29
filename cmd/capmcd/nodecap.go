@@ -31,6 +31,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"path"
 	"strings"
 
 	base "github.com/Cray-HPE/hms-base"
@@ -657,9 +658,9 @@ func generateControls(node *NodeInfo, controls []capmc.PowerCapControl) (map[*No
 	powerCtl := make([]capmc.PowerControl, node.RfPwrCtlCnt)
 	seen := make(map[string]bool)
 	pControls := make(map[*NodeInfo]powerGen)
+	nControls := []capmc.RFControl{}
 
 	for _, control := range controls {
-		var targNode *NodeInfo
 		var (
 			min, max int = -1, -1
 			ok       bool
@@ -698,30 +699,22 @@ func generateControls(node *NodeInfo, controls []capmc.PowerCapControl) (map[*No
 		}
 
 		if node.RfControlsCnt > 0 {
-			path := node.PowerCaps[control.Name].Path
-			if control.Name == "Node Power Limit" {
-				node.RfPowerURL = path
-				targNode = node
-			} else {
-				nni := *node
-				nni.RfPowerURL = path
-				targNode = &nni
-			}
+			pcPath := node.PowerCaps[control.Name].Path
 
+			ctl := capmc.RFControl{}
 			if *control.Val > 0 {
-				pControls[targNode] = powerGen{
-					controls: capmc.RFControl{
-						SetPoint:    control.Val,
-						ControlMode: "Automatic",
-					},
+				ctl = capmc.RFControl{
+					Oid:         pcPath,
+					SetPoint:    control.Val,
+					ControlMode: "Automatic",
 				}
 			} else {
-				pControls[targNode] = powerGen{
-					controls: capmc.RFControl{
-						ControlMode: "Disabled",
-					},
+				ctl = capmc.RFControl{
+					Oid:         pcPath,
+					ControlMode: "Disabled",
 				}
 			}
+			nControls = append(nControls, ctl)
 		} else if isHpeApollo6500(node) {
 			pControls[node] = powerGen{
 				powerLimit: capmc.HpeConfigurePowerLimit{
@@ -747,13 +740,24 @@ func generateControls(node *NodeInfo, controls []capmc.PowerCapControl) (map[*No
 		pControls[node] = powerGen{powerCtl: powerCtl}
 	}
 
+	if len(nControls) > 0 {
+		deepCtl := capmc.RFControlsDeep{Members: nControls}
+		pControls[node] = powerGen{controls: deepCtl}
+		fullPath := nControls[0].Oid
+		// Use the control URL as the basis for the deep patch URL. Chop the
+		// last 2 components from the path. It does not matter which control
+		// is the first element in the array, the URLs are of the same format.
+		url := path.Dir(path.Dir(fullPath))
+		node.RfPowerURL = url + "/Controls.Deep"
+	}
+
 	return pControls, nil
 }
 
 type powerGen struct {
 	powerCtl   []capmc.PowerControl
 	powerLimit capmc.HpeConfigurePowerLimit
-	controls   capmc.RFControl
+	controls   capmc.RFControlsDeep
 }
 
 // generatePayload - take a standard Redfish power cap structure or the
@@ -765,8 +769,7 @@ func generatePayload(node *NodeInfo, pGen powerGen) ([]byte, error) {
 	var power interface{} = nil
 
 	if node.RfControlsCnt > 0 {
-		if pGen.controls.SetPoint == nil &&
-			pGen.controls.ControlMode != "Disabled" {
+		if len(pGen.controls.Members) == 0 {
 			return nil, errors.New("missing power limit information")
 		}
 		power = pGen.controls
