@@ -4,7 +4,7 @@ networks:
   capmc:
 
 services:
-  ct-tests-functional-wait-for-smd:
+  wait-for-smd:
     build:
       context: test/ct/
       dockerfile: Dockerfile.wait-for-smd.Dockerfile
@@ -13,16 +13,16 @@ services:
       - cray-smd
     networks:
       - capmc
-  ct-tests-functional:
+  tavern-tests:
     build:
       context: test/ct/
       dockerfile: Dockerfile
     depends_on:
       - cray-capmc
-    entrypoint: entrypoint.sh functional -c /src/app/tavern_global_config_ct_test.yaml -p /src/app
+    entrypoint: entrypoint.sh tavern -c /src/app/tavern_global_config_ct_test.yaml -p /src/app/api
     networks:
       - capmc
-  ct-tests-smoke:
+  smoke-tests:
     build:
       context: test/ct/
       dockerfile: Dockerfile

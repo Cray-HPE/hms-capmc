@@ -33,10 +33,10 @@ test_name: Verify get_xname_status POST method with empty payload
 stages:
   # 1. POST /get_xname_status empty payload API response code
   # 2. POST /get_xname_status empty payload API response body
-  - name: Get the status of all xnames
+  - name: Get the status of all xnames via Redfish
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"source": "hsm"}
+      json: {"source": "redfish"}
       method: POST
       verify: !bool "{verify}"
     response:

@@ -1,0 +1,168 @@
+# MIT License
+#
+# (C) Copyright [2020-2022] Hewlett Packard Enterprise Development LP
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+
+# Negative Tavern test cases for the Cray Advanced Platform Monitoring and
+# Control (CAPMC) get_xname_status API.
+# Author: Mitch Schooler, Michael Jendrysik
+# Service: Cray Advanced Platform Monitoring and Control
+
+# HMS test metrics test cases: 13
+# 1. POST /get_xname_status invalid filter API response code
+# 2. POST /get_xname_status invalid filter API response body
+# 3. POST /get_xname_status garbage filter API response code
+# 4. POST /get_xname_status garbage filter API response body
+# 5. GET /get_xname_status API response code
+# 6. GET /get_xname_status API response body
+# 7. HEAD /get_xname_status API response code
+# 8. PUT /get_xname_status API response code
+# 9. PUT /get_xname_status API response body
+# 10. DELETE /get_xname_status API response code
+# 11. DELETE /get_xname_status API response body
+# 12. Disabled (CASMPET-1067) - OPTIONS /get_xname_status API response code
+# 13. Disabled (CASMPET-1067) - OPTIONS /get_xname_status API response body
+# 14. PATCH /get_xname_status API response code
+# 15. PATCH /get_xname_status API response body
+---
+test_name: capmcAPIGetXnameStatus invalid filter
+stages:
+  # 1. POST /get_xname_status invalid filter API response code
+  # 2. POST /get_xname_status invalid filter API response body
+  - name: capmcAPIGetXnameStatus fails with invalid filter
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"filter": "show_fake"}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 400
+      json:
+        e: 400
+        err_msg: "invalid filter string: show_fake"
+
+---
+test_name: capmcAPIGetXnameStatus garbage filter
+stages:
+  # 3. POST /get_xname_status garbage filter API response code
+  # 4. POST /get_xname_status garbage filter API response body
+  - name: capmcAPIGetXnameStatus fails with garbage filter
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"filter": "~!@#$%^&*"}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 400
+      json:
+        e: 400
+        err_msg: "invalid filter string: ~!@#$%^&*"
+
+---
+test_name: capmcAPIGetXnameStatus method fails GET
+stages:
+  # 5. GET /get_xname_status API response code
+  # 6. GET /get_xname_status API response body
+  - name: capmcAPIGetXnameStatus fails with GET method
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+      json:
+        e: 405
+        err_msg: "(GET) Not Allowed"
+
+---
+test_name: capmcAPIGetXnameStatus method fails HEAD
+stages:
+  # 7. HEAD /get_xname_status API response code
+  - name: capmcAPIGetXnameStatus fails with HEAD method
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      method: HEAD
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+
+---
+test_name: capmcAPIGetXnameStatus method fails PUT
+stages:
+  # 8. PUT /get_xname_status API response code
+  # 9. PUT /get_xname_status API response body
+  - name: capmcAPIGetXnameStatus fails with PUT method
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      method: PUT
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+      json:
+        e: 405
+        err_msg: "(PUT) Not Allowed"
+
+---
+test_name: capmcAPIGetXnameStatus method fails DELETE
+stages:
+  # 10. DELETE /get_xname_status API response code
+  # 11. DELETE /get_xname_status API response body
+  - name: capmcAPIGetXnameStatus fails with DELETE method
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      method: DELETE
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+      json:
+        e: 405
+        err_msg: "(DELETE) Not Allowed"
+
+#---
+#test_name: capmcAPIGetXnameStatus method fails OPTIONS
+#stages:
+#  # 12. Disabled (CASMPET-1067) - OPTIONS /get_xname_status API response code
+#  # 13. Disabled (CASMPET-1067) - OPTIONS /get_xname_status API response body
+#  - name: capmcAPIGetXnameStatus fails with OPTIONS method
+#    request:
+#      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+#      method: OPTIONS
+#      verify: !bool "{verify}"
+#    response:
+#      status_code: 405
+#      json:
+#        e: 405
+#        err_msg: "(OPTIONS) Not Allowed"
+#
+---
+test_name: capmcAPIGetXnameStatus method fails PATCH
+stages:
+  # 14. PATCH /get_xname_status API response code
+  # 15. PATCH /get_xname_status API response body
+  - name: capmcAPIGetXnameStatus fails with PATCH method
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+      json:
+        e: 405
+        err_msg: "(PATCH) Not Allowed"
