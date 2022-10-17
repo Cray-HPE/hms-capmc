@@ -19,9 +19,18 @@
 # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
+
 # Tavern test cases for the CAPMC version API
 # Author: Mitch Schooler, Andrew Nieuwsma, Michael Jendrysik
 # Service: Cray Advanced Platform Monitoring and Control
+
+# CAPMC Heal APIs test cases: 6
+# Ensure that /health can be retrieved
+# Ensure that /health cannot be posted to
+# Ensure that /liveness can be retrieved
+# Ensure that /liveness cannot be posted to
+# Ensure that /readiness can be retrieved
+# Ensure that /readiness cannot be posted to
 ---
 test_name: capmcAPIServiceAPIS
 stages:

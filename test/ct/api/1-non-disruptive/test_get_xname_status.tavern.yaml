@@ -25,16 +25,24 @@
 # Author: Mitch Schooler, Michael Jendrysik
 # Service: Cray Advanced Platform Monitoring and Control
 
-# CAPMC get_xname_status test cases: 4
-# 1. POST /get_xname_status empty payload API response size (Redfish)
-# 2. POST /get_xname_status empty payload API response body (Redfish)
-# 3. POST /get_xname_status empty payload API response size (HSM)
-# 4. POST /get_xname_status empty payload API response body (HSM)
+# CAPMC get_xname_status test cases: 14
+# /get_xname_status - Validate proper number of json fields (Redfish)
+# /get_xname_status - Validate response has valid fields (Redfish)
+# /get_xname_status - Validate proper number of json fields (HSM)
+# /get_xname_status - Validate response has valid fields (HSM)
+# /get_xname_status nodes in any state - validate number of fields
+# /get_xname_status nodes in any state
+# /get_xname_status all nodes in the 'off' state
+# /get_xname_status all nodes in the 'on' state
+# /get_xname_status all nodes in the 'halt' state
+# /get_xname_status all nodes in the 'standby' state
+# /get_xname_status all nodes in the 'ready' state
+# /get_xname_status all nodes in the 'diag' state of which there should be none
+# /get_xname_status all nodes in the 'disabled' state of which there should be none
+# /get_xname_status all nodes in the 'on' or 'off' states
 ---
 test_name: capmcAPIGetXnameStatus via Redfish
 stages:
-  # 1. POST /get_xname_status empty payload API response size (Redfish)
-  # 2. POST /get_xname_status empty payload API response body (Redfish)
   - name: capmcAPIGetXnameStatusPOST - Validate proper number of json fields (Redfish)
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
@@ -100,8 +108,6 @@ stages:
 ---
 test_name: capmcAPIGetXnameStatus via Hardware State Manager
 stages:
-  # 3. POST /get_xname_status empty payload API response size (HSM)
-  # 4. POST /get_xname_status empty payload API response body (HSM)
   - name: capmcAPIGetXnameStatusPOST - Validate proper number of json fields (HSM)
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
@@ -215,8 +221,22 @@ stages:
 test_name: capmcAPIGetXnameStatus with 'show_all' filter
 
 stages:
-  # 3. POST /get_xname_status show_all filter API response code
-  # 4. POST /get_xname_status show_all filter API response body
+  - name: Get nodes in any state - validate number of fields
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"filter": "show_all", "source": "hsm"}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_content
+        extra_kwargs:
+          comparisons:
+            # response body should have at least one node status and not only "e" and "err_msg" keys
+            - jmespath: "length(keys(@))"
+              operator: "gt"
+              expected: 2
   - name: Get nodes in any state
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
@@ -302,20 +322,11 @@ stages:
                     sequence:
                       - type: str
                         unique: True
-        # function: tavern.testutils.helpers:validate_content
-        # extra_kwargs:
-        #   comparisons:
-        #     # response body should have at least one node status and not only "e" and "err_msg" keys
-        #     - jmespath: "length(keys(@))"
-        #       operator: "gt"
-        #       expected: 2
 
 ---
 test_name: capmcAPIGetXnameStatus with 'show_off' filter
 
 stages:
-  # 5. POST /get_xname_status show_off filter API response code
-  # 6. POST /get_xname_status show_off filter API response body
   - name: Get all nodes in the 'off' state
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
@@ -360,8 +371,6 @@ stages:
 test_name: capmcAPIGetXnameStatus with 'show_on' filter
 
 stages:
-  # 7. POST /get_xname_status show_on filter API response code
-  # 8. POST /get_xname_status show_on filter API response body
   - name: Get all nodes in the 'on' state
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
@@ -406,8 +415,6 @@ stages:
 test_name: capmcAPIGetXnameStatus with 'show_halt' filter
 
 stages:
-  # 9. POST /get_xname_status show_halt filter API response code
-  # 10. POST /get_xname_status show_halt filter API response body
   - name: Get all nodes in the 'halt' state
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
@@ -452,8 +459,6 @@ stages:
 test_name: capmcAPIGetXnameStatus with 'show_standby' filter
 
 stages:
-  # 11. POST /get_xname_status show_standby filter API response code
-  # 12. POST /get_xname_status show_standby filter API response body
   - name: Get all nodes in the 'standby' state
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
@@ -498,8 +503,6 @@ stages:
 test_name: capmcAPIGetXnameStatus with 'show_ready' filter
 
 stages:
-  # 13. POST /get_xname_status show_ready filter API response code
-  # 14. POST /get_xname_status show_ready filter API response body
   - name: Get all nodes in the 'ready' state
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
@@ -544,8 +547,6 @@ stages:
 test_name: capmcAPIGetXnameStatus with 'show_diag' filter
 
 stages:
-  # 15. POST /get_xname_status show_diag filter API response code
-  # 16. POST /get_xname_status show_diag filter API response body
   - name: Get all nodes in the 'diag' state of which there should be none
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
@@ -572,8 +573,6 @@ stages:
 test_name: capmcAPIGetXnameStatus with 'show_disabled' filter
 
 stages:
-  # 17. POST /get_xname_status show_disabled filter API response code
-  # 18. POST /get_xname_status show_disabled filter API response body
   - name: Get all nodes in the 'disabled' state of which there should be none
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
@@ -618,8 +617,6 @@ stages:
 test_name: capmcAPIGetXnameStatus with multiple filters
 
 stages:
-  # 19. POST /get_xname_status show_on show_off filters API response code
-  # 20. POST /get_xname_status show_on show_off filters API response body
   - name: Get all nodes in the 'on' or 'off' states
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
