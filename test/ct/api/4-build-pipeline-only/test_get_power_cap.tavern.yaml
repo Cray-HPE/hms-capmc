@@ -1,0 +1,109 @@
+# MIT License
+#
+# (C) Copyright [2022] Hewlett Packard Enterprise Development LP
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+
+# Tavern test cases for the Cray Advanced Platform Monitoring and Control
+# (CAPMC) get_power_cap API.
+# Author: Shane Unruh
+# Service: Cray Advanced Platform Monitoring and Control
+
+# CAPMC get_power_cap test cases: 1
+# /get_power_cap -
+---
+test_name: capmcAPIGetPowerCap
+stages:
+  # get node to work with
+  - name: capmcAPIGetPowerCap - Get HSM Compute Node Component
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          xname: Components[0].ID
+          nid: Components[0].NID
+          original_state: Components[0].State
+
+  # set state to off
+  - name: capmcAPIGetPowerCap - Set HSM Node to Off
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname}/StateData"
+      json: {"State":"Off"}
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204
+  # test get_power_cap for node that is Off (failure case)
+  - name: capmcAPIGetPowerCap - test get_power_cap when node is off
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_power_cap"
+      json:
+        nids:
+          - !int "{nid:d}"
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+
+  # set state to Ready
+  - name: capmcAPIGetPowerCap - Set HSM Node to Ready
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname}/StateData"
+      json: {"State":"Ready"}
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204
+  # test get_power_cap for node that is Ready
+  - name: capmcAPIGetPowerCap - test get_power_cap when node is Ready
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_power_cap"
+      json:
+        nids:
+          - !int "{nid:d}"
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+
+  # Set state back to original state
+  # First set it to off (a node in the ready state can't go back to the on state)
+  - name: capmcAPIGetPowerCap - Set HSM Node to Ready
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname}/StateData"
+      json: {"State":"Off"}
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204
+  # set it to original state
+  - name: capmcAPIGetPowerCap - Set HSM Node to Ready
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname}/StateData"
+      json:
+        State: "{original_state}"
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204
+
