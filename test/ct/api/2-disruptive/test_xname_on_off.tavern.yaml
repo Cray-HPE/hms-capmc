@@ -20,30 +20,123 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-
 ---
-test_name: capmcAPIGetXnameStatus via Redfish
+test_name: capmcAPIXnameONForceOnFail - test that forcing a compute node on fails
 stages:
-  - name: capmcAPIGetXnameStatusPOST - Validate proper number of json fields (Redfish)
+  - name: capmcAPIXnameContext - Get an xname from the HSM Components collection to use in the next stage
     request:
-      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"source": "redfish"}
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          xname: Components[0].ID
+
+  - name: capmcAPIXnameOnPOSTActual - Validate proper number of json fields (Redfish)
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_on"
+      json: {"reason": "ct tests", xnames: ["{xname}"], "force":true}
       method: POST
       verify: !bool "{verify}"
     response:
       status_code: 200
       verify_response_with:
-        function: tavern.testutils.helpers:validate_content
+        function: tavern.testutils.helpers:validate_pykwalify
         extra_kwargs:
-          comparisons:
-            # response body should have at least one node status along with "e" and "err_msg" keys
-            - jmespath: "length(keys(@))"
-              operator: "gt"
-              expected: 2
-  - name: capmcAPIGetXnameStatusPOST - Validate response has valid fields (Redfish)
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - -1
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - "Errors encountered with 1/1 Xnames issued ForceOn"
+              "xnames":
+                type: seq
+                required: True
+                matching: all
+                sequence:
+                  - type: map
+                    required: True
+                    mapping:
+                      "e":
+                        type: int
+                        required: True
+                        enum:
+                          - -1
+                      "err_msg":
+                        required: True
+                        type: str
+                        enum:
+                          - "NodeBMC x1000c0s0b1: no supported ResetType for ForceOn operation"
+                      "xname":
+                        required: True
+                        type: str
+                        enum:
+                          - "{xname}"
+
+---
+test_name: capmcAPIXnameONHappyPath - test that an on works
+stages:
+  - name: capmcAPIXnameOFFContext - Get an xname from the HSM Components collection to use in the next stage
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          xname: Components[0].ID
+
+  - name: capmcAPIXnameOffPOSTPrep - Validate proper number of json fields (Redfish)
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      json: {"reason": "ct tests", xnames: ["{xname}"], "force":true, "continue": true}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+
+  - name: capmcAPIXnameOnPOSTActual - Validate proper number of json fields (Redfish)
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_on"
+      json: {"reason": "ct tests", xnames: ["{xname}"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+  - name: capmcAPIGetXnameOnValidation - Validate response has valid fields (Redfish)
+    max_retries: 30 #retry this because there are delays to cause the state change
+    delay_after: 10
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"source": "redfish"}
+      json: {"source": "redfish",xnames: ["{xname}"] }
       method: POST
       verify: !bool "{verify}"
     response:
@@ -68,569 +161,91 @@ stages:
               "on":
                 type: seq
                 matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "off":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "undefined":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
----
-test_name: capmcAPIGetXnameStatus via Hardware State Manager
-stages:
-  - name: capmcAPIGetXnameStatusPOST - Validate proper number of json fields (HSM)
-    request:
-      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"source": "hsm"}
-      method: POST
-      verify: !bool "{verify}"
-    response:
-      status_code: 200
-      verify_response_with:
-        function: tavern.testutils.helpers:validate_content
-        extra_kwargs:
-          comparisons:
-            # response body should have at least one node status along with "e" and "err_msg" keys
-            - jmespath: "length(keys(@))"
-              operator: "gt"
-              expected: 2
-  - name: capmcAPIGetXnameStatusPOST - Validate response has valid fields (HSM)
-    request:
-      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"source": "hsm"}
-      method: POST
-      verify: !bool "{verify}"
-    response:
-      status_code: 200
-      verify_response_with:
-        function: tavern.testutils.helpers:validate_pykwalify
-        extra_kwargs:
-          schema:
-            type: map
-            required: True
-            mapping:
-              "e":
-                type: int
                 required: True
-                enum:
-                  - 0
-              "err_msg":
-                required: True
-                type: str
-                enum:
-                  - ""
-              "on":
-                type: seq
-                matching: all
-                required: False
                 sequence:
                   - type: str
                     unique: True
-              "off":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "undefined":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "halt":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "standby":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "ready":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "disabled":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "empty":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "flags":
-                type: map
-                required: False
-                mapping:
-                  key:
-                    type: seq
-                    matching: all
-                    required: False
-                    sequence:
-                      - type: str
-                        unique: True
 
----
-test_name: capmcAPIGetXnameStatus with 'show_all' filter
-
-stages:
-  - name: Get nodes in any state - validate number of fields
-    request:
-      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"filter": "show_all", "source": "hsm"}
-      method: POST
-      verify: !bool "{verify}"
-    response:
-      status_code: 200
-      verify_response_with:
-        function: tavern.testutils.helpers:validate_content
-        extra_kwargs:
-          comparisons:
-            # response body should have at least one node status and not only "e" and "err_msg" keys
-            - jmespath: "length(keys(@))"
-              operator: "gt"
-              expected: 2
-  - name: Get nodes in any state
-    request:
-      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"filter": "show_all", "source": "hsm"}
-      method: POST
-      verify: !bool "{verify}"
-    response:
-      status_code: 200
-      verify_response_with:
-        function: tavern.testutils.helpers:validate_pykwalify
-        extra_kwargs:
-          schema:
-            type: map
-            required: True
-            mapping:
-              "e":
-                type: int
-                required: True
-                enum:
-                  - 0
-              "err_msg":
-                required: True
-                type: str
-                enum:
-                  - ""
-              "on":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "off":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "halt":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "standby":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "ready":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "disabled":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "empty":
-                type: seq
-                matching: all
-                required: False
-                sequence:
-                  - type: str
-                    unique: True
-              "flags":
-                type: map
-                required: False
-                mapping:
-                  key:
-                    type: seq
-                    matching: all
-                    required: False
-                    sequence:
-                      - type: str
-                        unique: True
-
----
-test_name: capmcAPIGetXnameStatus with 'show_off' filter
-
-stages:
-  - name: Get all nodes in the 'off' state
-    request:
-      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"filter": "show_off", "source": "hsm"}
-      method: POST
-      verify: !bool "{verify}"
-    response:
-      status_code: 200
-      verify_response_with:
-        function: tavern.testutils.helpers:validate_content
-        extra_kwargs:
-          comparisons:
-            - jmespath: "length(keys(@))"
-              operator: "lt"
-              expected: 4
-            - jmespath: "length(keys(@))"
-              operator: "gt"
-              expected: 1
-            - jmespath: "contains(keys(@), 'on')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'halt')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'standby')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'ready')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'disabled')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'e')"
-              operator: "eq"
-              expected: True
-            - jmespath: "contains(keys(@), 'err_msg')"
-              operator: "eq"
-              expected: True
-
----
-test_name: capmcAPIGetXnameStatus with 'show_on' filter
-
-stages:
-  - name: Get all nodes in the 'on' state
-    request:
-      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"filter": "show_on", "source": "hsm"}
-      method: POST
-      verify: !bool "{verify}"
-    response:
-      status_code: 200
-      verify_response_with:
-        function: tavern.testutils.helpers:validate_content
-        extra_kwargs:
-          comparisons:
-            - jmespath: "length(keys(@))"
-              operator: "lt"
-              expected: 4
-            - jmespath: "length(keys(@))"
-              operator: "gt"
-              expected: 1
-            - jmespath: "contains(keys(@), 'off')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'halt')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'standby')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'ready')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'disabled')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'e')"
-              operator: "eq"
-              expected: True
-            - jmespath: "contains(keys(@), 'err_msg')"
-              operator: "eq"
-              expected: True
-
----
-test_name: capmcAPIGetXnameStatus with 'show_halt' filter
-
-stages:
-  - name: Get all nodes in the 'halt' state
-    request:
-      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"filter": "show_halt", "source": "hsm"}
-      method: POST
-      verify: !bool "{verify}"
-    response:
-      status_code: 200
-      verify_response_with:
-        function: tavern.testutils.helpers:validate_content
-        extra_kwargs:
-          comparisons:
-            - jmespath: "length(keys(@))"
-              operator: "lt"
-              expected: 4
-            - jmespath: "length(keys(@))"
-              operator: "gt"
-              expected: 1
-            - jmespath: "contains(keys(@), 'on')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'off')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'standby')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'ready')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'disabled')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'e')"
-              operator: "eq"
-              expected: True
-            - jmespath: "contains(keys(@), 'err_msg')"
-              operator: "eq"
-              expected: True
-
----
-test_name: capmcAPIGetXnameStatus with 'show_standby' filter
-
-stages:
-  - name: Get all nodes in the 'standby' state
-    request:
-      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"filter": "show_standby", "source": "hsm"}
-      method: POST
-      verify: !bool "{verify}"
-    response:
-      status_code: 200
-      verify_response_with:
-        function: tavern.testutils.helpers:validate_content
-        extra_kwargs:
-          comparisons:
-            - jmespath: "length(keys(@))"
-              operator: "lt"
-              expected: 4
-            - jmespath: "length(keys(@))"
-              operator: "gt"
-              expected: 1
-            - jmespath: "contains(keys(@), 'on')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'off')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'halt')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'ready')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'disabled')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'e')"
-              operator: "eq"
-              expected: True
-            - jmespath: "contains(keys(@), 'err_msg')"
-              operator: "eq"
-              expected: True
-
----
-test_name: capmcAPIGetXnameStatus with 'show_ready' filter
-
-stages:
-  - name: Get all nodes in the 'ready' state
-    request:
-      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"filter": "show_ready", "source": "hsm"}
-      method: POST
-      verify: !bool "{verify}"
-    response:
-      status_code: 200
-      verify_response_with:
-        function: tavern.testutils.helpers:validate_content
-        extra_kwargs:
-          comparisons:
-            - jmespath: "length(keys(@))"
-              operator: "lt"
-              expected: 4
-            - jmespath: "length(keys(@))"
-              operator: "gt"
-              expected: 1
-            - jmespath: "contains(keys(@), 'on')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'off')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'halt')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'standby')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'disabled')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'e')"
-              operator: "eq"
-              expected: True
-            - jmespath: "contains(keys(@), 'err_msg')"
-              operator: "eq"
-              expected: True
-
----
-test_name: capmcAPIGetXnameStatus with 'show_diag' filter
-
-stages:
-  - name: Get all nodes in the 'diag' state of which there should be none
-    request:
-      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"filter": "show_diag", "source": "hsm"}
-      method: POST
-      verify: !bool "{verify}"
-    response:
-      status_code: 200
-      verify_response_with:
-        function: tavern.testutils.helpers:validate_content
-        extra_kwargs:
-          comparisons:
-            - jmespath: "length(keys(@))"
-              operator: "eq"
-              expected: 2
-            - jmespath: "contains(keys(@), 'e')"
-              operator: "eq"
-              expected: True
-            - jmespath: "contains(keys(@), 'err_msg')"
-              operator: "eq"
-              expected: True
-
----
-test_name: capmcAPIGetXnameStatus with 'show_disabled' filter
-
-stages:
-  - name: Get all nodes in the 'disabled' state of which there should be none
-    request:
-      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"filter": "show_disabled", "source": "hsm"}
-      method: POST
-      verify: !bool "{verify}"
-    response:
-      status_code: 200
-      verify_response_with:
-        function: tavern.testutils.helpers:validate_content
-        extra_kwargs:
-          comparisons:
-            - jmespath: "length(keys(@))"
-              operator: "lt"
-              expected: 4
-            - jmespath: "length(keys(@))"
-              operator: "gt"
-              expected: 1
-            - jmespath: "contains(keys(@), 'on')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'off')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'halt')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'standby')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'ready')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'e')"
-              operator: "eq"
-              expected: True
-            - jmespath: "contains(keys(@), 'err_msg')"
-              operator: "eq"
-              expected: True
-
----
-test_name: capmcAPIGetXnameStatus with multiple filters
-
-stages:
-  - name: Get all nodes in the 'on' or 'off' states
-    request:
-      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"filter": "show_on|show_off", "source": "hsm"}
-      method: POST
-      verify: !bool "{verify}"
-    response:
-      status_code: 200
-      verify_response_with:
-        function: tavern.testutils.helpers:validate_content
-        extra_kwargs:
-          comparisons:
-            - jmespath: "length(keys(@))"
-              operator: "lt"
-              expected: 5
-            - jmespath: "length(keys(@))"
-              operator: "gt"
-              expected: 1
-            - jmespath: "contains(keys(@), 'halt')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'standby')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'ready')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'disabled')"
-              operator: "eq"
-              expected: False
-            - jmespath: "contains(keys(@), 'e')"
-              operator: "eq"
-              expected: True
-            - jmespath: "contains(keys(@), 'err_msg')"
-              operator: "eq"
-              expected: True
+# # THIS TEST IS BROKEN, WIP
+#---
+#test_name: capmcAPIXnameOFFSadPath - test that an off works
+#stages:
+#  - name: capmcAPIXnameContext - Get an xname from the HSM Components collection to use in the next stage
+#    request:
+#      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+#      method: GET
+#      verify: !bool "{verify}"
+#    response:
+#      status_code: 200
+#      save:
+#        json:
+#          xname: Components[0].ID
+#
+#  - name: capmcAPIXnameOffPOSTPrep - Validate proper number of json fields (Redfish)
+#    request:
+#      url: "{capmc_base_url}/capmc/v1/xname_on"
+#      json: {"reason": "ct tests", xnames: ["{xname}"]}
+#      method: POST
+#      verify: !bool "{verify}"
+#    response:
+#      status_code: 200
+#
+#  - name: capmcAPIXnameOffPOSTActual - Validate proper number of json fields (Redfish)
+#    request:
+#      url: "{capmc_base_url}/capmc/v1/xname_off"
+#      json: {"reason": "ct tests", xnames: ["{xname}"], "force":true, "continue": true }
+#      method: POST
+#      verify: !bool "{verify}"
+#    response:
+#      status_code: 200
+#      verify_response_with:
+#        function: tavern.testutils.helpers:validate_pykwalify
+#        extra_kwargs:
+#          schema:
+#            type: map
+#            required: True
+#            mapping:
+#              "e":
+#                type: int
+#                required: True
+#                enum:
+#                  - 0
+#              "err_msg":
+#                required: True
+#                type: str
+#                enum:
+#                  - ""
+#  - name: capmcAPIGetXnameOffValidation - Validate response has valid fields (Redfish)
+#    max_retries: 30 #retry this because there are delays to cause the state change
+#    delay_after: 10
+#    request:
+#      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+#      json: {"source": "redfish",xnames: ["{xname}"] }
+#      method: POST
+#      verify: !bool "{verify}"
+#    response:
+#      status_code: 200
+#      verify_response_with:
+#        function: tavern.testutils.helpers:validate_pykwalify
+#        extra_kwargs:
+#          schema:
+#            type: map
+#            required: True
+#            mapping:
+#              "e":
+#                type: int
+#                required: True
+#                enum:
+#                  - 0
+#              "err_msg":
+#                required: True
+#                type: str
+#                enum:
+#                  - ""
+#              "off":
+#                type: seq
+#                matching: all
+#                required: True
+#                sequence:
+#                  - type: str
+#                    unique: True
