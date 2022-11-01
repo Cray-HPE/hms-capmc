@@ -50,10 +50,11 @@ docker compose up -d cray-capmc
 
 sleep 10
 if ! docker compose up --exit-code-from smoke smoke; then
+  docker logs smoke
   echo "CT smoke tests FAILED!"
   cleanup 1
 fi
-
+docker logs smoke
 # wait for containers to stabilize and simulated HSM hardware discoveries to complete
 docker compose up --exit-code-from wait-for-smd wait-for-smd
 
