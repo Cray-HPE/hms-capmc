@@ -17,8 +17,6 @@ services:
     build:
       context: test/ct/
       dockerfile: Dockerfile
-    depends_on:
-      - cray-capmc
     entrypoint: entrypoint.sh tavern -c /src/app/tavern_global_config_ct_test.yaml -p /src/app/api
     networks:
       - capmc
@@ -26,8 +24,6 @@ services:
     build:
       context: test/ct/
       dockerfile: Dockerfile
-    depends_on:
-      - cray-capmc
     entrypoint: entrypoint.sh smoke -f smoke.json -u http://cray-capmc:27777
     networks:
       - capmc
