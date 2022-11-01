@@ -13,7 +13,7 @@ services:
       - cray-smd
     networks:
       - capmc
-  tavern-tests:
+  tavern:
     build:
       context: test/ct/
       dockerfile: Dockerfile
@@ -22,7 +22,7 @@ services:
     entrypoint: entrypoint.sh tavern -c /src/app/tavern_global_config_ct_test.yaml -p /src/app/api
     networks:
       - capmc
-  smoke-tests:
+  smoke:
     build:
       context: test/ct/
       dockerfile: Dockerfile
