@@ -25,24 +25,16 @@
 
 set -x
 
-# Add .exe if running in a WSL environment
-if $(uname -r | grep -q "Microsoft"); then
-    shopt -s expand_aliases
-    alias docker-compose=docker-compose.exe
-fi
-
 # Configure docker compose
 export COMPOSE_PROJECT_NAME=$RANDOM
 export COMPOSE_FILE=docker-compose.test.unit.yaml
-
-args="-f $COMPOSE_FILE -p $COMPOSE_PROJECT_NAME"
 
 echo "COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}"
 echo "COMPOSE_FILE: $COMPOSE_FILE"
 
 function cleanup() {
-  docker-compose $args down
-  if ! [[ $? -eq 0 ]]; then
+  echo "Cleaning up containers..."
+  if ! docker compose down --remove-orphans; then
     echo "Failed to decompose environment!"
     exit 1
   fi
@@ -52,11 +44,12 @@ function cleanup() {
 
 # Step 3) Get the base containers running
 echo "Starting containers..."
-docker-compose $args build
-docker-compose $args up --exit-code-from unit-tests unit-tests
+docker compose build --no-cache
+docker compose up --exit-code-from unit-tests unit-tests
+
 
 test_result=$?
-
+docker compose logs unit-tests
 # Clean up
 echo "Cleaning up containers..."
 if [[ $test_result -ne 0 ]]; then
