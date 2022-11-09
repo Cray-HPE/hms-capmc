@@ -220,7 +220,7 @@ stages:
 
 ---
 #TODO
-test_name: capmcAPIGetXnameStatusPOST via Hardware State Manager with Node Xname
+test_name: capmcAPIGetXnameStatus via Hardware State Manager with Node Xname
 
 stages:
   - name: Get Node Xname from HSM Components to use in upcoming stage

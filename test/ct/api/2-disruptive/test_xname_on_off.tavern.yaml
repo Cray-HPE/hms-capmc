@@ -34,9 +34,10 @@ stages:
         json:
           xname: Components[0].ID
 
-  - name: capmcAPIXnameOnPOSTActual - Validate proper number of json fields (Redfish)
+  - name: capmcAPIXnameOnPOSTActual - Validate proper number of json fields
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
+      #TODO: this assumes that a random compute node in HSM doesn't support ForceOn, seems like a bad assumption
       json: {"reason": "ct tests", xnames: ["{xname}"], "force":true}
       method: POST
       verify: !bool "{verify}"
@@ -76,7 +77,7 @@ stages:
                         required: True
                         type: str
                         enum:
-                          - "NodeBMC x1000c0s0b1: no supported ResetType for ForceOn operation"
+                          - "NodeBMC {xname}: no supported ResetType for ForceOn operation"
                       "xname":
                         required: True
                         type: str
@@ -97,7 +98,7 @@ stages:
         json:
           xname: Components[0].ID
 
-  - name: capmcAPIXnameOffPOSTPrep - Validate proper number of json fields (Redfish)
+  - name: capmcAPIXnameOffPOSTPrep - Validate proper number of json fields
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
       json: {"reason": "ct tests", xnames: ["{xname}"], "force":true, "continue": true}
@@ -106,7 +107,7 @@ stages:
     response:
       status_code: 200
 
-  - name: capmcAPIXnameOnPOSTActual - Validate proper number of json fields (Redfish)
+  - name: capmcAPIXnameOnPOSTActual - Validate proper number of json fields
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
       json: {"reason": "ct tests", xnames: ["{xname}"]}
@@ -136,7 +137,7 @@ stages:
     delay_after: 10
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"source": "redfish",xnames: ["{xname}"] }
+      json: {"source": "redfish", xnames: ["{xname}"] }
       method: POST
       verify: !bool "{verify}"
     response:
@@ -181,7 +182,7 @@ stages:
 #        json:
 #          xname: Components[0].ID
 #
-#  - name: capmcAPIXnameOffPOSTPrep - Validate proper number of json fields (Redfish)
+#  - name: capmcAPIXnameOffPOSTPrep - Validate proper number of json fields
 #    request:
 #      url: "{capmc_base_url}/capmc/v1/xname_on"
 #      json: {"reason": "ct tests", xnames: ["{xname}"]}
@@ -190,7 +191,7 @@ stages:
 #    response:
 #      status_code: 200
 #
-#  - name: capmcAPIXnameOffPOSTActual - Validate proper number of json fields (Redfish)
+#  - name: capmcAPIXnameOffPOSTActual - Validate proper number of json fields
 #    request:
 #      url: "{capmc_base_url}/capmc/v1/xname_off"
 #      json: {"reason": "ct tests", xnames: ["{xname}"], "force":true, "continue": true }
@@ -220,7 +221,7 @@ stages:
 #    delay_after: 10
 #    request:
 #      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-#      json: {"source": "redfish",xnames: ["{xname}"] }
+#      json: {"source": "redfish", xnames: ["{xname}"] }
 #      method: POST
 #      verify: !bool "{verify}"
 #    response:
