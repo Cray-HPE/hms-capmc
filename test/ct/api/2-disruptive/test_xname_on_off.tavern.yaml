@@ -76,8 +76,7 @@ stages:
                       "err_msg":
                         required: True
                         type: str
-                        enum:
-                          - "NodeBMC {xname}: no supported ResetType for ForceOn operation"
+                        pattern: "NodeBMC [A-Za-z0-9]+: no supported ResetType for ForceOn operation"
                       "xname":
                         required: True
                         type: str
