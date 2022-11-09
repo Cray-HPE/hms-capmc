@@ -48,7 +48,7 @@ echo "Starting containers..."
 docker compose build --no-cache
 docker compose up -d cray-capmc
 
-sleep 10
+sleep 15
 
 docker compose logs cray-capmc
 if ! docker compose up --exit-code-from smoke smoke; then
