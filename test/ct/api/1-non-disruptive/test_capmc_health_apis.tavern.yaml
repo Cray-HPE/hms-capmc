@@ -32,7 +32,8 @@
 # Ensure that /readiness can be retrieved
 # Ensure that /readiness cannot be posted to
 ---
-test_name: capmcAPIServiceAPIS
+test_name: capmcAPIServiceAPIs
+
 stages:
   - name: capmcAPIHealthGET - Ensure that /health can be retrieved
     request:
@@ -51,12 +52,18 @@ stages:
               readiness:
                 type: str
                 required: True
+                enum:
+                  - "Ready"
               vault:
                 type: str
                 required: True
+                pattern: "Vault connection established with [0-9]+ credentials loaded"
               hsm:
                 type: str
                 required: True
+                enum:
+                  - "HSM Ready"
+
   - name: capmcAPIHealthPOST - Ensure that /health cannot be posted to
     request:
       url: "{capmc_base_url}/capmc/v1/health"
@@ -64,6 +71,7 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 405
+
   - name: capmcAPILivenessGET - Ensure that /liveness can be retrieved
     request:
       url: "{capmc_base_url}/capmc/v1/liveness"
@@ -71,6 +79,7 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 204
+
   - name: capmcAPILivenessPOST - Ensure that /liveness cannot be posted to
     request:
       url: "{capmc_base_url}/capmc/v1/liveness"
@@ -78,6 +87,7 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 405
+
   - name: capmcAPIReadinessGET - Ensure that /readiness can be retrieved
     request:
       url: "{capmc_base_url}/capmc/v1/readiness"
@@ -85,6 +95,7 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 204
+
   - name: capmcAPIReadinessPOST - Ensure that /readiness cannot be posted to
     request:
       url: "{capmc_base_url}/capmc/v1/readiness"
@@ -92,4 +103,3 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 405
-

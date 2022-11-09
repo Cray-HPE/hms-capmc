@@ -25,11 +25,12 @@
 # Author: Mitch Schooler, Michael Jendrysik
 # Service: Cray Advanced Platform Monitoring and Control
 
-# CAPMC get_xname_status test cases: 14
+# CAPMC get_xname_status test cases: 15
 # /get_xname_status - Validate proper number of json fields (Redfish)
 # /get_xname_status - Validate response has valid fields (Redfish)
 # /get_xname_status - Validate proper number of json fields (HSM)
 # /get_xname_status - Validate response has valid fields (HSM)
+# /get_xname_status - Validate response for request with Node (HSM)
 # /get_xname_status nodes in any state - validate number of fields
 # /get_xname_status nodes in any state
 # /get_xname_status all nodes in the 'off' state
@@ -216,6 +217,108 @@ stages:
                     sequence:
                       - type: str
                         unique: True
+
+---
+#TODO
+test_name: capmcAPIGetXnameStatusPOST via Hardware State Manager with Node Xname
+
+stages:
+  - name: Get Node Xname from HSM Components to use in upcoming stage
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          node_xname: Components[0].ID
+
+  - name: capmcAPIGetXnameStatusPOSTnode - Validate response has proper number of json fields and valid fields (HSM)
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"source": "hsm", "xnames":["{node_xname}"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "on":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "off":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "halt":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "standby":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "ready":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "disabled":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: int
+                    unique: True
+              "flags":
+                type: map
+                required: False
+                mapping:
+                  key:
+                    type: seq
+                    matching: all
+                    required: False
+                    sequence:
+                      - type: int
+                        unique: True
+        function: tavern.testutils.helpers:validate_content
+        extra_kwargs:
+          comparisons:
+            # response body should have at least one node status and not only "e" and "err_msg" keys
+            - jmespath: "length(keys(@))"
+              operator: "gt"
+              expected: 2
 
 ---
 test_name: capmcAPIGetXnameStatus with 'show_all' filter
