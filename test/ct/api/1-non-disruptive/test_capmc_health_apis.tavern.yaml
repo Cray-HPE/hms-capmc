@@ -20,11 +20,11 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-# Tavern test cases for the CAPMC version API
+# Tavern test cases for the CAPMC service APIs
 # Author: Mitch Schooler, Andrew Nieuwsma, Michael Jendrysik
 # Service: Cray Advanced Platform Monitoring and Control
 
-# CAPMC Heal APIs test cases: 6
+# CAPMC service APIs test cases: 6
 # Ensure that /health can be retrieved
 # Ensure that /health cannot be posted to
 # Ensure that /liveness can be retrieved

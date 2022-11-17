@@ -1,6 +1,6 @@
 # MIT License
 #
-# (C) Copyright [2020-2022] Hewlett Packard Enterprise Development LP
+# (C) Copyright 2022 Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -20,8 +20,22 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
+# Tavern test cases for the Cray Advanced Platform Monitoring and Control
+# (CAPMC) xname_on and xname_off APIs.
+# Author: Mitch Schooler, Andrew Nieuwsma
+# Service: Cray Advanced Platform Monitoring and Control
+
+# HMS test metrics test cases: TODO
+# POST /xname_on Compute Node Power On Force Fails API response code
+# POST /xname_on Compute Node Power On Force Fails API response body
+# POST /xname_off Compute Node Power Off Force API response code
+# POST /xname_off Compute Node Power Off Force API response body
+# POST /xname_on Compute Node Power On API response code
+# POST /xname_on Compute Node Power On API response body
+# POST /get_xname_status Compute Node Powered On API response code
+# POST /get_xname_status Compute Node Powered On API response body
 ---
-test_name: capmcAPIXnameONForceOnFail - test that forcing a compute node on fails
+test_name: capmcAPIXnameONForceOnFail - Test that forcing a compute node on fails
 stages:
   - name: capmcAPIXnameContext - Get an xname from the HSM Components collection to use in the next stage
     request:
@@ -34,11 +48,13 @@ stages:
         json:
           xname: Components[0].ID
 
+  # POST /xname_on Compute Node Power On Force Fails API response code
+  # POST /xname_on Compute Node Power On Force Fails API response body
   - name: capmcAPIXnameOnPOSTActual - Validate proper number of json fields
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
       #TODO: this assumes that a random compute node in HSM doesn't support ForceOn, seems like a bad assumption
-      json: {"reason": "ct tests", xnames: ["{xname}"], "force":true}
+      json: {"reason":"CT test case: capmcAPIXnameOnPOSTActual","xnames":["{xname}"],"force":true}
       method: POST
       verify: !bool "{verify}"
     response:
@@ -84,7 +100,7 @@ stages:
                           - "{xname}"
 
 ---
-test_name: capmcAPIXnameONHappyPath - test that an on works
+test_name: capmcAPIXnameONHappyPath - Test that an on works
 stages:
   - name: capmcAPIXnameOFFContext - Get an xname from the HSM Components collection to use in the next stage
     request:
@@ -97,19 +113,31 @@ stages:
         json:
           xname: Components[0].ID
 
+  # POST /xname_off Compute Node Power Off Force API response code
+  # POST /xname_off Compute Node Power Off Force API response body
   - name: capmcAPIXnameOffPOSTPrep - Validate proper number of json fields
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
-      json: {"reason": "ct tests", xnames: ["{xname}"], "force":true, "continue": true}
+      json: {"reason":"CT test case: capmcAPIXnameOffPOSTPrep","xnames":["{xname}"],"force":true,"continue":true}
       method: POST
       verify: !bool "{verify}"
     response:
       status_code: 200
+      #TODO
+      #verify_response_with:
+      #  function: tavern.testutils.helpers:validate_pykwalify
+      #  extra_kwargs:
+      #    schema:
+      #      type: map
+      #      required: True
+      #      mapping:
 
+  # POST /xname_on Compute Node Power On API response code
+  # POST /xname_on Compute Node Power On API response body
   - name: capmcAPIXnameOnPOSTActual - Validate proper number of json fields
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
-      json: {"reason": "ct tests", xnames: ["{xname}"]}
+      json: {"reason":"CT test case: capmcAPIXnameOnPOSTActual","xnames":["{xname}"]}
       method: POST
       verify: !bool "{verify}"
     response:
@@ -131,12 +159,15 @@ stages:
                 type: str
                 enum:
                   - ""
+
+  # POST /get_xname_status Compute Node Powered On API response code
+  # POST /get_xname_status Compute Node Powered On API response body
   - name: capmcAPIGetXnameOnValidation - Validate response has valid fields (Redfish)
     max_retries: 30 #retry this because there are delays to cause the state change
     delay_after: 10
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"source": "redfish", xnames: ["{xname}"] }
+      json: {"source":"redfish","xnames":["{xname}"]}
       method: POST
       verify: !bool "{verify}"
     response:
@@ -184,7 +215,7 @@ stages:
 #  - name: capmcAPIXnameOffPOSTPrep - Validate proper number of json fields
 #    request:
 #      url: "{capmc_base_url}/capmc/v1/xname_on"
-#      json: {"reason": "ct tests", xnames: ["{xname}"]}
+#      json: {"reason": "ct tests", "xnames": ["{xname}"]}
 #      method: POST
 #      verify: !bool "{verify}"
 #    response:
@@ -193,7 +224,7 @@ stages:
 #  - name: capmcAPIXnameOffPOSTActual - Validate proper number of json fields
 #    request:
 #      url: "{capmc_base_url}/capmc/v1/xname_off"
-#      json: {"reason": "ct tests", xnames: ["{xname}"], "force":true, "continue": true }
+#      json: {"reason": "ct tests", "xnames": ["{xname}"], "force":true, "continue": true }
 #      method: POST
 #      verify: !bool "{verify}"
 #    response:
@@ -220,7 +251,7 @@ stages:
 #    delay_after: 10
 #    request:
 #      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-#      json: {"source": "redfish", xnames: ["{xname}"] }
+#      json: {"source": "redfish", "xnames": ["{xname}"] }
 #      method: POST
 #      verify: !bool "{verify}"
 #    response:

@@ -219,7 +219,6 @@ stages:
                         unique: True
 
 ---
-#TODO
 test_name: capmcAPIGetXnameStatus via Hardware State Manager with Node Xname
 
 stages:
