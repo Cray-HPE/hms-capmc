@@ -92,7 +92,7 @@ stages:
                       "err_msg":
                         required: True
                         type: str
-                        pattern: "NodeBMC [A-Za-z0-9]+: no supported ResetType for ForceOn operation"
+                        pattern: "NodeBMC (x[0-9]+c[0-9]+s[0-9]+b[0-9]+): no supported ResetType for ForceOn operation"
                       "xname":
                         required: True
                         type: str
