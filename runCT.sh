@@ -51,7 +51,7 @@ docker compose up -d cray-capmc
 sleep 15
 
 docker compose logs cray-capmc
-if ! docker compose up --exit-code-from smoke smoke; then
+if ! docker compose up --no-recreate --exit-code-from smoke smoke; then
   echo "CT smoke tests FAILED!"
   cleanup 1
 fi
