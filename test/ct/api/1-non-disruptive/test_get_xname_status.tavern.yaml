@@ -43,6 +43,7 @@
 # /get_xname_status all nodes in the 'on' or 'off' states
 ---
 test_name: capmcAPIGetXnameStatus via Redfish
+
 stages:
   - name: capmcAPIGetXnameStatusPOST - Validate proper number of json fields (Redfish)
     request:
@@ -60,6 +61,7 @@ stages:
             - jmespath: "length(keys(@))"
               operator: "gt"
               expected: 2
+
   - name: capmcAPIGetXnameStatusPOST - Validate response has valid fields (Redfish)
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
@@ -106,8 +108,10 @@ stages:
                 sequence:
                   - type: str
                     unique: True
+
 ---
 test_name: capmcAPIGetXnameStatus via Hardware State Manager
+
 stages:
   - name: capmcAPIGetXnameStatusPOST - Validate proper number of json fields (HSM)
     request:
@@ -125,6 +129,7 @@ stages:
             - jmespath: "length(keys(@))"
               operator: "gt"
               expected: 2
+
   - name: capmcAPIGetXnameStatusPOST - Validate response has valid fields (HSM)
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
@@ -339,6 +344,7 @@ stages:
             - jmespath: "length(keys(@))"
               operator: "gt"
               expected: 2
+
   - name: Get nodes in any state
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"

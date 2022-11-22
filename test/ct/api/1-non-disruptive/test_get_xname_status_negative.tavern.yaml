@@ -33,10 +33,10 @@
 # /get_xname_status fails with HEAD method
 # /get_xname_status fails with PUT method
 # /get_xname_status fails with DELETE method
-# /get_xname_status fails with OPTIONS method # disabled
 # /get_xname_status fails with PATCH method
 ---
 test_name: capmcAPIGetXnameStatus NodeBMC xname
+
 stages:
   - name: Get NodeBMC xname from HSM Components to use in upcoming stages
     request:
@@ -48,6 +48,7 @@ stages:
       save:
         json:
           bmc_xname: Components[0].ID
+
   - name: capmcAPIGetXnameStatus fails with NodeBMC xname
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
@@ -83,6 +84,7 @@ stages:
 
 ---
 test_name: capmcAPIGetXnameStatus invalid filter
+
 stages:
   - name: capmcAPIGetXnameStatus fails with invalid filter
     request:
@@ -98,6 +100,7 @@ stages:
 
 ---
 test_name: capmcAPIGetXnameStatus garbage filter
+
 stages:
   - name: capmcAPIGetXnameStatus fails with garbage filter
     request:
@@ -113,6 +116,7 @@ stages:
 
 ---
 test_name: capmcAPIGetXnameStatus GET method fails
+
 stages:
   - name: capmcAPIGetXnameStatus fails with GET method
     request:
@@ -127,6 +131,7 @@ stages:
 
 ---
 test_name: capmcAPIGetXnameStatus HEAD method fails
+
 stages:
   - name: capmcAPIGetXnameStatus fails with HEAD method
     request:
@@ -138,6 +143,7 @@ stages:
 
 ---
 test_name: capmcAPIGetXnameStatus PUT method fails
+
 stages:
   - name: capmcAPIGetXnameStatus fails with PUT method
     request:
@@ -152,6 +158,7 @@ stages:
 
 ---
 test_name: capmcAPIGetXnameStatus DELETE method fails
+
 stages:
   - name: capmcAPIGetXnameStatus fails with DELETE method
     request:
@@ -166,6 +173,7 @@ stages:
 
 ---
 test_name: capmcAPIGetXnameStatus PATCH method fails
+
 stages:
   - name: capmcAPIGetXnameStatus fails with PATCH method
     request:

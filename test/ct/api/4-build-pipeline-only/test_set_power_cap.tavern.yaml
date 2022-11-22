@@ -45,6 +45,7 @@
 # 18. setup10 - Set HSM Node 1 to its original state
 ---
 test_name: capmcAPISetPowerCap
+
 stages:
   - name: capmcAPISetPowerCap - setup1 - Get HSM Nodes
     request:

@@ -35,6 +35,7 @@
 # 7. setup5 - Set HSM Node to its original state
 ---
 test_name: capmcAPIGetPowerCap
+
 stages:
   - name: capmcAPIGetPowerCap - setup1 - Get HSM Node
     request:
@@ -193,4 +194,3 @@ stages:
       verify: !bool "{verify}"
     response:
       status_code: 204
-

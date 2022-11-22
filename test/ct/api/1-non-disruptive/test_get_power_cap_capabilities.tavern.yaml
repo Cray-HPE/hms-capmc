@@ -32,6 +32,7 @@
 # 4. test3 - POST get_power_cap_capabilities - nonexistent nid - failure test
 ---
 test_name: capmcAPIGetPowerCapCapabilities
+
 stages:
   - name: capmcAPIGetPowerCapabilities - setup1 - Get HSM Nodes
     request:
