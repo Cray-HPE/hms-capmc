@@ -4,52 +4,10 @@ networks:
   capmc:
 
 services:
-  wait-for-smd:
-    build:
-      context: test/ct/
-      dockerfile: Dockerfile.wait-for-smd.Dockerfile
-    networks:
-      - capmc
-  tavern:
-    build:
-      context: test/ct/
-      dockerfile: Dockerfile
-    entrypoint: entrypoint.sh tavern -c /src/app/tavern_global_config_ct_test.yaml -p /src/app/api
-    networks:
-      - capmc
-  smoke:
-    build:
-      context: test/ct/
-      dockerfile: Dockerfile
-    entrypoint: entrypoint.sh smoke -f smoke.json -u http://cray-capmc:27777
-    networks:
-      - capmc
-  cray-capmc:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      - HSM_URL=http://cray-smd:27779
-      - CRAY_VAULT_AUTH_PATH=auth/token/create
-      - CRAY_VAULT_ROLE_FILE=configs/namespace
-      - CRAY_VAULT_JWT_FILE=configs/token
-      - VAULT_ADDR=http://vault:8200
-      - VAULT_TOKEN=hms
-      - VAULT_KEYPATH=hms-creds
-      - VAULT_SKIP_VERIFY=true
-      - VAULT_ENABLED=true
-      - LOG_LEVEL=DEBUG
-      - TRS_IMPLEMENTATION=LOCAL
-      - HSMLOCK_ENABLED=true
 
-    networks:
-      - capmc
-    depends_on:
-      - cray-smd
-      - vault-kv-enabler
-      - kafka
-      - emulator-loader
-
+  #
+  # Required services
+  #
   vault:
     hostname: vault
     image: artifactory.algol60.net/docker.io/library/vault:1.5.5
@@ -61,6 +19,7 @@ services:
       - IPC_LOCK
     networks:
       - capmc
+
   vault-kv-enabler:
     image: artifactory.algol60.net/csm-docker/stable/vault-kv-enabler:1.13.4
     environment:
@@ -71,7 +30,7 @@ services:
       - vault
     networks:
       - capmc
-#
+
   hmsds-postgres:
     hostname: hmsds-postgres
     image: artifactory.algol60.net/docker.io/library/postgres:11-alpine
@@ -81,6 +40,7 @@ services:
       - POSTGRES_DB=hmsds
     networks:
       - capmc
+
   cray-smd-init:
     image: artifactory.algol60.net/csm-docker/stable/cray-smd:1.48.0
     environment:
@@ -91,6 +51,7 @@ services:
     networks:
       - capmc
     command: /entrypoint.sh smd-init
+
   cray-smd:
     image: artifactory.algol60.net/csm-docker/stable/cray-smd:1.48.0
     environment:
@@ -111,6 +72,7 @@ services:
       - vault
     networks:
       - capmc
+
   zookeeper:
     image: artifactory.algol60.net/docker.io/confluentinc/cp-zookeeper:6.1.1
     hostname: zookeeper
@@ -119,6 +81,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     networks:
       - capmc
+
   kafka:
     image: artifactory.algol60.net/docker.io/confluentinc/cp-kafka:6.1.1
     hostname: kafka
@@ -133,6 +96,7 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
     networks:
       - capmc
+
   cray-hms-hmcollector:
     image: artifactory.algol60.net/csm-docker/stable/hms-hmcollector:2.12.4
     environment:
@@ -154,6 +118,10 @@ services:
       - capmc
     depends_on:
       - kafka
+
+  #
+  # Emulated hardware
+  #
   emulator-loader:
     image: artifactory.algol60.net/docker.io/library/golang:1.16-alpine
     command: >
@@ -191,6 +159,7 @@ services:
       - rfemulator3
     networks:
       - capmc
+
   rfemulator0:
     hostname: x0c0s1b0
     image: artifactory.algol60.net/csm-docker/stable/csm-rie:1.3.0
@@ -203,6 +172,7 @@ services:
       capmc:
         aliases:
           - x0c0s1b0
+
   rfemulator1:
     hostname: x0c0s2b0
     image: artifactory.algol60.net/csm-docker/stable/csm-rie:1.3.0
@@ -215,6 +185,7 @@ services:
       capmc:
         aliases:
           - x0c0s2b0
+
   rfemulator2:
     hostname: x0c0s3b0
     image: artifactory.algol60.net/csm-docker/stable/csm-rie:1.3.0
@@ -227,6 +198,7 @@ services:
       capmc:
         aliases:
           - x0c0s3b0
+
   rfemulator3:
     hostname: x0c0s4b0
     image: artifactory.algol60.net/csm-docker/stable/csm-rie:1.3.0
@@ -239,3 +211,57 @@ services:
       capmc:
         aliases:
           - x0c0s4b0
+
+  #
+  # Service under test
+  #
+  cray-capmc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - HSM_URL=http://cray-smd:27779
+      - CRAY_VAULT_AUTH_PATH=auth/token/create
+      - CRAY_VAULT_ROLE_FILE=configs/namespace
+      - CRAY_VAULT_JWT_FILE=configs/token
+      - VAULT_ADDR=http://vault:8200
+      - VAULT_TOKEN=hms
+      - VAULT_KEYPATH=hms-creds
+      - VAULT_SKIP_VERIFY=true
+      - VAULT_ENABLED=true
+      - LOG_LEVEL=DEBUG
+      - TRS_IMPLEMENTATION=LOCAL
+      - HSMLOCK_ENABLED=true
+    networks:
+      - capmc
+    depends_on:
+      - cray-smd
+      - vault-kv-enabler
+      - kafka
+      - emulator-loader
+
+  #
+  # Tests
+  #
+  wait-for-smd:
+    build:
+      context: test/ct/
+      dockerfile: Dockerfile.wait-for-smd.Dockerfile
+    networks:
+      - capmc
+
+  tavern:
+    build:
+      context: test/ct/
+      dockerfile: Dockerfile
+    entrypoint: entrypoint.sh tavern -c /src/app/tavern_global_config_ct_test.yaml -p /src/app/api
+    networks:
+      - capmc
+
+  smoke:
+    build:
+      context: test/ct/
+      dockerfile: Dockerfile
+    entrypoint: entrypoint.sh smoke -f smoke.json -u http://cray-capmc:27777
+    networks:
+      - capmc
