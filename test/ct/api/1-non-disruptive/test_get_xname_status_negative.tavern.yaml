@@ -164,20 +164,6 @@ stages:
         e: 405
         err_msg: "(DELETE) Not Allowed"
 
-#---
-#test_name: capmcAPIGetXnameStatus OPTIONS method fails
-#stages:
-#  - name: capmcAPIGetXnameStatus fails with OPTIONS method
-#    request:
-#      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-#      method: OPTIONS
-#      verify: !bool "{verify}"
-#    response:
-#      status_code: 405
-#      json:
-#        e: 405
-#        err_msg: "(OPTIONS) Not Allowed"
-#
 ---
 test_name: capmcAPIGetXnameStatus PATCH method fails
 stages:
