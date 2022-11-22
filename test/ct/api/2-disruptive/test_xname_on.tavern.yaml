@@ -24,7 +24,7 @@
 # Author: Mitch Schooler, Andrew Nieuwsma
 # Service: Cray Advanced Platform Monitoring and Control
 
-# HMS test metrics test cases: TODO
+# HMS test metrics test cases: 8
 
 # POST /xname_off Power Off Compute Node
 # POST /get_xname_status Verify Off Compute Node

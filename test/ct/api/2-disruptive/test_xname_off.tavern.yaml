@@ -20,27 +20,26 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-# Tavern test cases for the Cray Advanced Platform Monitoring and Control
-# (CAPMC) xname_reinit API.
-# Author: Mitch Schooler
+# Tavern test cases for the Cray Advanced Platform Monitoring and Control (CAPMC) xname_off API.
+# Author: Mitch Schooler, Andrew Nieuwsma
 # Service: Cray Advanced Platform Monitoring and Control
 
 # HMS test metrics test cases: 8
 
 # POST /xname_on Power On Compute Node
 # POST /get_xname_status Verify On Compute Node
-# POST /xname_reinit On Compute Node
-# POST /get_xname_status Verify On Compute Node
+# POST /xname_off On Compute Node
+# POST /get_xname_status Verify Off Compute Node
 
 # POST /xname_off Power Off Compute Node
 # POST /get_xname_status Verify Off Compute Node
-# POST /xname_reinit Off Compute Node
-# POST /get_xname_status Verify On Compute Node
+# POST /xname_off Off Compute Node
+# POST /get_xname_status Verify Off Compute Node
 ---
-test_name: capmcAPIxnameReinitPOSTonComputeNode - TODO
+test_name: capmcAPIxnameOffPOSTonComputeNode - TODO
 
 stages:
-  - name: capmcAPIxnameReinitPOSTonComputeNodeTarget - TODO
+  - name: capmcAPIxnameOffPOSTonComputeNodeTarget - TODO
     request:
       url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
       method: GET
@@ -51,11 +50,11 @@ stages:
         json:
           node_xname: Components[0].ID
 
-  - name: capmcAPIxnameReinitPOSTonComputeNodePrep - TODO
+  - name: capmcAPIxnameOffPOSTonComputeNodePrep - TODO
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
       # Not all compute node types support ForceOn (only Intel does), can't use force=true here
-      json: {"reason":"CT test case: capmcAPIxnameReinitPOSTonComputeNodePrep","xnames":["{node_xname}"],"force":false}
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeNodePrep","xnames":["{node_xname}"],"force":false}
       method: POST
       verify: !bool "{verify}"
     response:
@@ -78,7 +77,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameReinitPOSTonComputeNodeStatusCheck - TODO
+  - name: capmcAPIxnameOffPOSTonComputeNodeStatusCheck - TODO
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -116,101 +115,11 @@ stages:
                     enum:
                       - "{node_xname}"
 
-  - name: capmcAPIxnameReinitPOSTonComputeNodeActual - TODO
-    request:
-      url: "{capmc_base_url}/capmc/v1/xname_reinit"
-      # Cray Mountain compute node
-      # TODO: xname_reinit w/ force=true turns the node off but then errors out saying ForceOn is not supported leaving it off
-      # TODO: xname_reinit w/ force=false works, but there's no way to confirm that the node was reinitialized since the state doesn't change from "On", it also powers on an initially "Off" node successfully
-      json: {"reason":"CT test case: capmcAPIxnameReinitPOSTonComputeNodeActual","xnames":["{node_xname}"],"force":false}
-      # Intel compute node
-      # Same behavior as Cray Mountain compute w/ force=false
-      # Different behavior w/ force=on: you actually see the state flip from "On" to "Off" and back to "On" since Intel supports ForceOff and ForceOn
-      # Gigabyte compute node
-      # Couldn't get the node to change power states at all with node_off, node_on, or node_reinit with force=true or force=false
-      # HPE compute node
-      # Couldn't get the node to change power states at all with node_off, node_on, or node_reinit with force=true or force=false
-      method: POST
-      verify: !bool "{verify}"
-    response:
-      status_code: 200
-      verify_response_with:
-        function: tavern.testutils.helpers:validate_pykwalify
-        extra_kwargs:
-          schema:
-            type: map
-            required: True
-            mapping:
-              "e":
-                type: int
-                required: True
-                enum:
-                  - 0
-              "err_msg":
-                required: True
-                type: str
-                enum:
-                  - ""
-
-  # Not checking that the node powers "Off" before powering back "On" again, could only get that to work on Intel compute node w/ force=true
-
-  - name: capmcAPIxnameReinitPOSTonComputeNodeStatusCheck - TODO
-    # retry here if needed since there can be delays to the state change
-    max_retries: 30
-    delay_after: 10
-    request:
-      url: "{capmc_base_url}/capmc/v1/get_xname_status"
-      json: {"source":"redfish","xnames":["{node_xname}"]}
-      method: POST
-      verify: !bool "{verify}"
-    response:
-      status_code: 200
-      verify_response_with:
-        function: tavern.testutils.helpers:validate_pykwalify
-        extra_kwargs:
-          schema:
-            type: map
-            required: True
-            mapping:
-              "e":
-                type: int
-                required: True
-                enum:
-                  - 0
-              "err_msg":
-                required: True
-                type: str
-                enum:
-                  - ""
-              "on":
-                type: seq
-                matching: all
-                required: True
-                sequence:
-                  - type: str
-                    unique: True
-                    enum:
-                      - "{node_xname}"
----
-test_name: capmcAPIxnameReinitPOSToffComputeNode - TODO
-
-stages:
-  - name: capmcAPIxnameReinitPOSToffComputeNodeTarget - TODO
-    request:
-      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
-      method: GET
-      verify: !bool "{verify}"
-    response:
-      status_code: 200
-      save:
-        json:
-          node_xname: Components[0].ID
-
-  - name: capmcAPIxnameReinitPOSToffComputeNodePrep - TODO
+  - name: capmcAPIxnameOffPOSTonComputeNodeActual - TODO
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
       # All compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
-      json: {"reason":"CT test case: capmcAPIxnameOffPOSToffComputeNodePrep","xnames":["{node_xname}"],"force":true}
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeNodeActual","xnames":["{node_xname}"],"force":true}
       method: POST
       verify: !bool "{verify}"
     response:
@@ -233,7 +142,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameReinitPOSToffComputeNodeStatusCheck - TODO
+  - name: capmcAPIxnameOffPOSTonComputeNodeStatusCheck - TODO
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -271,10 +180,26 @@ stages:
                     enum:
                       - "{node_xname}"
 
-  - name: capmcAPIxnameReinitPOSToffComputeNodeActual - TODO
+---
+test_name: capmcAPIxnameOffPOSToffComputeNode - TODO
+
+stages:
+  - name: capmcAPIxnameOffPOSToffComputeNodeTarget - TODO
     request:
-      url: "{capmc_base_url}/capmc/v1/xname_reinit"
-      json: {"reason":"CT test case: capmcAPIxnameReinitPOSToffComputeNodeActual","xnames":["{node_xname}"],"force":false}
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          node_xname: Components[0].ID
+
+  - name: capmcAPIxnameOffPOSToffComputeNodePrep - TODO
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      # All compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSToffComputeNodePrep","xnames":["{node_xname}"],"force":true}
       method: POST
       verify: !bool "{verify}"
     response:
@@ -297,7 +222,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameReinitPOSToffComputeNodeStatusCheck - TODO
+  - name: capmcAPIxnameOffPOSToffComputeNodeStatusCheck - TODO
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -325,7 +250,72 @@ stages:
                 type: str
                 enum:
                   - ""
-              "on":
+              "off":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: str
+                    unique: True
+                    enum:
+                      - "{node_xname}"
+
+  - name: capmcAPIxnameOffPOSToffComputeNodeActual - TODO
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      # All compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSToffComputeNodeActual","xnames":["{node_xname}"],"force":true}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+
+  - name: capmcAPIxnameOffPOSToffComputeNodeStatusCheck - TODO
+    # retry here if needed since there can be delays to the state change
+    max_retries: 30
+    delay_after: 10
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"source":"redfish","xnames":["{node_xname}"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "off":
                 type: seq
                 matching: all
                 required: True
