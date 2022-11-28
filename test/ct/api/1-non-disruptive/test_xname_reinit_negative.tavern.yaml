@@ -1,0 +1,375 @@
+# MIT License
+#
+# (C) Copyright [2022] Hewlett Packard Enterprise Development LP
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+
+# Negative Tavern test cases for the Cray Advanced Platform Monitoring and
+# Control (CAPMC) xname_reinit API.
+# Author: Mitch Schooler
+# Service: Cray Advanced Platform Monitoring and Control
+
+# HMS test metrics test cases: 10
+# POST /xname_reinit fails with missing xnames
+# POST /xname_reinit fails with empty xname
+# POST /xname_reinit fails with garbage xname
+# POST /xname_reinit fails with NodeBMC xname
+# POST /xname_reinit fails with NodeEnclosure xname
+# GET /xname_reinit fails
+# DELETE /xname_reinit fails
+# PATCH /xname_reinit fails
+# PUT /xname_reinit fails
+# HEAD /xname_reinit fails
+---
+test_name: capmcAPIxnameReinitPOSTmissingXnames
+
+stages:
+  - name: capmcAPIxnameReinitPOSTmissingXnames - Verify xname_reinit fails with missing xnames list
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_reinit"
+      json: {"reason":"CT test case: capmcAPIxnameReinitPOSTmissingXnames","force":false}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 400
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 400
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - "Bad Request: Missing required xnames parameter"
+
+---
+test_name: capmcAPIxnameReinitPOSTemptyXname
+
+stages:
+  - name: capmcAPIxnameReinitPOSTemptyXname - Verify xname_reinit fails with empty xname
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_reinit"
+      json: {"reason":"CT test case: capmcAPIxnameReinitPOSTemptyXname","xnames":[""],"force":false}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 400
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 22
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - "invalid argument"
+              "xnames":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: map
+                    required: True
+                    mapping:
+                      "xname":
+                        type: str
+                        required: True
+                        enum:
+                          - ""
+                      "e":
+                        type: int
+                        required: True
+                        enum:
+                          - 22
+                      "err_msg":
+                        type: str
+                        required: True
+                        enum:
+                          - "invalid/duplicate xname"
+
+---
+test_name: capmcAPIxnameReinitPOSTgarbageXname
+
+stages:
+  - name: capmcAPIxnameReinitPOSTgarbageXname - Verify xname_reinit fails with garbage xname
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_reinit"
+      json: {"reason":"CT test case: capmcAPIxnameReinitPOSTgarbageXname","xnames":[".*&^%$#$%$^"],"force":false}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 400
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 22
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - "invalid argument"
+              "xnames":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: map
+                    required: True
+                    mapping:
+                      "xname":
+                        type: str
+                        required: True
+                        enum:
+                          - ".*&^%$#$%$^"
+                      "e":
+                        type: int
+                        required: True
+                        enum:
+                          - 22
+                      "err_msg":
+                        type: str
+                        required: True
+                        enum:
+                          - "invalid/duplicate xname"
+
+---
+test_name: capmcAPIxnameReinitPOSTnodeBMCxname
+
+stages:
+  - name: capmcAPIxnameReinitPOSTnodeBMCxnamePrep - Get NodeBMC xname from HSM Components to use in upcoming stage
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=NodeBMC"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          bmc_xname: Components[0].ID
+
+  - name: capmcAPIxnameReinitPOSTnodeBMCxnameActual - Verify xname_reinit fails with NodeBMC xname
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_reinit"
+      json: {"reason":"CT test case: capmcAPIxnameReinitPOSTnodeBMCxnameActual","xnames":["{bmc_xname}"],"force":false}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - -1
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - "Errors encountered with 1 components for Restart"
+              "xnames":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: map
+                    required: True
+                    mapping:
+                      "xname":
+                        type: str
+                        required: True
+                        enum:
+                          - "{bmc_xname}"
+                      "e":
+                        type: int
+                        required: True
+                        enum:
+                          - -1
+                      "err_msg":
+                        type: str
+                        required: True
+                        enum:
+                          - "Skipping {bmc_xname}: Type, 'NodeBMC', not defined in power sequence for 'Restart'"
+
+---
+test_name: capmcAPIxnameReinitPOSTnodeEnclosureXname
+
+stages:
+  - name: capmcAPIxnameReinitPOSTnodeEnclosureXnamePrep - Get NodeEnclosure xname from HSM Components to use in upcoming stage
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=NodeEnclosure"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          enclosure_xname: Components[0].ID
+
+  - name: capmcAPIxnameReinitPOSTnodeEnclosureXnameActual - Verify xname_reinit fails with NodeEnclosure xname
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_reinit"
+      json: {"reason":"CT test case: capmcAPIxnameReinitPOSTnodeEnclosureXnameActual","xnames":["{enclosure_xname}"],"force":true}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - -1
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - "Errors encountered with 1 components for ForceRestart"
+              "xnames":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: map
+                    required: True
+                    mapping:
+                      "xname":
+                        type: str
+                        required: True
+                        enum:
+                          - "{enclosure_xname}"
+                      "e":
+                        type: int
+                        required: True
+                        enum:
+                          - -1
+                      "err_msg":
+                        type: str
+                        required: True
+                        enum:
+                          - "Skipping {enclosure_xname}: Type, 'NodeEnclosure', not defined in power sequence for 'ForceRestart'"
+
+---
+test_name: capmcAPIxnameReinitGET - Verify xname_reinit GET method fails
+
+stages:
+  - name: capmcAPIxnameReinitGET - Verify xname_reinit fails with GET method
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_reinit"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+      json:
+        e: 405
+        err_msg: "(GET) Not Allowed"
+
+---
+test_name: capmcAPIxnameReinitDELETE - Verify xname_reinit DELETE method fails
+
+stages:
+  - name: capmcAPIxnameReinitDELETE - Verify xname_reinit fails with DELETE method
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_reinit"
+      method: DELETE
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+      json:
+        e: 405
+        err_msg: "(DELETE) Not Allowed"
+
+---
+test_name: capmcAPIxnameReinitPATCH - Verify xname_reinit PATCH method fails
+
+stages:
+  - name: capmcAPIxnameReinitPATCH - Verify xname_reinit fails with PATCH method
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_reinit"
+      json: {"reason":"CT test case: capmcAPIxnameReinitPATCH","xnames":["FAKE"]}
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+      json:
+        e: 405
+        err_msg: "(PATCH) Not Allowed"
+
+---
+test_name: capmcAPIxnameReinitPUT - Verify xname_reinit PUT method fails
+
+stages:
+  - name: capmcAPIxnameReinitPUT - Verify xname_reinit fails with PUT method
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_reinit"
+      json: {"reason":"CT test case: capmcAPIxnameReinitPUT","xnames":["FAKE"]}
+      method: PUT
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+      json:
+        e: 405
+        err_msg: "(PUT) Not Allowed"
+
+---
+test_name: capmcAPIxnameReinitHEAD - Verify xname_reinit HEAD method fails
+
+stages:
+  - name: capmcAPIxnameReinitHEAD - Verify xname_reinit fails with HEAD method
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_reinit"
+      method: HEAD
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
