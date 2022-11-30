@@ -631,59 +631,59 @@ stages:
                     enum:
                       - "{compute_module_xname}"
 
-#---
-##TODO: Need create these components since CAPMC expects RouterModule w/ HSNBoard under it, not all RouterMoodules are set up this way by simulation environment
-##TODO: Check if this is expected for recursive:false, could be a bug since I don't see this behavior with other hierarchal components
-#test_name: capmcAPIxnameOnPOSToffRouterModuleAndHSNBoard - TODO
-#
-#stages:
-#  - name: capmcAPIxnameOnPOSToffRouterModuleAndHSNBoardTargetRouterModule - TODO
-#    request:
-#      url: "{hsm_base_url}/hsm/v2/State/Components?type=RouterModule"
-#      method: GET
-#      verify: !bool "{verify}"
-#    response:
-#      status_code: 200
-#      save:
-#        json:
-#          router_module_xname: Components[0].ID
-#
-#  - name: capmcAPIxnameOnPOSToffRouterModuleAndHSNBoardTargetHSNBoard - TODO
-#    request:
-#      url: "{hsm_base_url}/hsm/v2/State/Components?type=HSNBoard"
-#      method: GET
-#      verify: !bool "{verify}"
-#    response:
-#      status_code: 200
-#      save:
-#        json:
-#          hsn_board_xname: Components[0].ID
-#
-#  - name: capmcAPIxnameOnPOSToffRouterModuleAndHSNBoardPrep - TODO
-#    request:
-#      url: "{capmc_base_url}/capmc/v1/xname_off"
-#      json: {"reason":"CT test case: capmcAPIxnameOnPOSToffRouterModuleAndHSNBoardPrep","xnames":["{router_module_xname}","{hsn_board_xname}"],"force":true,"recursive":false}
-#      method: POST
-#      verify: !bool "{verify}"
-#    response:
-#      status_code: 200
-#      verify_response_with:
-#        function: tavern.testutils.helpers:validate_pykwalify
-#        extra_kwargs:
-#          schema:
-#            type: map
-#            required: True
-#            mapping:
-#              "e":
-#                type: int
-#                required: True
-#                enum:
-#                  - 0
-#              "err_msg":
-#                required: True
-#                type: str
-#                enum:
-#                  - ""
+---
+#TODO: Need create these components since CAPMC expects RouterModule w/ HSNBoard under it, not all RouterMoodules are set up this way by simulation environment
+#TODO: Check if this is expected for recursive:false, could be a bug since I don't see this behavior with other hierarchal components
+test_name: capmcAPIxnameOnPOSToffRouterModuleAndHSNBoard - TODO
+
+stages:
+  - name: capmcAPIxnameOnPOSToffRouterModuleAndHSNBoardTargetRouterModule - TODO
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=RouterModule"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          router_module_xname: Components[0].ID
+
+  - name: capmcAPIxnameOnPOSToffRouterModuleAndHSNBoardTargetHSNBoard - TODO
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=HSNBoard"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          hsn_board_xname: Components[0].ID
+
+  - name: capmcAPIxnameOnPOSToffRouterModuleAndHSNBoardPrep - TODO
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      json: {"reason":"CT test case: capmcAPIxnameOnPOSToffRouterModuleAndHSNBoardPrep","xnames":["{router_module_xname}","{hsn_board_xname}"],"force":true,"recursive":false}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
 #
 #  - name: capmcAPIxnameOnPOSToffRouterModuleAndHSNBoardStatusCheckRouterModule - TODO
 #    # retry here if needed since there can be delays to the state change
