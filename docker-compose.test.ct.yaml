@@ -150,6 +150,12 @@ services:
         \"RediscoverOnUpdate\":true,
         \"User\":\"root\",
         \"Password\":\"root_password\"
+      },{
+        \"ID\":\"x0c0b0\",
+        \"FQDN\":\"x0c0b0\",
+        \"RediscoverOnUpdate\":true,
+        \"User\":\"root\",
+        \"Password\":\"root_password\"
       }]}' http://cray-smd:27779/hsm/v2/Inventory/RedfishEndpoints"
     depends_on:
       - cray-smd
@@ -157,6 +163,7 @@ services:
       - rfemulator1
       - rfemulator2
       - rfemulator3
+      - rfemulator4
     networks:
       - capmc
 
@@ -211,6 +218,18 @@ services:
       capmc:
         aliases:
           - x0c0s4b0
+
+  rfemulator4:
+    hostname: x0c0b0
+    image: artifactory.algol60.net/csm-docker/stable/csm-rie:1.3.0
+    environment:
+      - MOCKUPFOLDER=CMM
+      - XNAME=x0c0b0
+      - PORT=443
+    networks:
+      capmc:
+        aliases:
+          - x0c0b0
 
   #
   # Service under test
