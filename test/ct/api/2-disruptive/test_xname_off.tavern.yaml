@@ -21,10 +21,10 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 
 # Tavern test cases for the Cray Advanced Platform Monitoring and Control (CAPMC) xname_off API.
-# Author: Mitch Schooler, Andrew Nieuwsma
+# Author: Mitch Schooler
 # Service: Cray Advanced Platform Monitoring and Control
 
-# HMS test metrics test cases: 8
+# HMS test metrics test cases: TODO
 
 # POST /xname_on Power On Compute Node
 # POST /get_xname_status Verify On Compute Node
@@ -35,6 +35,26 @@
 # POST /get_xname_status Verify Off Compute Node
 # POST /xname_off Off Compute Node
 # POST /get_xname_status Verify Off Compute Node
+
+# POST /xname_on Power On Chassis
+# POST /get_xname_status Verify On Chassis
+# POST /xname_off On Chassis
+# POST /get_xname_status Verify Off Chassis
+
+# POST /xname_on Power On ComputeModule
+# POST /get_xname_status Verify On ComputeModule
+# POST /xname_off On ComputeModule
+# POST /get_xname_status Verify Off ComputeModule
+
+#TODO: Need to create these components using simulator/RIE to ensure an HSNBoard exists under RouterModule
+# POST /xname_on Power On RouterModule and HSNBoard
+# POST /get_xname_status Verify On RouterModule and HSNBoard
+# POST /xname_off On RouterModule and HSNBoard
+# POST /get_xname_status Verify Off RouterModule and HSNBoard
+
+#TODO: Need to create these components using simulator/RIE
+# CabinetPDUOutlet
+# CabinetPDUPowerConnector
 ---
 test_name: capmcAPIxnameOffPOSTonComputeNode - TODO
 
@@ -54,7 +74,7 @@ stages:
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
       # Not all compute node types support ForceOn (only Intel does), can't use force=true here
-      json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeNodePrep","xnames":["{node_xname}"],"force":false}
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeNodePrep","xnames":["{node_xname}"],"force":false,"recursive":false}
       method: POST
       verify: !bool "{verify}"
     response:
@@ -119,7 +139,7 @@ stages:
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
       # All compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
-      json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeNodeActual","xnames":["{node_xname}"],"force":true}
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeNodeActual","xnames":["{node_xname}"],"force":true,"recursive":false}
       method: POST
       verify: !bool "{verify}"
     response:
@@ -199,7 +219,7 @@ stages:
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
       # All compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
-      json: {"reason":"CT test case: capmcAPIxnameOffPOSToffComputeNodePrep","xnames":["{node_xname}"],"force":true}
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSToffComputeNodePrep","xnames":["{node_xname}"],"force":true,"recursive":false}
       method: POST
       verify: !bool "{verify}"
     response:
@@ -264,7 +284,7 @@ stages:
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
       # All compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
-      json: {"reason":"CT test case: capmcAPIxnameOffPOSToffComputeNodeActual","xnames":["{node_xname}"],"force":true}
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSToffComputeNodeActual","xnames":["{node_xname}"],"force":true,"recursive":false}
       method: POST
       verify: !bool "{verify}"
     response:
@@ -324,3 +344,289 @@ stages:
                     unique: True
                     enum:
                       - "{node_xname}"
+
+---
+test_name: capmcAPIxnameOffPOSTonChassis - TODO
+
+stages:
+  - name: capmcAPIxnameOffPOSTonChassisTarget - TODO
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Chassis"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          chassis_xname: Components[0].ID
+
+  - name: capmcAPIxnameOffPOSTonChassisPrep - TODO
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_on"
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSTonChassisPrep","xnames":["{chassis_xname}"],"force":false,"recursive":false}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+
+  - name: capmcAPIxnameOffPOSTonChassisStatusCheck - TODO
+    # retry here if needed since there can be delays to the state change
+    max_retries: 30
+    delay_after: 10
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"source":"redfish","xnames":["{chassis_xname}"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "on":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: str
+                    unique: True
+                    enum:
+                      - "{chassis_xname}"
+
+  - name: capmcAPIxnameOffPOSTonChassisActual - TODO
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSTonChassisActual","xnames":["{chassis_xname}"],"force":true,"recursive":false}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+
+  - name: capmcAPIxnameOffPOSTonChassisStatusCheck - TODO
+    # retry here if needed since there can be delays to the state change
+    max_retries: 30
+    delay_after: 10
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"source":"redfish","xnames":["{chassis_xname}"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "off":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: str
+                    unique: True
+                    enum:
+                      - "{chassis_xname}"
+
+---
+test_name: capmcAPIxnameOffPOSTonComputeModule - TODO
+
+stages:
+  - name: capmcAPIxnameOffPOSTonComputeModuleTarget - TODO
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=ComputeModule"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          compute_module_xname: Components[0].ID
+
+  - name: capmcAPIxnameOffPOSTonComputeModulePrep - TODO
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_on"
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeModulePrep","xnames":["{compute_module_xname}"],"force":false,"recursive":false}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+
+  - name: capmcAPIxnameOffPOSTonComputeModuleStatusCheck - TODO
+    # retry here if needed since there can be delays to the state change
+    max_retries: 30
+    delay_after: 10
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"source":"redfish","xnames":["{compute_module_xname}"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "on":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: str
+                    unique: True
+                    enum:
+                      - "{compute_module_xname}"
+
+  - name: capmcAPIxnameOffPOSTonComputeModuleActual - TODO
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeModuleActual","xnames":["{compute_module_xname}"],"force":true,"recursive":false}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+
+  - name: capmcAPIxnameOffPOSTonComputeModuleStatusCheck - TODO
+    # retry here if needed since there can be delays to the state change
+    max_retries: 30
+    delay_after: 10
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"source":"redfish","xnames":["{compute_module_xname}"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "off":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: str
+                    unique: True
+                    enum:
+                      - "{compute_module_xname}"
