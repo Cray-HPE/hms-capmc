@@ -36,6 +36,9 @@
 # POST /get_xname_status Verify Off Compute Node
 # POST /xname_reinit Off Compute Node
 # POST /get_xname_status Verify On Compute Node
+
+#TODO: Chassis type doesn't support 'Restart' or 'ForceRestart' operations
+#TODO: ComputeModule type doesn't support 'Restart' or 'ForceRestart' operations
 ---
 test_name: capmcAPIxnameReinitPOSTonComputeNode - TODO
 

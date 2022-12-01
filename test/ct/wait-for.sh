@@ -24,8 +24,7 @@
 
 # wait-for.sh; used by runCT.sh to make sure HSM has been populated with data before running.
 echo "Initiating..."
-#TODO
-#URL="http://cray-smd:27779/hsm/v2/State/Components"
+# wait for the emulated Nodes to be discovered which take longer than the CMM
 URL="http://cray-smd:27779/hsm/v2/State/Components?type=Node"
 sentry=1
 limit=200
