@@ -49,6 +49,49 @@ stages:
         json:
           compute_module_xname: Components[0].ID
 
+  #TODO: Want to check /State/Components
+  - name: capmcAPIxnameOffPOSTonComputeModuleRecursiveTarget - TODO
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              Components:
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: map
+                    required: True
+                    allowempty: True
+                    mapping:
+                      ID:
+                        type: str
+                        required: True
+                        #TODO: this causes the failure
+                        enum:
+                          - "x9999c7s9b9n9"
+                      Type:
+                        type: str
+                        required: True
+                      State:
+                        type: str
+                        required: True
+                      Flag:
+                        type: str
+                        required: True
+                      Enabled:
+                        type: bool
+                        required: True
+
   - name: capmcAPIxnameOffPOSTonComputeModuleRecursivePrep - TODO
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
