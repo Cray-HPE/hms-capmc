@@ -20,23 +20,23 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-# Tavern test cases for the Cray Advanced Platform Monitoring and Control (CAPMC) xname_off API.
+# Tavern test cases for the Cray Advanced Platform Monitoring and Control (CAPMC) xname_on API.
 # Author: Mitch Schooler
 # Service: Cray Advanced Platform Monitoring and Control
 
 # HMS test metrics test cases: 6
 
-# POST /xname_on Power On ComputeModule Recursive
-# POST /get_xname_status Verify On ComputeModule
-# POST /get_xname_status Verify On Compute Node
-# POST /xname_off On ComputeModule Recursive
+# POST /xname_off Power Off ComputeModule Recursive
 # POST /get_xname_status Verify Off ComputeModule
 # POST /get_xname_status Verify Off Compute Node
+# POST /xname_on Off ComputeModule Recursive
+# POST /get_xname_status Verify On ComputeModule
+# POST /get_xname_status Verify On Compute Node
 ---
-test_name: capmcAPIxnameOffPOSTonComputeModuleRecursive - TODO
+test_name: capmcAPIxnameOnPOSToffComputeModuleRecursive - TODO
 
 stages:
-  - name: capmcAPIxnameOffPOSTonComputeModuleRecursiveTarget - TODO
+  - name: capmcAPIxnameOnPOSToffComputeModuleRecursiveTarget - TODO
     request:
       url: "{hsm_base_url}/hsm/v2/State/Components?type=ComputeModule"
       method: GET
@@ -47,11 +47,11 @@ stages:
         json:
           compute_module_xname: Components[0].ID
 
-  - name: capmcAPIxnameOffPOSTonComputeModuleRecursivePrep - TODO
+  - name: capmcAPIxnameOnPOSToffComputeModuleRecursivePrep - TODO
     request:
-      url: "{capmc_base_url}/capmc/v1/xname_on"
-      # Not all compute node types support ForceOn (only Intel does), can't use force=true here
-      json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeModuleRecursivePrep","xnames":["{compute_module_xname}"],"force":false,"recursive":true}
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      # All compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
+      json: {"reason":"CT test case: capmcAPIxnameOnPOSToffComputeModuleRecursivePrep","xnames":["{compute_module_xname}"],"force":true,"recursive":true}
       method: POST
       verify: !bool "{verify}"
     response:
@@ -74,7 +74,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameOffPOSTonComputeModuleRecursiveStatusCheckComputeModule - TODO
+  - name: capmcAPIxnameOnPOSToffComputeModuleRecursiveStatusCheckComputeModule - TODO
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -102,7 +102,7 @@ stages:
                 type: str
                 enum:
                   - ""
-              "on":
+              "off":
                 type: seq
                 matching: all
                 required: True
@@ -112,7 +112,7 @@ stages:
                     enum:
                       - "{compute_module_xname}"
 
-  - name: capmcAPIxnameOffPOSTonComputeModuleRecursiveStatusCheckNode - TODO
+  - name: capmcAPIxnameOnPOSToffComputeModuleRecursiveStatusCheckNode - TODO
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -141,7 +141,7 @@ stages:
                 type: str
                 enum:
                   - ""
-              "on":
+              "off":
                 type: seq
                 matching: all
                 required: True
@@ -151,11 +151,11 @@ stages:
                     enum:
                       - "{compute_module_xname}b0n0"
 
-  - name: capmcAPIxnameOffPOSTonComputeModuleRecursiveActual - TODO
+  - name: capmcAPIxnameOnPOSToffComputeModuleRecursiveActual - TODO
     request:
-      url: "{capmc_base_url}/capmc/v1/xname_off"
-      # All compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
-      json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeModuleRecursiveActual","xnames":["{compute_module_xname}"],"force":true,"recursive":true}
+      url: "{capmc_base_url}/capmc/v1/xname_on"
+      # Not all compute node types support ForceOn (only Intel does), can't use force=true here
+      json: {"reason":"CT test case: capmcAPIxnameOnPOSToffComputeModuleRecursiveActual","xnames":["{compute_module_xname}"],"force":false,"recursive":true}
       method: POST
       verify: !bool "{verify}"
     response:
@@ -178,7 +178,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameOffPOSTonComputeModuleRecursiveStatusCheckComputeModule - TODO
+  - name: capmcAPIxnameOnPOSToffComputeModuleRecursiveStatusCheckComputeModule - TODO
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -206,7 +206,7 @@ stages:
                 type: str
                 enum:
                   - ""
-              "off":
+              "on":
                 type: seq
                 matching: all
                 required: True
@@ -216,7 +216,7 @@ stages:
                     enum:
                       - "{compute_module_xname}"
 
-  - name: capmcAPIxnameOffPOSTonComputeModuleRecursiveStatusCheckNode - TODO
+  - name: capmcAPIxnameOnPOSToffComputeModuleRecursiveStatusCheckNode - TODO
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -245,7 +245,7 @@ stages:
                 type: str
                 enum:
                   - ""
-              "off":
+              "on":
                 type: seq
                 matching: all
                 required: True
