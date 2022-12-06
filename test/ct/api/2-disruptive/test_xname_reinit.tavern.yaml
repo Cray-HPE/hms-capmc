@@ -57,7 +57,7 @@ stages:
   - name: capmcAPIxnameReinitPOSTonComputeNodePrep - TODO
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
-      # Not all compute node types support ForceOn (only Intel does), can't use force=true here
+      # not all compute node types support ForceOn (only Intel does), can't use force=true here
       json: {"reason":"CT test case: capmcAPIxnameReinitPOSTonComputeNodePrep","xnames":["{node_xname}"],"force":false}
       method: POST
       verify: !bool "{verify}"
@@ -155,7 +155,7 @@ stages:
                 enum:
                   - ""
 
-  # Not checking that the node powers "Off" before powering back "On" again, could only get that to work on Intel compute node w/ force=true
+  # not checking that the node powers "Off" before powering back "On" again, could only get that to work on Intel compute node w/ force=true
 
   - name: capmcAPIxnameReinitPOSTonComputeNodeStatusCheck - TODO
     # retry here if needed since there can be delays to the state change
@@ -212,7 +212,7 @@ stages:
   - name: capmcAPIxnameReinitPOSToffComputeNodePrep - TODO
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
-      # All compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
+      # all compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
       json: {"reason":"CT test case: capmcAPIxnameOffPOSToffComputeNodePrep","xnames":["{node_xname}"],"force":true}
       method: POST
       verify: !bool "{verify}"

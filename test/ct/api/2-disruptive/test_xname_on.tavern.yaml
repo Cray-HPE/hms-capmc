@@ -73,7 +73,7 @@ stages:
   - name: capmcAPIxnameOnPOSToffComputeNodePrep - TODO
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
-      # All compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
+      # all compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
       json: {"reason":"CT test case: capmcAPIxnameOnPOSToffComputeNodePrep","xnames":["{node_xname}"],"force":true,"recursive":false}
       method: POST
       verify: !bool "{verify}"
@@ -138,7 +138,7 @@ stages:
   - name: capmcAPIxnameOnPOSToffComputeNodeActual - TODO
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
-      # Not all compute node types support ForceOn (only Intel does), can't use force=true here
+      # not all compute node types support ForceOn (only Intel does), can't use force=true here
       json: {"reason":"CT test case: capmcAPIxnameOnPOSToffComputeNodeActual","xnames":["{node_xname}"],"force":false,"recursive":false}
       method: POST
       verify: !bool "{verify}"
@@ -218,7 +218,7 @@ stages:
   - name: capmcAPIxnameOnPOSTonComputeNodePrep - TODO
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
-      # Not all compute node types support ForceOn (only Intel does), can't use force=true here
+      # not all compute node types support ForceOn (only Intel does), can't use force=true here
       json: {"reason":"CT test case: capmcAPIxnameOnPOSTonComputeNodePrep","xnames":["{node_xname}"],"force":false,"recursive":false}
       method: POST
       verify: !bool "{verify}"
@@ -283,7 +283,7 @@ stages:
   - name: capmcAPIxnameOnPOSTonComputeNodeActual - TODO
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
-      # Not all compute node types support ForceOn (only Intel does), can't use force=true here
+      # not all compute node types support ForceOn (only Intel does), can't use force=true here
       json: {"reason":"CT test case: capmcAPIxnameOnPOSTonComputeNodeActual","xnames":["{node_xname}"],"force":false,"recursive":false}
       method: POST
       verify: !bool "{verify}"

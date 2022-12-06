@@ -57,7 +57,7 @@ stages:
   - name: capmcAPIxnameOffPOSTonComputeModuleRecursivePrep - TODO
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
-      # Not all compute node types support ForceOn (only Intel does), can't use force=true here
+      # not all compute node types support ForceOn (only Intel does), can't use force=true here
       json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeModuleRecursivePrep","xnames":["{compute_module_xname}"],"force":false,"recursive":true}
       method: POST
       verify: !bool "{verify}"
@@ -161,7 +161,7 @@ stages:
   - name: capmcAPIxnameOffPOSTonComputeModuleRecursiveActual - TODO
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
-      # All compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
+      # all compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
       json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeModuleRecursiveActual","xnames":["{compute_module_xname}"],"force":true,"recursive":true}
       method: POST
       verify: !bool "{verify}"
@@ -280,7 +280,7 @@ stages:
   - name: capmcAPIxnameOffPOSTonComputeNodePrereqPrep - TODO
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
-      # Not all compute node types support ForceOn (only Intel does), can't use force=true here
+      # not all compute node types support ForceOn (only Intel does), can't use force=true here
       # this assumes a fully populated Chassis with NodeBMC 0 and Node 0 under all ComputeModules
       json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeNodePrereqPrep","xnames":["{compute_module_xname}b0n0"],"force":false,"prereq":true}
       method: POST
@@ -385,7 +385,8 @@ stages:
   - name: capmcAPIxnameOffPOSTonComputeNodePrereqActual - TODO
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
-      # All compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
+      # all compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
+      # this assumes a fully populated Chassis with NodeBMC 0 and Node 0 under all ComputeModules
       json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeNodePrereqActual","xnames":["{compute_module_xname}b0n0"],"force":true,"prereq":true}
       method: POST
       verify: !bool "{verify}"
