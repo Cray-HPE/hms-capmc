@@ -222,6 +222,13 @@ stages:
                     sequence:
                       - type: str
                         unique: True
+                  warning:
+                    type: seq
+                    matching: all
+                    required: False
+                    sequence:
+                      - type: str
+                        unique: True
 
 ---
 test_name: capmcAPIGetXnameStatus via Hardware State Manager with Node Xname
@@ -424,6 +431,13 @@ stages:
                 required: False
                 mapping:
                   key:
+                    type: seq
+                    matching: all
+                    required: False
+                    sequence:
+                      - type: str
+                        unique: True
+                  warning:
                     type: seq
                     matching: all
                     required: False
