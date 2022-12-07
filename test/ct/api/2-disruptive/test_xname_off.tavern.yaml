@@ -24,12 +24,18 @@
 # Author: Mitch Schooler
 # Service: Cray Advanced Platform Monitoring and Control
 
-# HMS test metrics test cases: 16
+# HMS test metrics test cases: 20
 
 # POST /xname_on Power On Compute Node
 # POST /get_xname_status Verify On Compute Node
 # POST /xname_off On Compute Node
 # POST /get_xname_status Verify Off Compute Node
+
+#TODO
+# POST /xname_on Power On Multiple Compute Nodes
+# POST /get_xname_status Verify On Compute Nodes
+# POST /xname_off Multiple On Compute Nodes
+# POST /get_xname_status Verify Off Compute Nodes
 
 # POST /xname_off Power Off Compute Node
 # POST /get_xname_status Verify Off Compute Node
@@ -190,6 +196,156 @@ stages:
                     enum:
                       - "{node_xname}"
 
+#TODO vvv
+---
+test_name: capmcAPIxnameOffPOSTmultipleOnComputeNodes - TODO
+
+stages:
+  - name: capmcAPIxnameOffPOSTmultipleOnComputeNodesTargets - TODO
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          node_1_xname: Components[0].ID
+          node_2_xname: Components[1].ID
+
+  - name: capmcAPIxnameOffPOSTmultipleOnComputeNodesPrep - TODO
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_on"
+      # not all compute node types support ForceOn (only Intel does), can't use force=true here
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSTmultipleOnComputeNodesPrep","xnames":["{node_1_xname}","{node_2_xname}"],"force":false}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+
+  - name: capmcAPIxnameOffPOSTmultipleOnComputeNodesStatusCheck - TODO
+    # retry here if needed since there can be delays to the state change
+    max_retries: 30
+    delay_after: 10
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"source":"redfish","xnames":["{node_1_xname}","{node_2_xname}"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "on":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: str
+                    unique: True
+                    enum:
+                      - "{node_1_xname}"
+                      - "{node_2_xname}"
+
+  - name: capmcAPIxnameOffPOSTmultipleOnComputeNodesActual - TODO
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      # all compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSTmultipleOnComputeNodesActual","xnames":["{node_1_xname}","{node_2_xname}"],"force":true}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+
+  - name: capmcAPIxnameOffPOSTmultipleOnComputeNodesStatusCheck - TODO
+    # retry here if needed since there can be delays to the state change
+    max_retries: 30
+    delay_after: 10
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"source":"redfish","xnames":["{node_1_xname}","{node_2_xname}"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "off":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: str
+                    unique: True
+                    enum:
+                      - "{node_1_xname}"
+                      - "{node_2_xname}"
+
+#TODO ^^^
 ---
 test_name: capmcAPIxnameOffPOSToffComputeNode - TODO
 
