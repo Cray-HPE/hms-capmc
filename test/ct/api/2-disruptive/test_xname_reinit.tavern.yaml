@@ -36,9 +36,6 @@
 # POST /get_xname_status Verify Off Compute Node
 # POST /xname_reinit Off Compute Node
 # POST /get_xname_status Verify On Compute Node
-
-#TODO: Chassis type doesn't support 'Restart' or 'ForceRestart' operations
-#TODO: ComputeModule type doesn't support 'Restart' or 'ForceRestart' operations
 ---
 test_name: capmcAPIxnameReinitPOSTonComputeNode - TODO
 
@@ -122,17 +119,7 @@ stages:
   - name: capmcAPIxnameReinitPOSTonComputeNodeActual - TODO
     request:
       url: "{capmc_base_url}/capmc/v1/xname_reinit"
-      # Cray Mountain compute node
-      # TODO: xname_reinit w/ force=true turns the node off but then errors out saying ForceOn is not supported leaving it off
-      # TODO: xname_reinit w/ force=false works, but there's no way to confirm that the node was reinitialized since the state doesn't change from "On", it also powers on an initially "Off" node successfully
       json: {"reason":"CT test case: capmcAPIxnameReinitPOSTonComputeNodeActual","xnames":["{node_xname}"],"force":false}
-      # Intel compute node
-      # Same behavior as Cray Mountain compute w/ force=false
-      # Different behavior w/ force=on: you actually see the state flip from "On" to "Off" and back to "On" since Intel supports ForceOff and ForceOn
-      # Gigabyte compute node
-      # Couldn't get the node to change power states at all with node_off, node_on, or node_reinit with force=true or force=false
-      # HPE compute node
-      # Couldn't get the node to change power states at all with node_off, node_on, or node_reinit with force=true or force=false
       method: POST
       verify: !bool "{verify}"
     response:

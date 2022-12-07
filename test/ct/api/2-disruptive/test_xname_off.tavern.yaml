@@ -24,7 +24,7 @@
 # Author: Mitch Schooler
 # Service: Cray Advanced Platform Monitoring and Control
 
-# HMS test metrics test cases: TODO
+# HMS test metrics test cases: 16
 
 # POST /xname_on Power On Compute Node
 # POST /get_xname_status Verify On Compute Node
@@ -45,16 +45,6 @@
 # POST /get_xname_status Verify On ComputeModule
 # POST /xname_off On ComputeModule
 # POST /get_xname_status Verify Off ComputeModule
-
-#TODO: Need to create these components using simulator/RIE to ensure an HSNBoard exists under RouterModule
-# POST /xname_on Power On RouterModule and HSNBoard
-# POST /get_xname_status Verify On RouterModule and HSNBoard
-# POST /xname_off On RouterModule and HSNBoard
-# POST /get_xname_status Verify Off RouterModule and HSNBoard
-
-#TODO: Need to create these components using simulator/RIE
-# CabinetPDUOutlet
-# CabinetPDUPowerConnector
 ---
 test_name: capmcAPIxnameOffPOSTonComputeNode - TODO
 
