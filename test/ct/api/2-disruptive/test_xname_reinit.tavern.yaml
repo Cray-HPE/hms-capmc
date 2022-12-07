@@ -42,10 +42,10 @@
 # POST /xname_reinit Off Compute Node
 # POST /get_xname_status Verify On Compute Node
 ---
-test_name: capmcAPIxnameReinitPOSTonComputeNode - TODO
+test_name: capmcAPIxnameReinitPOSTonComputeNode - Verify xname_reinit restarts a compute node that is powered on
 
 stages:
-  - name: capmcAPIxnameReinitPOSTonComputeNodeTarget - TODO
+  - name: capmcAPIxnameReinitPOSTonComputeNodeTarget - Retrieve a compute node from HSM to be used in later stages
     request:
       url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
       method: GET
@@ -56,7 +56,7 @@ stages:
         json:
           node_xname: Components[0].ID
 
-  - name: capmcAPIxnameReinitPOSTonComputeNodePrep - TODO
+  - name: capmcAPIxnameReinitPOSTonComputeNodePrep - Power the target node on to prepare it for the test case
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
       # not all compute node types support ForceOn (only Intel does), can't use force=true here
@@ -83,7 +83,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameReinitPOSTonComputeNodeStatusCheck - TODO
+  - name: capmcAPIxnameReinitPOSTonComputeNodeStatusCheck - Verify that the target node is powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -121,9 +121,10 @@ stages:
                     enum:
                       - "{node_xname}"
 
-  - name: capmcAPIxnameReinitPOSTonComputeNodeActual - TODO
+  - name: capmcAPIxnameReinitPOSTonComputeNodeActual - Restart the target node using xname_reinit
     request:
       url: "{capmc_base_url}/capmc/v1/xname_reinit"
+      # not all compute node types support ForceOn (only Intel does), can't use force=true here
       json: {"reason":"CT test case: capmcAPIxnameReinitPOSTonComputeNodeActual","xnames":["{node_xname}"],"force":false}
       method: POST
       verify: !bool "{verify}"
@@ -149,7 +150,7 @@ stages:
 
   # not checking that the node powers "Off" before powering back "On" again, could only get that to work on Intel compute node w/ force=true
 
-  - name: capmcAPIxnameReinitPOSTonComputeNodeStatusCheck - TODO
+  - name: capmcAPIxnameReinitPOSTonComputeNodeStatusCheck - Verify that the target node is powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -188,10 +189,10 @@ stages:
                       - "{node_xname}"
 
 ---
-test_name: capmcAPIxnameReinitPOSTmultipleOnComputeNodes - TODO
+test_name: capmcAPIxnameReinitPOSTmultipleOnComputeNodes - Verify xname_reinit restarts multiple compute nodes that are powered on
 
 stages:
-  - name: capmcAPIxnameReinitPOSTmultipleOnComputeNodesTargets - TODO
+  - name: capmcAPIxnameReinitPOSTmultipleOnComputeNodesTargets - Retrieve two compute nodes from HSM to be used in later stages
     request:
       url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
       method: GET
@@ -203,7 +204,7 @@ stages:
           node_1_xname: Components[0].ID
           node_2_xname: Components[1].ID
 
-  - name: capmcAPIxnameReinitPOSTmultipleOnComputeNodesPrep - TODO
+  - name: capmcAPIxnameReinitPOSTmultipleOnComputeNodesPrep - Power the target nodes on to prepare them for the test case
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
       # not all compute node types support ForceOn (only Intel does), can't use force=true here
@@ -230,7 +231,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameReinitPOSTmultipleOnComputeNodesStatusCheck - TODO
+  - name: capmcAPIxnameReinitPOSTmultipleOnComputeNodesStatusCheck - Verify that the target nodes are powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -269,7 +270,7 @@ stages:
                       - "{node_1_xname}"
                       - "{node_2_xname}"
 
-  - name: capmcAPIxnameReinitPOSTmultipleOnComputeNodesActual - TODO
+  - name: capmcAPIxnameReinitPOSTmultipleOnComputeNodesActual - Restart the target nodes using xname_reinit
     request:
       url: "{capmc_base_url}/capmc/v1/xname_reinit"
       # not all compute node types support ForceOn (only Intel does), can't use force=true here
@@ -296,7 +297,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameReinitPOSTmultipleOnComputeNodesStatusCheck - TODO
+  - name: capmcAPIxnameReinitPOSTmultipleOnComputeNodesStatusCheck - Verify that the target nodes are powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -336,10 +337,10 @@ stages:
                       - "{node_2_xname}"
 
 ---
-test_name: capmcAPIxnameReinitPOSToffComputeNode - TODO
+test_name: capmcAPIxnameReinitPOSToffComputeNode - Verify xname_reinit restarts a compute node that is powered off
 
 stages:
-  - name: capmcAPIxnameReinitPOSToffComputeNodeTarget - TODO
+  - name: capmcAPIxnameReinitPOSToffComputeNodeTarget - Retrieve a compute node from HSM to be used in later stages
     request:
       url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
       method: GET
@@ -350,7 +351,7 @@ stages:
         json:
           node_xname: Components[0].ID
 
-  - name: capmcAPIxnameReinitPOSToffComputeNodePrep - TODO
+  - name: capmcAPIxnameReinitPOSToffComputeNodePrep - Power the target node off to prepare it for the test case
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
       # all compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
@@ -377,7 +378,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameReinitPOSToffComputeNodeStatusCheck - TODO
+  - name: capmcAPIxnameReinitPOSToffComputeNodeStatusCheck - Verify that the target node is powered off using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -415,9 +416,10 @@ stages:
                     enum:
                       - "{node_xname}"
 
-  - name: capmcAPIxnameReinitPOSToffComputeNodeActual - TODO
+  - name: capmcAPIxnameReinitPOSToffComputeNodeActual - Restart the target node using xname_reinit
     request:
       url: "{capmc_base_url}/capmc/v1/xname_reinit"
+      # not all compute node types support ForceOn (only Intel does), can't use force=true here
       json: {"reason":"CT test case: capmcAPIxnameReinitPOSToffComputeNodeActual","xnames":["{node_xname}"],"force":false}
       method: POST
       verify: !bool "{verify}"
@@ -441,7 +443,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameReinitPOSToffComputeNodeStatusCheck - TODO
+  - name: capmcAPIxnameReinitPOSToffComputeNodeStatusCheck - Verify that the target node is powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10

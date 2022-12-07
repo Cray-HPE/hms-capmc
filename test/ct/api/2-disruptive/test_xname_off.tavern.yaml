@@ -51,10 +51,10 @@
 # POST /xname_off On ComputeModule
 # POST /get_xname_status Verify Off ComputeModule
 ---
-test_name: capmcAPIxnameOffPOSTonComputeNode - TODO
+test_name: capmcAPIxnameOffPOSTonComputeNode - Verify xname_off powers off a compute node that is powered on
 
 stages:
-  - name: capmcAPIxnameOffPOSTonComputeNodeTarget - TODO
+  - name: capmcAPIxnameOffPOSTonComputeNodeTarget - Retrieve a compute node from HSM to be used in later stages
     request:
       url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
       method: GET
@@ -65,7 +65,7 @@ stages:
         json:
           node_xname: Components[0].ID
 
-  - name: capmcAPIxnameOffPOSTonComputeNodePrep - TODO
+  - name: capmcAPIxnameOffPOSTonComputeNodePrep - Power the target node on to prepare it for the test case
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
       # not all compute node types support ForceOn (only Intel does), can't use force=true here
@@ -92,7 +92,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameOffPOSTonComputeNodeStatusCheck - TODO
+  - name: capmcAPIxnameOffPOSTonComputeNodeStatusCheck - Verify that the target node is powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -130,7 +130,7 @@ stages:
                     enum:
                       - "{node_xname}"
 
-  - name: capmcAPIxnameOffPOSTonComputeNodeActual - TODO
+  - name: capmcAPIxnameOffPOSTonComputeNodeActual - Power the target node off using xname_off
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
       # all compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
@@ -157,7 +157,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameOffPOSTonComputeNodeStatusCheck - TODO
+  - name: capmcAPIxnameOffPOSTonComputeNodeStatusCheck - Verify that the target node is powered off using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -196,10 +196,10 @@ stages:
                       - "{node_xname}"
 
 ---
-test_name: capmcAPIxnameOffPOSTmultipleOnComputeNodes - TODO
+test_name: capmcAPIxnameOffPOSTmultipleOnComputeNodes - Verify xname_off powers off multiple compute nodes that are powered on
 
 stages:
-  - name: capmcAPIxnameOffPOSTmultipleOnComputeNodesTargets - TODO
+  - name: capmcAPIxnameOffPOSTmultipleOnComputeNodesTargets - Retrieve two compute nodes from HSM to be used in later stages
     request:
       url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
       method: GET
@@ -211,7 +211,7 @@ stages:
           node_1_xname: Components[0].ID
           node_2_xname: Components[1].ID
 
-  - name: capmcAPIxnameOffPOSTmultipleOnComputeNodesPrep - TODO
+  - name: capmcAPIxnameOffPOSTmultipleOnComputeNodesPrep - Power the target nodes on to prepare them for the test case
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
       # not all compute node types support ForceOn (only Intel does), can't use force=true here
@@ -238,7 +238,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameOffPOSTmultipleOnComputeNodesStatusCheck - TODO
+  - name: capmcAPIxnameOffPOSTmultipleOnComputeNodesStatusCheck - Verify that the target nodes are powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -277,7 +277,7 @@ stages:
                       - "{node_1_xname}"
                       - "{node_2_xname}"
 
-  - name: capmcAPIxnameOffPOSTmultipleOnComputeNodesActual - TODO
+  - name: capmcAPIxnameOffPOSTmultipleOnComputeNodesActual - Power the target nodes off using xname_off
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
       # all compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
@@ -304,7 +304,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameOffPOSTmultipleOnComputeNodesStatusCheck - TODO
+  - name: capmcAPIxnameOffPOSTmultipleOnComputeNodesStatusCheck - Verify that the target nodes are powered off using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -344,10 +344,10 @@ stages:
                       - "{node_2_xname}"
 
 ---
-test_name: capmcAPIxnameOffPOSToffComputeNode - TODO
+test_name: capmcAPIxnameOffPOSToffComputeNode - Verify xname_off keeps power off for a compute node that is already powered off
 
 stages:
-  - name: capmcAPIxnameOffPOSToffComputeNodeTarget - TODO
+  - name: capmcAPIxnameOffPOSToffComputeNodeTarget - Retrieve a compute node from HSM to be used in later stages
     request:
       url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
       method: GET
@@ -358,7 +358,7 @@ stages:
         json:
           node_xname: Components[0].ID
 
-  - name: capmcAPIxnameOffPOSToffComputeNodePrep - TODO
+  - name: capmcAPIxnameOffPOSToffComputeNodePrep - Power the target node off to prepare it for the test case
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
       # all compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
@@ -385,7 +385,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameOffPOSToffComputeNodeStatusCheck - TODO
+  - name: capmcAPIxnameOffPOSToffComputeNodeStatusCheck - Verify that the target node is powered off using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -423,7 +423,7 @@ stages:
                     enum:
                       - "{node_xname}"
 
-  - name: capmcAPIxnameOffPOSToffComputeNodeActual - TODO
+  - name: capmcAPIxnameOffPOSToffComputeNodeActual - Power the target node off using xname_off
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
       # all compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
@@ -450,7 +450,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameOffPOSToffComputeNodeStatusCheck - TODO
+  - name: capmcAPIxnameOffPOSToffComputeNodeStatusCheck - Verify that the target node is powered off using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -489,10 +489,10 @@ stages:
                       - "{node_xname}"
 
 ---
-test_name: capmcAPIxnameOffPOSTonChassis - TODO
+test_name: capmcAPIxnameOffPOSTonChassis - Verify xname_off powers off a chassis that is powered on
 
 stages:
-  - name: capmcAPIxnameOffPOSTonChassisTarget - TODO
+  - name: capmcAPIxnameOffPOSTonChassisTarget - Retrieve a chassis from HSM to be used in later stages
     request:
       url: "{hsm_base_url}/hsm/v2/State/Components?type=Chassis"
       method: GET
@@ -503,7 +503,7 @@ stages:
         json:
           chassis_xname: Components[0].ID
 
-  - name: capmcAPIxnameOffPOSTonChassisPrep - TODO
+  - name: capmcAPIxnameOffPOSTonChassisPrep - Power the target chassis on to prepare it for the test case
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
       json: {"reason":"CT test case: capmcAPIxnameOffPOSTonChassisPrep","xnames":["{chassis_xname}"],"force":false,"recursive":false}
@@ -529,7 +529,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameOffPOSTonChassisStatusCheck - TODO
+  - name: capmcAPIxnameOffPOSTonChassisStatusCheck - Verify that the target chassis is powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -567,7 +567,7 @@ stages:
                     enum:
                       - "{chassis_xname}"
 
-  - name: capmcAPIxnameOffPOSTonChassisActual - TODO
+  - name: capmcAPIxnameOffPOSTonChassisActual - Power the target chassis off using xname_off
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
       json: {"reason":"CT test case: capmcAPIxnameOffPOSTonChassisActual","xnames":["{chassis_xname}"],"force":true,"recursive":false}
@@ -593,7 +593,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameOffPOSTonChassisStatusCheck - TODO
+  - name: capmcAPIxnameOffPOSTonChassisStatusCheck - Verify that the target chassis is powered off using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -632,10 +632,10 @@ stages:
                       - "{chassis_xname}"
 
 ---
-test_name: capmcAPIxnameOffPOSTonComputeModule - TODO
+test_name: capmcAPIxnameOffPOSTonComputeModule - Verify xname_off powers off a compute module that is powered on
 
 stages:
-  - name: capmcAPIxnameOffPOSTonComputeModuleTarget - TODO
+  - name: capmcAPIxnameOffPOSTonComputeModuleTarget - Retrieve a compute module from HSM to be used in later stages
     request:
       url: "{hsm_base_url}/hsm/v2/State/Components?type=ComputeModule"
       method: GET
@@ -646,7 +646,7 @@ stages:
         json:
           compute_module_xname: Components[0].ID
 
-  - name: capmcAPIxnameOffPOSTonComputeModulePrep - TODO
+  - name: capmcAPIxnameOffPOSTonComputeModulePrep - Power the target compute module on to prepare it for the test case
     request:
       url: "{capmc_base_url}/capmc/v1/xname_on"
       json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeModulePrep","xnames":["{compute_module_xname}"],"force":false,"recursive":false}
@@ -672,7 +672,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameOffPOSTonComputeModuleStatusCheck - TODO
+  - name: capmcAPIxnameOffPOSTonComputeModuleStatusCheck - Verify that the target compute module is powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
@@ -710,7 +710,7 @@ stages:
                     enum:
                       - "{compute_module_xname}"
 
-  - name: capmcAPIxnameOffPOSTonComputeModuleActual - TODO
+  - name: capmcAPIxnameOffPOSTonComputeModuleActual - Power the target compute module off using xname_off
     request:
       url: "{capmc_base_url}/capmc/v1/xname_off"
       json: {"reason":"CT test case: capmcAPIxnameOffPOSTonComputeModuleActual","xnames":["{compute_module_xname}"],"force":true,"recursive":false}
@@ -736,7 +736,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameOffPOSTonComputeModuleStatusCheck - TODO
+  - name: capmcAPIxnameOffPOSTonComputeModuleStatusCheck - Verify that the target compute module is powered off using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: 30
     delay_after: 10
