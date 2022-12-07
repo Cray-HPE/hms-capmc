@@ -31,7 +31,6 @@
 # POST /xname_off On Compute Node
 # POST /get_xname_status Verify Off Compute Node
 
-#TODO
 # POST /xname_on Power On Multiple Compute Nodes
 # POST /get_xname_status Verify On Compute Nodes
 # POST /xname_off Multiple On Compute Nodes
@@ -196,7 +195,6 @@ stages:
                     enum:
                       - "{node_xname}"
 
-#TODO vvv
 ---
 test_name: capmcAPIxnameOffPOSTmultipleOnComputeNodes - TODO
 
@@ -345,7 +343,6 @@ stages:
                       - "{node_1_xname}"
                       - "{node_2_xname}"
 
-#TODO ^^^
 ---
 test_name: capmcAPIxnameOffPOSToffComputeNode - TODO
 
