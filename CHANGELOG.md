@@ -24,6 +24,15 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [2.6.0] - 2022-12-07
+
+### Changed
+
+CASMHMS-5468 - Refactored CAPMC CT tests for HMTH, including:
+- Update CAPMC CT tests to use latest hms-test:4.0.0 image
+- Break out CAPMC CT tests into non-disruptive, disruptive, destructive, and build-pipeline-only test buckets
+- Add many new API tests that execute in the runCT environment in the build pipeline
+
 ## [2.5.0] - 2022-07-26
 
 ### Changed
