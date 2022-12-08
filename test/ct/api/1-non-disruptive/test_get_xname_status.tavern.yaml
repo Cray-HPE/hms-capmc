@@ -38,8 +38,8 @@
 # /get_xname_status all nodes in the 'halt' state
 # /get_xname_status all nodes in the 'standby' state
 # /get_xname_status all nodes in the 'ready' state
-# /get_xname_status all nodes in the 'diag' state of which there should be none
-# /get_xname_status all nodes in the 'disabled' state of which there should be none
+# /get_xname_status all nodes in the 'diag' state
+# /get_xname_status all nodes in the 'disabled' state
 # /get_xname_status all nodes in the 'on' or 'off' states
 ---
 test_name: capmcAPIGetXnameStatus via Redfish
@@ -80,13 +80,11 @@ stages:
               "e":
                 type: int
                 required: True
-                enum:
-                  - 0
+                # don't want test to fail on this "e" code if Redfish/hardware is in a bad state
               "err_msg":
                 required: True
                 type: str
-                enum:
-                  - ""
+                # don't want test to fail on this "err_msg" code if Redfish/hardware is in a bad state
               "on":
                 type: seq
                 matching: all
@@ -144,6 +142,7 @@ stages:
           schema:
             type: map
             required: True
+            allowempty: True
             mapping:
               "e":
                 type: int
@@ -211,9 +210,17 @@ stages:
                 sequence:
                   - type: str
                     unique: True
+              "populated":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: str
+                    unique: True
               "flags":
                 type: map
                 required: False
+                allowempty: True
                 mapping:
                   key:
                     type: seq
@@ -259,6 +266,7 @@ stages:
           schema:
             type: map
             required: True
+            allowempty: True
             mapping:
               "e":
                 type: int
@@ -275,53 +283,82 @@ stages:
                 matching: all
                 required: False
                 sequence:
-                  - type: int
+                  - type: str
                     unique: True
               "off":
                 type: seq
                 matching: all
                 required: False
                 sequence:
-                  - type: int
+                  - type: str
+                    unique: True
+              "undefined":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: str
                     unique: True
               "halt":
                 type: seq
                 matching: all
                 required: False
                 sequence:
-                  - type: int
+                  - type: str
                     unique: True
               "standby":
                 type: seq
                 matching: all
                 required: False
                 sequence:
-                  - type: int
+                  - type: str
                     unique: True
               "ready":
                 type: seq
                 matching: all
                 required: False
                 sequence:
-                  - type: int
+                  - type: str
                     unique: True
               "disabled":
                 type: seq
                 matching: all
                 required: False
                 sequence:
-                  - type: int
+                  - type: str
+                    unique: True
+              "empty":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: str
+                    unique: True
+              "populated":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: str
                     unique: True
               "flags":
                 type: map
                 required: False
+                allowempty: True
                 mapping:
                   key:
                     type: seq
                     matching: all
                     required: False
                     sequence:
-                      - type: int
+                      - type: str
+                        unique: True
+                  warning:
+                    type: seq
+                    matching: all
+                    required: False
+                    sequence:
+                      - type: str
                         unique: True
         function: tavern.testutils.helpers:validate_content
         extra_kwargs:
@@ -366,6 +403,7 @@ stages:
           schema:
             type: map
             required: True
+            allowempty: True
             mapping:
               "e":
                 type: int
@@ -385,6 +423,13 @@ stages:
                   - type: str
                     unique: True
               "off":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: str
+                    unique: True
+              "undefined":
                 type: seq
                 matching: all
                 required: False
@@ -426,9 +471,17 @@ stages:
                 sequence:
                   - type: str
                     unique: True
+              "populated":
+                type: seq
+                matching: all
+                required: False
+                sequence:
+                  - type: str
+                    unique: True
               "flags":
                 type: map
                 required: False
+                allowempty: True
                 mapping:
                   key:
                     type: seq
@@ -669,7 +722,7 @@ stages:
 test_name: capmcAPIGetXnameStatus with 'show_diag' filter
 
 stages:
-  - name: Get all nodes in the 'diag' state of which there should be none
+  - name: Get all nodes in the 'diag' state
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       json: {"filter": "show_diag", "source": "hsm"}
@@ -682,8 +735,26 @@ stages:
         extra_kwargs:
           comparisons:
             - jmespath: "length(keys(@))"
+              operator: "lt"
+              expected: 4
+            - jmespath: "length(keys(@))"
+              operator: "gt"
+              expected: 1
+            - jmespath: "contains(keys(@), 'on')"
               operator: "eq"
-              expected: 2
+              expected: False
+            - jmespath: "contains(keys(@), 'off')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'halt')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'standby')"
+              operator: "eq"
+              expected: False
+            - jmespath: "contains(keys(@), 'ready')"
+              operator: "eq"
+              expected: False
             - jmespath: "contains(keys(@), 'e')"
               operator: "eq"
               expected: True
@@ -695,7 +766,7 @@ stages:
 test_name: capmcAPIGetXnameStatus with 'show_disabled' filter
 
 stages:
-  - name: Get all nodes in the 'disabled' state of which there should be none
+  - name: Get all nodes in the 'disabled' state
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       json: {"filter": "show_disabled", "source": "hsm"}
