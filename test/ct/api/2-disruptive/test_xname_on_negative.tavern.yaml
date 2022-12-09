@@ -25,8 +25,138 @@
 # Author: Mitch Schooler
 # Service: Cray Advanced Platform Monitoring and Control
 
-# HMS test metrics test cases: 1
+# HMS test metrics test cases: 3
+# POST /xname_on fails with NodeBMC xname
+# POST /xname_on fails with NodeEnclosure xname
 # POST /xname_on fails for Node that is already locked
+---
+test_name: capmcAPIxnameOnPOSTnodeBMCxname
+
+stages:
+  - name: capmcAPIxnameOnPOSTnodeBMCxnamePrep - Get NodeBMC xname from HSM Components to use in upcoming stage
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=NodeBMC"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          bmc_xname: Components[0].ID
+
+  - name: capmcAPIxnameOnPOSTnodeBMCxnameActual - Verify xname_on fails with NodeBMC xname
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_on"
+      json: {"reason":"CT test case: capmcAPIxnameOnPOSTnodeBMCxnameActual","xnames":["{bmc_xname}"],"force":false}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - -1
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - "Errors encountered with 1 components for On"
+              "xnames":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: map
+                    required: True
+                    mapping:
+                      "xname":
+                        type: str
+                        required: True
+                        enum:
+                          - "{bmc_xname}"
+                      "e":
+                        type: int
+                        required: True
+                        enum:
+                          - -1
+                      "err_msg":
+                        type: str
+                        required: True
+                        enum:
+                          - "Skipping {bmc_xname}: Type, 'NodeBMC', not defined in power sequence for 'On'"
+
+---
+test_name: capmcAPIxnameOnPOSTnodeEnclosureXname
+
+stages:
+  - name: capmcAPIxnameOnPOSTnodeEnclosureXnamePrep - Get NodeEnclosure xname from HSM Components to use in upcoming stage
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=NodeEnclosure"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          enclosure_xname: Components[0].ID
+
+  - name: capmcAPIxnameOnPOSTnodeEnclosureXnameActual - Verify xname_on fails with NodeEnclosure xname
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_on"
+      json: {"reason":"CT test case: capmcAPIxnameOnPOSTnodeEnclosureXnameActual","xnames":["{enclosure_xname}"],"force":true}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - -1
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - "Errors encountered with 1 components for ForceOn"
+              "xnames":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: map
+                    required: True
+                    mapping:
+                      "xname":
+                        type: str
+                        required: True
+                        enum:
+                          - "{enclosure_xname}"
+                      "e":
+                        type: int
+                        required: True
+                        enum:
+                          - -1
+                      "err_msg":
+                        type: str
+                        required: True
+                        enum:
+                          - "Skipping {enclosure_xname}: Type, 'NodeEnclosure', not defined in power sequence for 'ForceOn'"
+
 ---
 test_name: capmcAPIxnameOnPOSTlockedNode
 
