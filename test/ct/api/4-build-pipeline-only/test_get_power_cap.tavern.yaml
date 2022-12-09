@@ -1,0 +1,196 @@
+# MIT License
+#
+# (C) Copyright [2022] Hewlett Packard Enterprise Development LP
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+
+# Tavern test cases for the Cray Advanced Platform Monitoring and Control
+# (CAPMC) get_power_cap API.
+# Author: Shane Unruh
+# Service: Cray Advanced Platform Monitoring and Control
+
+# CAPMC get_power_cap test cases: 2
+# 1. setup1 - Get HSM Node
+# 2. setup2 - Set HSM Node to Off
+# 3. test1 - POST get_power_cap when node is off
+# 4. setup3 - Set HSM Node to Ready
+# 5. test2 - POST get_power_cap when node is Ready
+# 6. setup4 - Set HSM Node to Off
+# 7. setup5 - Set HSM Node to its original state
+---
+test_name: capmcAPIGetPowerCap
+
+stages:
+  - name: capmcAPIGetPowerCap - setup1 - Get HSM Node
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          xname: Components[0].ID
+          nid: Components[0].NID
+          original_state: Components[0].State
+
+  - name: capmcAPIGetPowerCap - setup2 - Set HSM Node to Off
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname}/StateData"
+      json: {"State":"Off"}
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204
+
+  - name: capmcAPIGetPowerCap - test1 - POST get_power_cap when node is off
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_power_cap"
+      json:
+        nids:
+          - !int "{nid:d}"
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          # expected: {'e': 22, 'err_msg': '', 'nids': [{'nid': 1000, 'e': 22, 'err_msg': ""}]}
+          schema:
+            type: map
+            mapping:
+              e:
+                type: int
+                required: True
+                enum:
+                  - 22
+              err_msg:
+                type: str
+                required: True
+              nids:
+                type: seq
+                required: True
+                matching: all
+                sequence:
+                  -  type: map
+                     mapping:
+                       nid:
+                         type: int
+                         required: True
+                         enum:
+                           - !int "{nid:d}"
+                       e:
+                         type: int
+                         required: True
+                         enum:
+                           - 22
+                       err_msg:
+                         type: str
+                         required: True
+
+  - name: capmcAPIGetPowerCap - setup3 - Set HSM Node to Ready
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname}/StateData"
+      json: {"State":"Ready"}
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204
+
+  - name: capmcAPIGetPowerCap - test2 - POST get_power_cap when node is Ready
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_power_cap"
+      json:
+        nids:
+          - !int "{nid:d}"
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          # example: {'e': 0, 'err_msg': '',
+          #           'nids':
+          #             [{'nid': 1000,
+          #               'controls':
+          #                 [{'name': 'Node Power Limit', 'val': 0}]}]}
+          schema:
+            type: map
+            mapping:
+              e:
+                type: int
+                required: True
+                enum:
+                  - 0
+              err_msg:
+                type: str
+                required: True
+                enum:
+                  - ""
+              nids:
+                type: seq
+                required: True
+                matching: all
+                sequence:
+                  -  type: map
+                     mapping:
+                       nid:
+                         type: int
+                         required: True
+                         enum:
+                           - !int "{nid:d}"
+                       controls:
+                         type: seq
+                         required: True
+                         matching: all
+                         sequence:
+                           - type: map
+                             mapping:
+                               name:
+                                 type: str
+                                 required: True
+                               val:
+                                 type: int
+                                 required: True
+
+  # The following steps put the nodes back to their original state
+  # For each node:
+  # - First set it to off, because a node in the ready state can't go directly back to the on state.
+  # - Then set it to the original state.
+
+  - name: capmcAPIGetPowerCap - setup4 - Set HSM Node to Off
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname}/StateData"
+      json: {"State":"Off"}
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204
+
+  - name: capmcAPIGetPowerCap - setup5 - Set HSM Node to its original state
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname}/StateData"
+      json:
+        State: "{original_state}"
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204

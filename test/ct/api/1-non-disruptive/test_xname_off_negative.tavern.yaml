@@ -1,0 +1,287 @@
+# MIT License
+#
+# (C) Copyright [2022] Hewlett Packard Enterprise Development LP
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+
+# Negative Tavern test cases for the Cray Advanced Platform Monitoring and
+# Control (CAPMC) xname_off API.
+# Author: Mitch Schooler
+# Service: Cray Advanced Platform Monitoring and Control
+
+# HMS test metrics test cases: 9
+# POST /xname_off fails with missing xnames
+# POST /xname_off fails with empty xname
+# POST /xname_off fails with garbage xname
+# POST /xname_off fails with recursive and prereq options
+# GET /xname_off fails
+# DELETE /xname_off fails
+# PATCH /xname_off fails
+# PUT /xname_off fails
+# HEAD /xname_off fails
+---
+test_name: capmcAPIxnameOffPOSTmissingXnames
+
+stages:
+  - name: capmcAPIxnameOffPOSTmissingXnames - Verify xname_off fails with missing xnames list
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSTmissingXnames","force":false}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 400
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 400
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - "Bad Request: Missing required xnames parameter"
+
+---
+test_name: capmcAPIxnameOffPOSTemptyXname
+
+stages:
+  - name: capmcAPIxnameOffPOSTemptyXname - Verify xname_off fails with empty xname
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSTemptyXname","xnames":[""],"force":false}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 400
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 22
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - "invalid argument"
+              "xnames":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: map
+                    required: True
+                    mapping:
+                      "xname":
+                        type: str
+                        required: True
+                        enum:
+                          - ""
+                      "e":
+                        type: int
+                        required: True
+                        enum:
+                          - 22
+                      "err_msg":
+                        type: str
+                        required: True
+                        enum:
+                          - "invalid/duplicate xname"
+
+---
+test_name: capmcAPIxnameOffPOSTgarbageXname
+
+stages:
+  - name: capmcAPIxnameOffPOSTgarbageXname - Verify xname_off fails with garbage xname
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSTgarbageXname","xnames":[".*&^%$#$%$^"],"force":false}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 400
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 22
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - "invalid argument"
+              "xnames":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: map
+                    required: True
+                    mapping:
+                      "xname":
+                        type: str
+                        required: True
+                        enum:
+                          - ".*&^%$#$%$^"
+                      "e":
+                        type: int
+                        required: True
+                        enum:
+                          - 22
+                      "err_msg":
+                        type: str
+                        required: True
+                        enum:
+                          - "invalid/duplicate xname"
+
+---
+test_name: capmcAPIxnameOffPOSTnodeXnameRecursiveAndPrereq
+
+stages:
+  - name: capmcAPIxnameOffPOSTnodeXnameRecursiveAndPrereqPrep - Get compute Node xname from HSM Components to use in upcoming stage
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          node_xname: Components[0].ID
+
+  - name: capmcAPIxnameOffPOSTnodeXnameRecursiveAndPrereqActual - Verify xname_off fails with recursive and prereq options
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      json: {"reason":"CT test case: capmcAPIxnameOffPOSTnodeXnameRecursiveAndPrereqActual","xnames":["{node_xname}"],"force":false,"recursive":true,"prereq":true}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 400
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 400
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - "Bad Request: recursive and prereq options are mutually exclusive"
+
+---
+test_name: capmcAPIxnameOffGET - Verify xname_off GET method fails
+
+stages:
+  - name: capmcAPIxnameOffGET - Verify xname_off fails with GET method
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+      json:
+        e: 405
+        err_msg: "(GET) Not Allowed"
+
+---
+test_name: capmcAPIxnameOffDELETE - Verify xname_off DELETE method fails
+
+stages:
+  - name: capmcAPIxnameOffDELETE - Verify xname_off fails with DELETE method
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      method: DELETE
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+      json:
+        e: 405
+        err_msg: "(DELETE) Not Allowed"
+
+---
+test_name: capmcAPIxnameOffPATCH - Verify xname_off PATCH method fails
+
+stages:
+  - name: capmcAPIxnameOffPATCH - Verify xname_off fails with PATCH method
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      json: {"reason":"CT test case: capmcAPIxnameOffPATCH","xnames":["FAKE"]}
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+      json:
+        e: 405
+        err_msg: "(PATCH) Not Allowed"
+
+---
+test_name: capmcAPIxnameOffPUT - Verify xname_off PUT method fails
+
+stages:
+  - name: capmcAPIxnameOffPUT - Verify xname_off fails with PUT method
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      json: {"reason":"CT test case: capmcAPIxnameOffPUT","xnames":["FAKE"]}
+      method: PUT
+      verify: !bool "{verify}"
+    response:
+      status_code: 405
+      json:
+        e: 405
+        err_msg: "(PUT) Not Allowed"
+
+---
+test_name: capmcAPIxnameOffHEAD - Verify xname_off HEAD method fails
+
+stages:
+  - name: capmcAPIxnameOffHEAD - Verify xname_off fails with HEAD method
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      method: HEAD
+      verify: !bool "{verify}"
+    response:
+      status_code: 405

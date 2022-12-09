@@ -1,0 +1,488 @@
+# MIT License
+#
+# (C) Copyright [2022] Hewlett Packard Enterprise Development LP
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+
+# Tavern test cases for the Cray Advanced Platform Monitoring and Control (CAPMC) xname_on API.
+# Author: Mitch Schooler
+# Service: Cray Advanced Platform Monitoring and Control
+
+# HMS test metrics test cases: 12
+
+# POST /xname_off Power Off ComputeModule Recursive
+# POST /get_xname_status Verify Off ComputeModule
+# POST /get_xname_status Verify Off Compute Node
+# POST /xname_on Off ComputeModule Recursive
+# POST /get_xname_status Verify On ComputeModule
+# POST /get_xname_status Verify On Compute Node
+
+# POST /xname_off Power Off Compute Node Prereq
+# POST /get_xname_status Verify Off Compute Node
+# POST /get_xname_status Verify Off ComputeModule
+# POST /xname_on Off Compute Node Prereq
+# POST /get_xname_status Verify On Compute Node
+# POST /get_xname_status Verify On ComputeModule
+---
+test_name: capmcAPIxnameOnPOSToffComputeModuleRecursive - Verify xname_on with the recursive option powers on a compute module and its children that are powered off
+
+stages:
+  - name: capmcAPIxnameOnPOSToffComputeModuleRecursiveTarget - Retrieve a compute module from HSM to be used in later stages
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=ComputeModule"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          compute_module_xname: Components[0].ID
+
+  - name: capmcAPIxnameOnPOSToffComputeModuleRecursivePrep - Power the target compute module and its children off to prepare them for the test case
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      # all compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
+      json: {"reason":"CT test case: capmcAPIxnameOnPOSToffComputeModuleRecursivePrep","xnames":["{compute_module_xname}"],"force":true,"recursive":true}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+
+  - name: capmcAPIxnameOnPOSToffComputeModuleRecursiveStatusCheckComputeModule - Verify that the target compute module is powered off using get_xname_status
+    # retry here if needed since there can be delays to the state change
+    max_retries: 30
+    delay_after: 10
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"source":"redfish","xnames":["{compute_module_xname}"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "off":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: str
+                    unique: True
+                    enum:
+                      - "{compute_module_xname}"
+
+  - name: capmcAPIxnameOnPOSToffComputeModuleRecursiveStatusCheckNode - Verify that the target node is powered off using get_xname_status
+    # retry here if needed since there can be delays to the state change
+    max_retries: 30
+    delay_after: 10
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      # this assumes a fully populated Chassis with NodeBMC 0 and Node 0 under all ComputeModules
+      json: {"source":"redfish","xnames":["{compute_module_xname}b0n0"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "off":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: str
+                    unique: True
+                    enum:
+                      - "{compute_module_xname}b0n0"
+
+  - name: capmcAPIxnameOnPOSToffComputeModuleRecursiveActual - Power the target compute module and its children on using xname_on
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_on"
+      # not all compute node types support ForceOn (only Intel does), can't use force=true here
+      json: {"reason":"CT test case: capmcAPIxnameOnPOSToffComputeModuleRecursiveActual","xnames":["{compute_module_xname}"],"force":false,"recursive":true}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+
+  - name: capmcAPIxnameOnPOSToffComputeModuleRecursiveStatusCheckComputeModule - Verify that the target compute module is powered on using get_xname_status
+    # retry here if needed since there can be delays to the state change
+    max_retries: 30
+    delay_after: 10
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"source":"redfish","xnames":["{compute_module_xname}"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "on":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: str
+                    unique: True
+                    enum:
+                      - "{compute_module_xname}"
+
+  - name: capmcAPIxnameOnPOSToffComputeModuleRecursiveStatusCheckNode - Verify that the target node is powered on using get_xname_status
+    # retry here if needed since there can be delays to the state change
+    max_retries: 30
+    delay_after: 10
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      # this assumes a fully populated Chassis with NodeBMC 0 and Node 0 under all ComputeModules
+      json: {"source":"redfish","xnames":["{compute_module_xname}b0n0"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "on":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: str
+                    unique: True
+                    enum:
+                      - "{compute_module_xname}b0n0"
+
+---
+test_name: capmcAPIxnameOnPOSToffComputeNodePrereq - Verify xname_on with the prereq option powers on a compute node and its parents that are powered off
+
+stages:
+  - name: capmcAPIxnameOnPOSToffComputeNodePrereqTarget - Retrieve a compute module from HSM to be used in later stages
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=ComputeModule"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          compute_module_xname: Components[0].ID
+
+  - name: capmcAPIxnameOnPOSToffComputeNodePrereqPrep - Power the target compute node and its parents off to prepare them for the test case
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_off"
+      # all compute node types support ForceOff (Cray, Intel, Gigabyte, HPE), can use force=true here
+      # this assumes a fully populated Chassis with NodeBMC 0 and Node 0 under all ComputeModules
+      json: {"reason":"CT test case: capmcAPIxnameOnPOSToffComputeNodePrereqPrep","xnames":["{compute_module_xname}b0n0"],"force":true,"prereq":true}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+
+  - name: capmcAPIxnameOnPOSToffComputeNodePrereqStatusCheckNode - Verify that the target node is powered off using get_xname_status
+    # retry here if needed since there can be delays to the state change
+    max_retries: 30
+    delay_after: 10
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      # this assumes a fully populated Chassis with NodeBMC 0 and Node 0 under all ComputeModules
+      json: {"source":"redfish","xnames":["{compute_module_xname}b0n0"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "off":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: str
+                    unique: True
+                    enum:
+                      - "{compute_module_xname}b0n0"
+
+  - name: capmcAPIxnameOnPOSToffComputeNodePrereqStatusCheckComputeModule - Verify that the target compute module is powered off using get_xname_status
+    # retry here if needed since there can be delays to the state change
+    max_retries: 30
+    delay_after: 10
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"source":"redfish","xnames":["{compute_module_xname}"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "off":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: str
+                    unique: True
+                    enum:
+                      - "{compute_module_xname}"
+
+  - name: capmcAPIxnameOnPOSToffComputeNodePrereqActual - Power the target node and its parents on using xname_on
+    request:
+      url: "{capmc_base_url}/capmc/v1/xname_on"
+      # not all compute node types support ForceOn (only Intel does), can't use force=true here
+      # this assumes a fully populated Chassis with NodeBMC 0 and Node 0 under all ComputeModules
+      json: {"reason":"CT test case: capmcAPIxnameOnPOSToffComputeNodePrereqActual","xnames":["{compute_module_xname}b0n0"],"force":false,"prereq":true}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+
+  - name: capmcAPIxnameOnPOSToffComputeNodePrereqStatusCheckNode - Verify that the target node is powered on using get_xname_status
+    # retry here if needed since there can be delays to the state change
+    max_retries: 30
+    delay_after: 10
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      # this assumes a fully populated Chassis with NodeBMC 0 and Node 0 under all ComputeModules
+      json: {"source":"redfish","xnames":["{compute_module_xname}b0n0"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "on":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: str
+                    unique: True
+                    enum:
+                      - "{compute_module_xname}b0n0"
+
+  - name: capmcAPIxnameOnPOSToffComputeNodePrereqStatusCheckComputeModule - Verify that the target compute module is powered on using get_xname_status
+    # retry here if needed since there can be delays to the state change
+    max_retries: 30
+    delay_after: 10
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_xname_status"
+      json: {"source":"redfish","xnames":["{compute_module_xname}"]}
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          schema:
+            type: map
+            required: True
+            mapping:
+              "e":
+                type: int
+                required: True
+                enum:
+                  - 0
+              "err_msg":
+                required: True
+                type: str
+                enum:
+                  - ""
+              "on":
+                type: seq
+                matching: all
+                required: True
+                sequence:
+                  - type: str
+                    unique: True
+                    enum:
+                      - "{compute_module_xname}"

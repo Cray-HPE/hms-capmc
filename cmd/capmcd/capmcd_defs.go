@@ -126,10 +126,10 @@ var (
 	//
 	// ResetType:
 	// Default mapping for CAPMC `Off` operations to Redfish ResetType
-	// GracefulSutdown - requires no additional checks
-	// Off             - requires no additional checks (DTMF is adding)
-	// PushPowerButton - requires additional checks (this is a toggle)
-	// ForceOff        - requires no additional checks
+	// GracefulShutdown - requires no additional checks
+	// Off              - requires no additional checks (DTMF is adding)
+	// PushPowerButton  - requires additional checks (this is a toggle)
+	// ForceOff         - requires no additional checks
 	//
 	// Default mapping for CAPMC `On` operations to Redfish ResetType
 	// On              - requires no additional checks

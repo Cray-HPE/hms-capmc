@@ -22,28 +22,6 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-# wait-for.sh; used by runCT.sh to make sure HSM has been populated with data before running.
-echo "Initiating..."
-# wait for the emulated Nodes to be discovered which take longer than the CMM
-URL="http://cray-smd:27779/hsm/v2/State/Components?type=Node"
-sentry=1
-limit=200
-while :; do
-  length=$(curl --silent ${URL} | jq '.Components | length')
-
-  if [ ! -z "$length" ] && [ "$length" -gt "0" ]; then
-    echo $URL" is available"
-    break
-  fi
-
-  if [ "$sentry" -gt "$limit" ]; then
-    echo "Failed to connect for $limit, exiting"
-    exit 1
-  fi
-
-  ((sentry++))
-
-  echo $URL" is unavailable - sleeping"
-  sleep 1
-
-done
+VERSION=$(cat .version)
+make ct_image
+docker run --rm -it --network hms-simulation-environment_simulation cray-capmc-hmth-test:${VERSION} tavern -c /src/app/tavern_global_config_ct_test.yaml -p /src/app/api #/2-disruptive

@@ -1,0 +1,573 @@
+# MIT License
+#
+# (C) Copyright [2022] Hewlett Packard Enterprise Development LP
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+
+# Tavern test cases for the Cray Advanced Platform Monitoring and Control
+# (CAPMC) set_power_cap API.
+# Author: Shane Unruh
+# Service: Cray Advanced Platform Monitoring and Control
+
+# CAPMC set_power_cap test cases: 7
+#  1. setup1 - Get HSM Nodes
+#  2. setup2 - get_power_cap_capabilities for nodes
+#  3. setup3 - Set HSM Node 0 to Off
+#  4. setup4 - Set HSM Node 1 to Off
+#  5. test1 - POST set_power_cap for powered off node - failure test
+#  6. setup5 - Set HSM Node 0 to Ready
+#  7. setup6 - Set HSM Node 1 to Ready
+#  8. test2 - POST set_power_cap for two ready nodes
+# 10. test3 - POST get_power_cap verify power cap values
+# 11. test4 - POST set_power_cap value larger than max - failure test
+# 12. test5 - POST set_power_cap value less than min - failure test
+# 13. test6 - POST set_power_cap to zero
+# 14. test7 - POST set_power_cap to zero second time - failure test
+# 15. setup7 - Set HSM Node 0 to Off
+# 16. setup8 - Set HSM Node 0 to its original state
+# 17. setup9 - Set HSM Node 1 to Off
+# 18. setup10 - Set HSM Node 1 to its original state
+---
+test_name: capmcAPISetPowerCap
+
+stages:
+  - name: capmcAPISetPowerCap - setup1 - Get HSM Nodes
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+      method: GET
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          xname0: Components[0].ID
+          nid0: Components[0].NID
+          original_state0: Components[0].State
+          xname1: Components[1].ID
+          nid1: Components[1].NID
+          original_state1: Components[1].State
+
+  - name: capmcAPISetPowerCap - setup2 - get_power_cap_capabilities
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_power_cap_capabilities"
+      json:
+        nids:
+          - !int "{nid0:d}"
+          - !int "{nid1:d}"
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      save:
+        json:
+          min0: groups[0].host_limit_min
+          max0: groups[0].host_limit_max
+          min1: groups[0].host_limit_min
+          max1: groups[0].host_limit_max
+
+  - name: capmcAPISetPowerCap - setup3 - Set HSM Node 0 to Off
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname0}/StateData"
+      json: {"State":"Off"}
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204
+
+  - name: capmcAPISetPowerCap - setup4 - Set HSM Node 1 to Off
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname1}/StateData"
+      json: {"State":"Off"}
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204
+
+  - name: capmcAPISetPowerCap - test1 - POST set_power_cap for powered off node - failure test
+    request:
+      url: "{capmc_base_url}/capmc/v1/set_power_cap"
+      json:
+        nids:
+          - nid: !int "{nid0:d}"
+            controls:
+              - name: Node Power Limit
+                val: 410
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          # expected:
+          # {
+          #   "e": 22,
+          #   "err_msg": "No supported power capping controls",
+          #   "nids": [
+          #     {
+          #       "nid": 1000,
+          #       "e": 22,
+          #       "err_msg": "Invalid state, NID is not 'ready'"
+          #     }
+          #   ]
+          # }
+          schema:
+            type: map
+            mapping:
+              e:
+                type: int
+                required: True
+                enum:
+                  - 22
+              err_msg:
+                type: str
+                required: True
+              nids:
+                type: seq
+                required: True
+                matching: all
+                sequence:
+                  -  type: map
+                     mapping:
+                       nid:
+                         type: int
+                         required: true
+                         enum:
+                           - !int "{nid0:d}"
+                       e:
+                         type: int
+                         required: True
+                         enum:
+                           - 22
+                       err_msg:
+                         type: str
+                         required: True
+                         pattern: "Invalid state, NID is not 'ready'"
+
+  - name: capmcAPISetPowerCap - setup5 - Set HSM Node 0 to Ready
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname0}/StateData"
+      json: {"State":"Ready"}
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204
+
+  - name: capmcAPISetPowerCap - setup6 - Set HSM Node 1 to Ready
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname1}/StateData"
+      json: {"State":"Ready"}
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204
+
+  - name: capmcAPISetPowerCap - test2 - set_power_cap for two ready nodes
+    request:
+      url: "{capmc_base_url}/capmc/v1/set_power_cap"
+      json:
+        nids:
+          - nid: !int "{nid0:d}"
+            controls:
+              - name: Node Power Limit
+                val: !int "{min0:d}"
+          - nid: !int "{nid1:d}"
+            controls:
+              - name: Node Power Limit
+                val: !int "{min1:d}"
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          # expected:
+          # {
+          #   "e": 0,
+          #   "err_msg": "",
+          #   "nids": null
+          # }
+          schema:
+            type: map
+            mapping:
+              e:
+                type: int
+                required: True
+                enum:
+                  - 0
+              err_msg:
+                type: str
+                required: True
+              nids:
+                type: none
+                required: False
+
+  - name: capmcAPIGetPowerCap - test3 - POST get_power_cap verify power cap values
+    request:
+      url: "{capmc_base_url}/capmc/v1/get_power_cap"
+      json:
+        nids:
+          - !int "{nid0:d}"
+          - !int "{nid1:d}"
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          # example: {'e': 0, 'err_msg': '',
+          #           'nids':
+          #             [{'nid': 1000,
+          #               'controls':
+          #                 [{'name': 'Node Power Limit', 'val': 350}]},
+          #             [{'nid': 1001,
+          #               'controls':
+          #                 [{'name': 'Node Power Limit', 'val': 350}]}]}
+          schema:
+            type: map
+            mapping:
+              e:
+                type: int
+                required: True
+                enum:
+                  - 0
+              err_msg:
+                type: str
+                required: True
+                enum:
+                  - ""
+              nids:
+                type: seq
+                required: True
+                matching: any
+                sequence:
+                  -  type: map
+                     mapping:
+                       nid:
+                         type: int
+                         required: True
+                         enum:
+                           - !int "{nid0:d}"
+                       controls:
+                         type: seq
+                         required: True
+                         matching: "*"
+                         sequence:
+                           - type: map
+                             mapping:
+                               name:
+                                 type: str
+                                 required: True
+                               val:
+                                 type: int
+                                 required: True
+                                 enum:
+                                   - !int "{min0:d}"
+                  -  type: map
+                     mapping:
+                       nid:
+                         type: int
+                         required: True
+                         enum:
+                           - !int "{nid1:d}"
+                       controls:
+                         type: seq
+                         required: True
+                         matching: "*"
+                         sequence:
+                           - type: map
+                             mapping:
+                               name:
+                                 type: str
+                                 required: True
+                               val:
+                                 type: int
+                                 required: True
+                                 enum:
+                                   - !int "{min1:d}"
+
+  - name: capmcAPISetPowerCap - test4 - POST set_power_cap value larger than max - failure test
+    request:
+      url: "{capmc_base_url}/capmc/v1/set_power_cap"
+      json:
+        nids:
+          - nid: !int "{nid0:d}"
+            controls:
+              - name: Node Power Limit
+                val: 1234567
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          # expected:
+          # {
+          #   "e": 22,
+          #   "err_msg": "No supported power capping controls",
+          #   "nids": [
+          #     {
+          #       "nid": 1000,
+          #       "e": 22,
+          #       "err_msg": "Control (Node Power Limit) value (400000) is greater than maximum (925)"
+          #     }
+          #   ]
+          # }
+          schema:
+            type: map
+            mapping:
+              e:
+                type: int
+                required: True
+                enum:
+                  - 22
+              err_msg:
+                type: str
+                required: True
+              nids:
+                type: seq
+                required: True
+                matching: all
+                sequence:
+                  -  type: map
+                     mapping:
+                       nid:
+                         type: int
+                         required: true
+                         enum:
+                           - !int "{nid0:d}"
+                       e:
+                         type: int
+                         required: True
+                         enum:
+                           - 22
+                       err_msg:
+                         type: str
+                         required: True
+                         enum:
+                           - "Control (Node Power Limit) value (1234567) is greater than maximum ({max0})"
+
+  - name: capmcAPISetPowerCap - test5 - POST set_power_cap value less than min - failure test
+    request:
+      url: "{capmc_base_url}/capmc/v1/set_power_cap"
+      json:
+        nids:
+          - nid: !int "{nid0:d}"
+            controls:
+              - name: Node Power Limit
+                val: 1
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          # expected:
+          # {
+          #   "e": 22,
+          #   "err_msg": "No supported power capping controls",
+          #   "nids": [
+          #     {
+          #       "nid": 1000,
+          #       "e": 22,
+          #       "err_msg": "Control (Node Power Limit) value (1) is less than minimum (350)"
+          #     }
+          #   ]
+          # }
+          schema:
+            type: map
+            mapping:
+              e:
+                type: int
+                required: True
+                enum:
+                  - 22
+              err_msg:
+                type: str
+                required: True
+              nids:
+                type: seq
+                required: True
+                matching: all
+                sequence:
+                  -  type: map
+                     mapping:
+                       nid:
+                         type: int
+                         required: true
+                         enum:
+                           - !int "{nid0:d}"
+                       e:
+                         type: int
+                         required: True
+                         enum:
+                           - 22
+                       err_msg:
+                         type: str
+                         required: True
+                         enum:
+                           - "Control (Node Power Limit) value (1) is less than minimum ({min0})"
+
+  - name: capmcAPISetPowerCap - test6 - POST set_power_cap to zero
+    request:
+      url: "{capmc_base_url}/capmc/v1/set_power_cap"
+      json:
+        nids:
+          - nid: !int "{nid0:d}"
+            controls:
+              - name: Node Power Limit
+                val: 0
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          # expected:
+          # {
+          #   "e": 0,
+          #   "err_msg": "",
+          #   "nids": null
+          # }
+          schema:
+            type: map
+            mapping:
+              e:
+                type: int
+                required: True
+                enum:
+                  - 0
+              err_msg:
+                type: str
+                required: True
+              nids:
+                type: none
+                required: False
+
+  - name: capmcAPISetPowerCap - test7 - POST set_power_cap to zero second time - failure test
+    request:
+      url: "{capmc_base_url}/capmc/v1/set_power_cap"
+      json:
+        nids:
+          - nid: !int "{nid0:d}"
+            controls:
+              - name: Node Power Limit
+                val: 0
+      method: POST
+      verify: !bool "{verify}"
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_pykwalify
+        extra_kwargs:
+          # expected:
+          # {
+          #   "e": 52,
+          #   "err_msg": "Invalid exchange",
+          #   "nids": [
+          #     {
+          #       "nid": 1000,
+          #       "e": 400,
+          #       "err_msg": "Error setting power cap for NID"
+          #     }
+          #   ]
+          # }
+          schema:
+            type: map
+            mapping:
+              e:
+                type: int
+                required: True
+                enum:
+                  - 52
+              err_msg:
+                type: str
+                required: True
+                enum:
+                  - "Invalid exchange"
+              nids:
+                type: seq
+                required: True
+                matching: all
+                sequence:
+                  -  type: map
+                     mapping:
+                       nid:
+                         type: int
+                         required: true
+                         enum:
+                           - !int "{nid0:d}"
+                       e:
+                         type: int
+                         required: True
+                         enum:
+                           - 400
+                       err_msg:
+                         type: str
+                         required: True
+                         enum:
+                           - "Error setting power cap for NID"
+
+  # The following steps put the nodes back to their original state
+  # For each node:
+  # - First set it to off, because a node in the ready state can't go directly back to the on state.
+  # - Then set it to the original state.
+
+  - name: capmcAPISetPowerCap - setup7 - Set HSM Node 0 to Off
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname0}/StateData"
+      json: {"State":"Off"}
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204
+
+  - name: capmcAPISetPowerCap - setup8 - Set HSM Node 0 to its original state
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname0}/StateData"
+      json:
+        State: "{original_state0}"
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204
+
+  - name: capmcAPISetPowerCap - setup9 - Set HSM Node 1 to Off
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname1}/StateData"
+      json: {"State":"Off"}
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204
+
+  - name: capmcAPISetPowerCap - setup10 - Set HSM Node 1 to its original state
+    request:
+      url: "{hsm_base_url}/hsm/v2/State/Components/{xname1}/StateData"
+      json:
+        State: "{original_state1}"
+      method: PATCH
+      verify: !bool "{verify}"
+    response:
+      status_code: 204

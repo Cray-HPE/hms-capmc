@@ -35,6 +35,5 @@ unittest:
 ct:
 	./runCT.sh
 
-
 ct_image:
-	docker build --no-cache -f test/ct/Dockerfile test/ct/ --tag cray-capmc-test:${VERSION}
+	docker build --no-cache -f test/ct/Dockerfile test/ct/ --tag cray-capmc-hmth-test:${VERSION}
