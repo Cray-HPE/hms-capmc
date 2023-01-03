@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [3.0.0] - 2022-01-03
+
+### Changed
+
+- Converted xname_[on/off/reinit] to use PCS for power operations
+
 ## [2.7.0] - 2023-01-04
 
 ### Changed
