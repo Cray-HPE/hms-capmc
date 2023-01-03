@@ -53,6 +53,24 @@ var xnameOffReplayData = []testData{
 		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}},
 		`{"ComponentEndpoints":[{"ID":"x0c0s8b0n0","Type":"Node","Domain":"ice.next.cray.com","FQDN":"x0c0s8b0n0.ice.next.cray.com","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"44:a8:42:21:a1:fd","UUID":"4c4c4544-0057-3210-8038-b8c04f463432","OdataID":"/redfish/v1/Systems/System.Embedded.1","RedfishEndpointID":"x0c0s8b0","RedfishEndpointFQDN":"x0c0s8.ice.next.cray.com","RedfishURL":"x0c0s8.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"System","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","GracefulShutdown","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"NIC.Integrated.1-3-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-3-1","Description":"Integrated NIC 1 Port 3 Partition 1","MACAddress":"44:a8:42:21:a1:fd","PermanentMACAddress":"44:a8:42:21:a1:fd"},{"RedfishId":"NIC.Integrated.1-4-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-4-1","Description":"Integrated NIC 1 Port 4 Partition 1","MACAddress":"44:a8:42:21:a1:fe","PermanentMACAddress":"44:a8:42:21:a1:fe"},{"RedfishId":"NIC.Integrated.1-1-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-1-1","Description":"Integrated NIC 1 Port 1 Partition 1","MACAddress":"44:a8:42:21:a1:fb","PermanentMACAddress":"44:a8:42:21:a1:fb"},{"RedfishId":"NIC.Integrated.1-2-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-2-1","Description":"Integrated NIC 1 Port 2 Partition 1","MACAddress":"44:a8:42:21:a1:fc","PermanentMACAddress":"44:a8:42:21:a1:fc"}]}}]}
 `},
+	{"https://fake-system.us.cray.com/apis/power-control/v1/transitions",
+		"POST",
+		``,
+		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
+		"200 OK", 200,
+		"HTTP/1.1", 1, 1,
+		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}, "Content-Length": []string{"1801"}},
+		`{"transitionID": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "operation": "off"}`,
+	},
+	{"https://fake-system.us.cray.com/apis/power-control/v1/transitions/3fa85f64-5717-4562-b3fc-2c963f66afa6",
+		"GET",
+		``,
+		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
+		"200 OK", 200,
+		"HTTP/1.1", 1, 1,
+		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}, "Content-Length": []string{"1801"}},
+		`{"transitionID": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "createTime": "2020-12-16T19:00:20", "automaticExpirationTime": "2022-12-22T14:58:40.703Z", "transitionStatus": "in-progress", "operation": "off", "taskCounts": { "total": 1, "new": 0, "in-progress": 1, "failed": 0, "succeeded": 0, "un-supported": 0 }, "tasks": [ { "xname": "x0c0s8b0n0", "taskStatus": "in-progress" } ]}`,
+	},
 	{"https://x0c0s8.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset",
 		"POST",
 		`{"ResetType": "ForceOff"}`,
@@ -121,6 +139,24 @@ var xnameOnReplayData = []testData{
 		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}},
 		`{"ComponentEndpoints":[{"ID":"x0c0s8b0n0","Type":"Node","Domain":"ice.next.cray.com","FQDN":"x0c0s8b0n0.ice.next.cray.com","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"44:a8:42:21:a1:fd","UUID":"4c4c4544-0057-3210-8038-b8c04f463432","OdataID":"/redfish/v1/Systems/System.Embedded.1","RedfishEndpointID":"x0c0s8b0","RedfishEndpointFQDN":"x0c0s8.ice.next.cray.com","RedfishURL":"x0c0s8.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"System","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","GracefulShutdown","ForceOff","GracefulRestart","PushPowerButton","Nmi"],"target":"/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"NIC.Integrated.1-3-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-3-1","Description":"Integrated NIC 1 Port 3 Partition 1","MACAddress":"44:a8:42:21:a1:fd","PermanentMACAddress":"44:a8:42:21:a1:fd"},{"RedfishId":"NIC.Integrated.1-4-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-4-1","Description":"Integrated NIC 1 Port 4 Partition 1","MACAddress":"44:a8:42:21:a1:fe","PermanentMACAddress":"44:a8:42:21:a1:fe"},{"RedfishId":"NIC.Integrated.1-1-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-1-1","Description":"Integrated NIC 1 Port 1 Partition 1","MACAddress":"44:a8:42:21:a1:fb","PermanentMACAddress":"44:a8:42:21:a1:fb"},{"RedfishId":"NIC.Integrated.1-2-1","@odata.id":"/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-2-1","Description":"Integrated NIC 1 Port 2 Partition 1","MACAddress":"44:a8:42:21:a1:fc","PermanentMACAddress":"44:a8:42:21:a1:fc"}]}}]}
 `},
+	{"https://fake-system.us.cray.com/apis/power-control/v1/transitions",
+		"POST",
+		``,
+		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
+		"200 OK", 200,
+		"HTTP/1.1", 1, 1,
+		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}, "Content-Length": []string{"1801"}},
+		`{"transitionID": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "operation": "on"}`,
+	},
+	{"https://fake-system.us.cray.com/apis/power-control/v1/transitions/3fa85f64-5717-4562-b3fc-2c963f66afa6",
+		"GET",
+		``,
+		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
+		"200 OK", 200,
+		"HTTP/1.1", 1, 1,
+		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}, "Content-Length": []string{"1801"}},
+		`{"transitionID": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "createTime": "2020-12-16T19:00:20", "automaticExpirationTime": "2022-12-22T14:58:40.703Z", "transitionStatus": "in-progress", "operation": "on", "taskCounts": { "total": 1, "new": 0, "in-progress": 1, "failed": 0, "succeeded": 0, "un-supported": 0 }, "tasks": [ { "xname": "x0c0s8b0n0", "taskStatus": "in-progress" } ]}`,
+	},
 	{"https://x0c0s8.ice.next.cray.com/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset",
 		"POST",
 		`{"ResetType": "On"}`,
@@ -732,63 +768,6 @@ func TestStatusComponentNotFound(t *testing.T) {
 	runTest(t, StatusComponentNotFoundHSM, &testReq, &StatusComponentNotFoundReplayData, StatusComponentNotFoundSSData)
 }
 
-var PowerComponentNotFoundHSM = "https://frosty-sms.us.cray.com:30443/apis/smd"
-var PowerComponentNotFoundReplayData = []testData{
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components?id=x0c0s21b0n0",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Date": []string{"Wed, 10 Apr 2019 18:15:42 GMT"}, "X-Kong-Upstream-Latency": []string{"3"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"1457"}, "Connection": []string{"keep-alive"}},
-		`{"Components":[{"ID":"x0c0s21b0n0","Type":"Node","State":"Ready","Flag":"OK","Enabled":true,"Role":"Compute","NID":4,"NetType":"Sling","Arch":"X86"}]}
-`},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v2/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"X-Kong-Upstream-Latency": []string{"3"}, "X-Kong-Proxy-Latency": []string{"0"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Connection": []string{"keep-alive"}, "Date": []string{"Wed, 10 Apr 2019 18:15:42 GMT"}},
-		`{"ComponentEndpoints":[{"ID":"x0c0s21b0n0","Type":"Node","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"a4:bf:01:2b:68:7c","UUID":"7f1d0db3-e077-11e7-ab21-a4bf012b687c","OdataID":"/redfish/v1/Systems/QSBP75001595","RedfishEndpointID":"x0c0s21b0","RedfishEndpointFQDN":"10.4.0.8","RedfishURL":"10.4.0.8/redfish/v1/Systems/QSBP75001595","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"S2600BPB","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulShutdown","GracefulRestart","ForceRestart","Nmi"],"target":"/redfish/v1/Systems/QSBP75001595/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"","@odata.id":"","Description":"Missing interface 1, MAC computed via workaround","MACAddress":"a4:bf:01:2b:68:7c"},{"RedfishId":"","@odata.id":"","Description":"Missing interface 2, MAC computed via workaround","MACAddress":"a4:bf:01:2b:68:7d"}]}}]}
-`},
-	{"https://10.4.0.8/redfish/v1/Systems/QSBP75001595/Actions/ComputerSystem.Reset",
-		"POST",
-		`{"ResetType": "On"}`,
-		map[string][]string{"Content-Type": []string{"application/json"}, "Authorization": []string{"Basic cm9vdDppbml0aWFsMA=="}, "Accept": []string{"*/*"}},
-		"404 Not Found", 404,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"X-Frame-Options": []string{"SAMEORIGIN"}, "X-Xss-Protection": []string{"1; mode=block"}, "Status": []string{"404"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"549"}, "Server": []string{"lighttpd/1.4.45"}, "Strict-Transport-Security": []string{"max-age=31536000; includeSubdomains; preload"}, "X-Ua-Compatible": []string{"IE=11"}, "Date": []string{"Wed, 10 Apr 2019 18:15:42 GMT"}},
-		`{"error":{"code":"Base.1.1.0.GeneralError","message":"A general error has occurred. See ExtendedInfo for more information.","@Message.ExtendedInfo":[{"@odata.type":"#Message.v1_0_4.Message","MessageId":"Base.1.1.0.ResourceMissingAtURI","Message":"The resource at the URI /redfish/v1/Systems/QSBP75001595/Actions/ComputerSystem.Reset was not found.","MessageArgs":["/redfish/v1/Systems/QSBP75001595/Actions/ComputerSystem.Reset"],"Severity":"Critical","Resolution":"Place a valid resource at the URI or correct the URI and resubmit the request."}]}}
-`},
-}
-var PowerComponentNotFoundSSData = []sstorage.MockLookup{
-	{
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s21b0n0",
-				URL:      "10.4.0.8/redfish/v1/Systems/QSBP75001595",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	},
-}
-
-func TestPowerComponentNotFound(t *testing.T) {
-	var testReq = testData{"/capmc/v1/xname_on",
-		"POST",
-		`{"xnames":["x0c0s21b0n0"]}`,
-		map[string][]string{"User-Agent": []string{"curl/7.37.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"26"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":-1,"err_msg":"Errors encountered with 1/1 Xnames issued On","xnames":[{"xname":"x0c0s21b0n0","e":404,"err_msg":"NodeBMC 10.4.0.8 HTTP 404 Not Found, Redfish Error Message: A general error has occurred. See ExtendedInfo for more information. ExtendedInfo: Message: The resource at the URI /redfish/v1/Systems/QSBP75001595/Actions/ComputerSystem.Reset was not found. Resolution: Place a valid resource at the URI or correct the URI and resubmit the request."}]}
-`}
-	runTest(t, PowerComponentNotFoundHSM, &testReq, &PowerComponentNotFoundReplayData, PowerComponentNotFoundSSData)
-}
-
 var PowerComponentDisabledHSM = "https://frosty-sms.us.cray.com:30443/apis/smd"
 var PowerComponentDisabledReplayData = []testData{
 	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components?id=x0c0s21b0n0",
@@ -846,63 +825,6 @@ func TestPowerComponentDisabled(t *testing.T) {
 	runTest(t, PowerComponentDisabledHSM, &testReq, &PowerComponentDisabledReplayData, PowerComponentDisabledSSData)
 }
 
-var PowerComponentNotAuthorizedHSM = "https://frosty-sms.us.cray.com:30443/apis/smd"
-var PowerComponentNotAuthorizedReplayData = []testData{
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components?id=x0c0s21b0n0",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Date": []string{"Wed, 10 Apr 2019 18:47:06 GMT"}, "X-Kong-Upstream-Latency": []string{"3"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"1457"}, "Connection": []string{"keep-alive"}},
-		`{"Components":[{"ID":"x0c0s21b0n0","Type":"Node","State":"Ready","Flag":"OK","Enabled":true,"Role":"Compute","NID":4,"NetType":"Sling","Arch":"X86"}]}
-`},
-	{"https://frosty-sms.us.cray.com:30443/apis/smd/hsm/v2/Inventory/ComponentEndpoints?id=x0c0s21b0n0",
-		"GET",
-		``,
-		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Connection": []string{"keep-alive"}, "Date": []string{"Wed, 10 Apr 2019 18:47:06 GMT"}, "X-Kong-Upstream-Latency": []string{"3"}, "X-Kong-Proxy-Latency": []string{"0"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}},
-		`{"ComponentEndpoints":[{"ID":"x0c0s21b0n0","Type":"Node","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"a4:bf:01:2b:68:7c","UUID":"7f1d0db3-e077-11e7-ab21-a4bf012b687c","OdataID":"/redfish/v1/Systems/QSBP75001594","RedfishEndpointID":"x0c0s21b0","RedfishEndpointFQDN":"10.4.0.8","RedfishURL":"10.4.0.8/redfish/v1/Systems/QSBP75001594","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"S2600BPB","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulShutdown","GracefulRestart","ForceRestart","Nmi"],"target":"/redfish/v1/Systems/QSBP75001594/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"","@odata.id":"","Description":"Missing interface 1, MAC computed via workaround","MACAddress":"a4:bf:01:2b:68:7c"},{"RedfishId":"","@odata.id":"","Description":"Missing interface 2, MAC computed via workaround","MACAddress":"a4:bf:01:2b:68:7d"}]}}]}
-`},
-	{"https://10.4.0.8/redfish/v1/Systems/QSBP75001594/Actions/ComputerSystem.Reset",
-		"POST",
-		`{"ResetType": "On"}`,
-		map[string][]string{"Accept": []string{"*/*"}, "Content-Type": []string{"application/json"}, "Authorization": []string{"Basic cm9vdDpiYWRwYXNz"}},
-		"401 Unauthorized", 401,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"X-Ua-Compatible": []string{"IE=11"}, "X-Frame-Options": []string{"SAMEORIGIN"}, "X-Xss-Protection": []string{"1; mode=block"}, "Date": []string{"Wed, 10 Apr 2019 18:47:06 GMT"}, "Server": []string{"lighttpd/1.4.45"}, "Strict-Transport-Security": []string{"max-age=31536000; includeSubdomains; preload"}, "Status": []string{"401"}, "Www-Authenticate": []string{"Basic realm=\"Redfish\""}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"877"}},
-		`{"error":{"code":"Base.1.1.0.GeneralError","message":"A general error has occurred. See ExtendedInfo for more information.","@Message.ExtendedInfo":[{"@odata.type":"#Message.v1_0_4.Message","MessageId":"Base.1.1.0.NoValidSession","Message":"There is no valid session established with the implementation.","Severity":"Critical","Resolution":"Establish as session before attempting any operations."},{"@odata.type":"#Message.v1_0_4.Message","MessageId":"Base.1.1.0.ResourceAtUriUnauthorized","Message":"While accessing the resource at /redfish/v1/Systems/QSBP75001594/Actions/ComputerSystem.Reset, the service received an authorization error failed.","MessageArgs":["/redfish/v1/Systems/QSBP75001594/Actions/ComputerSystem.Reset","failed"],"Severity":"Critical","Resolution":"Ensure that the appropriate access is provided for the service in order for it to access the URI."}]}}
-`},
-}
-var PowerComponentNotAuthorizedSSData = []sstorage.MockLookup{
-	{
-		Output: sstorage.OutputLookup{
-			Output: &compcreds.CompCredentials{
-				Xname:    "x0c0s21b0n0",
-				URL:      "10.4.0.8/redfish/v1/Systems/QSBP75001594",
-				Username: "root",
-				Password: "********",
-			},
-			Err: nil,
-		},
-	},
-}
-
-func TestPowerComponentNotAuthorized(t *testing.T) {
-	var testReq = testData{"/capmc/v1/xname_on",
-		"POST",
-		`{"xnames":["x0c0s21b0n0"]}`,
-		map[string][]string{"User-Agent": []string{"curl/7.37.0"}, "Accept": []string{"*/*"}, "Content-Length": []string{"26"}, "Content-Type": []string{"application/x-www-form-urlencoded"}},
-		"200 OK", 200,
-		"HTTP/1.1", 1, 1,
-		map[string][]string{"Content-Type": []string{"application/json"}},
-		`{"e":-1,"err_msg":"Errors encountered with 1/1 Xnames issued On","xnames":[{"xname":"x0c0s21b0n0","e":401,"err_msg":"NodeBMC 10.4.0.8 HTTP 401 Unauthorized, Redfish Error Message: A general error has occurred. See ExtendedInfo for more information. ExtendedInfo: Message: There is no valid session established with the implementation. Resolution: Establish as session before attempting any operations. Message: While accessing the resource at /redfish/v1/Systems/QSBP75001594/Actions/ComputerSystem.Reset, the service received an authorization error failed. Resolution: Ensure that the appropriate access is provided for the service in order for it to access the URI."}]}
-`}
-	runTest(t, PowerComponentNotAuthorizedHSM, &testReq, &PowerComponentNotAuthorizedReplayData, PowerComponentNotAuthorizedSSData)
-}
-
 var XnameOffRecursiveHSM = "https://slice-sms.us.cray.com:30443/apis/smd"
 var XnameOffRecursiveReplayData = []testData{
 	{"https://slice-sms.us.cray.com:30443/apis/smd/hsm/v2/State/Components/Query/x0c0s28?state=%21Empty&type=chassis&type=cabinetpdu&type=routermodule&type=hsnboard&type=computemodule&type=node",
@@ -932,6 +854,24 @@ var XnameOffRecursiveReplayData = []testData{
 		map[string][]string{"Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Connection": []string{"keep-alive"}, "Date": []string{"Tue, 14 May 2019 11:38:17 GMT"}, "X-Kong-Upstream-Latency": []string{"3"}, "X-Kong-Proxy-Latency": []string{"0"}},
 		`{"ComponentEndpoints":[{"ID":"x0c0s28b0n0","Type":"Node","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"a4:bf:01:28:92:0b","UUID":"3504bf56-ae5b-11e7-ab21-a4bf0128920b","OdataID":"/redfish/v1/Systems/QSBP74100092","RedfishEndpointID":"x0c0s28b0","RedfishEndpointFQDN":"10.4.0.5","RedfishURL":"10.4.0.5/redfish/v1/Systems/QSBP74100092","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"S2600BPB","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulShutdown","GracefulRestart","ForceRestart","Nmi"],"target":"/redfish/v1/Systems/QSBP74100092/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"","@odata.id":"","Description":"Missing interface 1, MAC computed via workaround","MACAddress":"a4:bf:01:28:92:0b"},{"RedfishId":"","@odata.id":"","Description":"Missing interface 2, MAC computed via workaround","MACAddress":"a4:bf:01:28:92:0c"}]}}]}
 `},
+	{"https://fake-system.us.cray.com/apis/power-control/v1/transitions",
+		"POST",
+		``,
+		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
+		"200 OK", 200,
+		"HTTP/1.1", 1, 1,
+		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}, "Content-Length": []string{"1801"}},
+		`{"transitionID": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "operation": "off"}`,
+	},
+	{"https://fake-system.us.cray.com/apis/power-control/v1/transitions/3fa85f64-5717-4562-b3fc-2c963f66afa6",
+		"GET",
+		``,
+		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
+		"200 OK", 200,
+		"HTTP/1.1", 1, 1,
+		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}, "Content-Length": []string{"1801"}},
+		`{"transitionID": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "createTime": "2020-12-16T19:00:20", "automaticExpirationTime": "2022-12-22T14:58:40.703Z", "transitionStatus": "in-progress", "operation": "off", "taskCounts": { "total": 1, "new": 0, "in-progress": 1, "failed": 0, "succeeded": 0, "un-supported": 0 }, "tasks": [ { "xname": "x0c0s8b0n0", "taskStatus": "in-progress" } ]}`,
+	},
 	{"https://10.4.0.5/redfish/v1/Systems/QSBP74100092/Actions/ComputerSystem.Reset",
 		"POST",
 		`{"ResetType": "ForceOff"}`,
@@ -1010,6 +950,24 @@ var XnameOnRecursiveReplayData = []testData{
 		map[string][]string{"Connection": []string{"keep-alive"}, "Date": []string{"Tue, 14 May 2019 11:44:45 GMT"}, "X-Kong-Upstream-Latency": []string{"3"}, "X-Kong-Proxy-Latency": []string{"0"}, "Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}},
 		`{"ComponentEndpoints":[{"ID":"x0c0s28b0n0","Type":"Node","RedfishType":"ComputerSystem","RedfishSubtype":"Physical","MACAddr":"a4:bf:01:28:92:0b","UUID":"3504bf56-ae5b-11e7-ab21-a4bf0128920b","OdataID":"/redfish/v1/Systems/QSBP74100092","RedfishEndpointID":"x0c0s28b0","RedfishEndpointFQDN":"10.4.0.5","RedfishURL":"10.4.0.5/redfish/v1/Systems/QSBP74100092","ComponentEndpointType":"ComponentEndpointComputerSystem","RedfishSystemInfo":{"Name":"S2600BPB","Actions":{"#ComputerSystem.Reset":{"ResetType@Redfish.AllowableValues":["On","ForceOff","GracefulShutdown","GracefulRestart","ForceRestart","Nmi"],"target":"/redfish/v1/Systems/QSBP74100092/Actions/ComputerSystem.Reset"}},"EthernetNICInfo":[{"RedfishId":"","@odata.id":"","Description":"Missing interface 1, MAC computed via workaround","MACAddress":"a4:bf:01:28:92:0b"},{"RedfishId":"","@odata.id":"","Description":"Missing interface 2, MAC computed via workaround","MACAddress":"a4:bf:01:28:92:0c"}]}}]}
 `},
+	{"https://fake-system.us.cray.com/apis/power-control/v1/transitions",
+		"POST",
+		``,
+		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
+		"200 OK", 200,
+		"HTTP/1.1", 1, 1,
+		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}, "Content-Length": []string{"1801"}},
+		`{"transitionID": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "operation": "on"}`,
+	},
+	{"https://fake-system.us.cray.com/apis/power-control/v1/transitions/3fa85f64-5717-4562-b3fc-2c963f66afa6",
+		"GET",
+		``,
+		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
+		"200 OK", 200,
+		"HTTP/1.1", 1, 1,
+		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}, "Content-Length": []string{"1801"}},
+		`{"transitionID": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "createTime": "2020-12-16T19:00:20", "automaticExpirationTime": "2022-12-22T14:58:40.703Z", "transitionStatus": "in-progress", "operation": "on", "taskCounts": { "total": 1, "new": 0, "in-progress": 1, "failed": 0, "succeeded": 0, "un-supported": 0 }, "tasks": [ { "xname": "x0c0s28b0n0", "taskStatus": "in-progress" } ]}`,
+	},
 	{"https://10.4.0.5/redfish/v1/Systems/QSBP74100092/Actions/ComputerSystem.Reset",
 		"POST",
 		`{"ResetType": "On"}`,
@@ -1085,6 +1043,24 @@ var XnameOffRecursiveChassisReplayData = []testData{
 		map[string][]string{"Content-Type": []string{"application/json"}, "Content-Length": []string{"1491"}, "Connection": []string{"keep-alive"}, "Date": []string{"Tue, 14 May 2019 13:12:22 GMT"}, "X-Kong-Upstream-Latency": []string{"2"}, "X-Kong-Proxy-Latency": []string{"1"}, "Via": []string{"kong/0.14.1"}},
 		`{"RedfishEndpoints":[{"ID":"x0c0s21b0","Type":"NodeBMC","Hostname":"10.4.0.8","Domain":"","FQDN":"10.4.0.8","Enabled":true,"UUID":"4d3c9478-8d43-482f-8371-a7838e45a674","User":"root","Password":"********","MACAddr":"a4bf012cf81d","RediscoverOnUpdate":true,"DiscoveryInfo":{"LastDiscoveryAttempt":"2019-05-09T13:08:32.318980Z","LastDiscoveryStatus":"DiscoverOK","RedfishVersion":"1.1.0"}}]}
 `},
+	{"https://fake-system.us.cray.com/apis/power-control/v1/transitions",
+		"POST",
+		``,
+		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
+		"200 OK", 200,
+		"HTTP/1.1", 1, 1,
+		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}, "Content-Length": []string{"1801"}},
+		`{"transitionID": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "operation": "off"}`,
+	},
+	{"https://fake-system.us.cray.com/apis/power-control/v1/transitions/3fa85f64-5717-4562-b3fc-2c963f66afa6",
+		"GET",
+		``,
+		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
+		"200 OK", 200,
+		"HTTP/1.1", 1, 1,
+		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}, "Content-Length": []string{"1801"}},
+		`{"transitionID": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "createTime": "2020-12-16T19:00:20", "automaticExpirationTime": "2022-12-22T14:58:40.703Z", "transitionStatus": "in-progress", "operation": "off", "taskCounts": { "total": 1, "new": 0, "in-progress": 1, "failed": 0, "succeeded": 0, "un-supported": 0 }, "tasks": [ { "xname": "x0c0s8b0n0", "taskStatus": "in-progress" } ]}`,
+	},
 	{"https://10.4.0.8/redfish/v1/Systems/QSBP74304730/Actions/ComputerSystem.Reset",
 		"POST",
 		`{"ResetType": "ForceOff"}`,
@@ -1169,6 +1145,24 @@ var XnameOnRecursiveChassisReplayData = []testData{
 		map[string][]string{"Via": []string{"kong/0.14.1"}, "Content-Type": []string{"application/json"}, "Content-Length": []string{"1491"}, "Connection": []string{"keep-alive"}, "Date": []string{"Tue, 14 May 2019 13:15:23 GMT"}, "X-Kong-Upstream-Latency": []string{"1"}, "X-Kong-Proxy-Latency": []string{"0"}},
 		`{"RedfishEndpoints":[{"ID":"x0c0s21b0","Type":"NodeBMC","Hostname":"10.4.0.8","Domain":"","FQDN":"10.4.0.8","Enabled":true,"UUID":"4d3c9478-8d43-482f-8371-a7838e45a674","User":"root","Password":"********","MACAddr":"a4bf012cf81d","RediscoverOnUpdate":true,"DiscoveryInfo":{"LastDiscoveryAttempt":"2019-05-09T13:08:32.318980Z","LastDiscoveryStatus":"DiscoverOK","RedfishVersion":"1.1.0"}}]}
 `},
+	{"https://fake-system.us.cray.com/apis/power-control/v1/transitions",
+		"POST",
+		``,
+		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
+		"200 OK", 200,
+		"HTTP/1.1", 1, 1,
+		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}, "Content-Length": []string{"1801"}},
+		`{"transitionID": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "operation": "on"}`,
+	},
+	{"https://fake-system.us.cray.com/apis/power-control/v1/transitions/3fa85f64-5717-4562-b3fc-2c963f66afa6",
+		"GET",
+		``,
+		map[string][]string{"Accept": []string{"application/json"}, "Content-Type": []string{"application/json"}},
+		"200 OK", 200,
+		"HTTP/1.1", 1, 1,
+		map[string][]string{"Content-Type": []string{"application/json"}, "Date": []string{"Wed, 27 Feb 2019 04:10:31 GMT"}, "Content-Length": []string{"1801"}},
+		`{"transitionID": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "createTime": "2020-12-16T19:00:20", "automaticExpirationTime": "2022-12-22T14:58:40.703Z", "transitionStatus": "in-progress", "operation": "on", "taskCounts": { "total": 1, "new": 0, "in-progress": 1, "failed": 0, "succeeded": 0, "un-supported": 0 }, "tasks": [ { "xname": "x0c0s21b0n0", "taskStatus": "in-progress" } ]}`,
+	},
 	{"https://10.4.0.8/redfish/v1/Systems/QSBP74304730/Actions/ComputerSystem.Reset",
 		"POST",
 		`{"ResetType": "On"}`,

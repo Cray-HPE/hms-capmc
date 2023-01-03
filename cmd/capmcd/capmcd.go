@@ -363,6 +363,7 @@ func main() {
 	var (
 		configFile string
 		hsm        string
+		pcs        string
 		err        error
 	)
 
@@ -383,6 +384,8 @@ func main() {
 		"Hardware State Manager location as URI, e.g. [scheme]://[host[:port]]")
 	flag.StringVar(&hms_ca_uri, "ca_uri", "",
 		"Certificate Authority CA bundle URI")
+	flag.StringVar(&pcs, "pcs", "http://localhost:xxxxx",
+		"Power Control Service location as URI, e.g. [scheme]://[host[:port]]")
 
 	// The "default" is installed with the service. The intent is
 	// ConfigPath/ConfigFile is a customized config and
@@ -466,6 +469,35 @@ func main() {
 		}
 	default:
 		log.Fatalf("Unexpected HSM URL scheme: %s", svc.hsmURL.Scheme)
+	}
+
+	if svc.pcsURL, err = url.Parse(pcs); err != nil {
+		log.Fatalf("Invalid PCS URI specified: %s", err)
+	}
+
+	// Set up the PCS information before connecting to any external
+	// resources since we may bail if we don't find what we want
+	// Check for non-empty URL (URI) scheme
+	if !svc.pcsURL.IsAbs() {
+		log.Fatal("WARNING: PCS URL not absolute\n")
+	}
+	switch svc.pcsURL.Scheme {
+	case "http", "https":
+		log.Printf("Info: power control service (PCS) --> %s\n",
+			svc.pcsURL.String())
+		// Stash the PCS Base version in the URL.Path (default)
+		switch svc.pcsURL.Path {
+		case "":
+			svc.pcsURL.Path = "/power-control/v1"
+		case "/power-control/v1":
+			// do nothing
+		default:
+			if !strings.HasSuffix(svc.pcsURL.Path, "/power-control/v1") {
+				svc.pcsURL.Path += "/power-control/v1"
+			}
+		}
+	default:
+		log.Fatalf("Unexpected PCS URL scheme: %s", svc.pcsURL.Scheme)
 	}
 
 	//CA/cert stuff

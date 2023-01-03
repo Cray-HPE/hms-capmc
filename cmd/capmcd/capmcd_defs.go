@@ -233,6 +233,7 @@ type CapmcD struct {
 	debug               bool
 	debugLevel          int
 	hsmURL              *url.URL
+	pcsURL              *url.URL
 	config              *Config
 	ActionMaxWorkers    int
 	OnUnsupportedAction string

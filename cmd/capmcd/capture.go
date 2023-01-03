@@ -27,8 +27,6 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"github.com/Cray-HPE/hms-base"
-	"github.com/Cray-HPE/hms-certs/pkg/hms_certs"
 	"io"
 	"io/ioutil"
 	"log"
@@ -38,6 +36,9 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	base "github.com/Cray-HPE/hms-base"
+	"github.com/Cray-HPE/hms-certs/pkg/hms_certs"
 )
 
 type testData struct {

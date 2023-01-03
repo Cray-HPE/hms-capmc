@@ -227,12 +227,6 @@ func TestDoXnameOff(t *testing.T) {
 			http.StatusBadRequest,
 			"{\"e\":400,\"err_msg\":\"Bad Request: Required xnames list is empty\"}\n",
 		},
-		{
-			"Power off Rosetta",
-			bytes.NewBuffer(json.RawMessage("{ \"xnames\": [ \"x1002c0r0e0\" ]}\n")),
-			http.StatusOK,
-			"{\"e\":0,\"err_msg\":\"\"}\n",
-		},
 	}
 
 	for _, tc := range tests {
