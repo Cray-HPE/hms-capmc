@@ -2,7 +2,7 @@
 
 # MIT License
 #
-# (C) Copyright [2022] Hewlett Packard Enterprise Development LP
+# (C) Copyright [2022-2023] Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -24,4 +24,4 @@
 
 VERSION=$(cat .version)
 make ct_image
-docker run --rm -it --network hms-simulation-environment_simulation cray-capmc-hmth-test:${VERSION} tavern -c /src/app/tavern_global_config_ct_test.yaml -p /src/app/api #/2-disruptive
+docker run --rm -it --network hms-simulation-environment_simulation cray-capmc-hmth-test:${VERSION} tavern -c /src/app/tavern_global_config_ct_test_emulated_hardware.yaml -p /src/app/api #/2-disruptive

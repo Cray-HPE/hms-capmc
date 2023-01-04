@@ -1,6 +1,6 @@
 # MIT License
 #
-# (C) Copyright [2022] Hewlett Packard Enterprise Development LP
+# (C) Copyright [2022-2023] Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -23,6 +23,11 @@
 # Tavern test cases for the Cray Advanced Platform Monitoring and Control (CAPMC) xname_off API.
 # Author: Mitch Schooler
 # Service: Cray Advanced Platform Monitoring and Control
+
+# This test assumes that all Chassis in HSM are fully populated with
+# NodeBMC 0 and Node 0 present under all ComputeModules which is not
+# always true. Need to ensure this is the case when spinning up emulated
+# hardware in runCT.sh
 
 # HMS test metrics test cases: 12
 
@@ -83,8 +88,8 @@ stages:
 
   - name: capmcAPIxnameOffPOSTonComputeModuleRecursiveStatusCheckComputeModule - Verify that the target compute module is powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
-    max_retries: 30
-    delay_after: 10
+    max_retries: !int "{xname_on_poll_num_attempts}"
+    delay_after: !float "{xname_on_poll_interval}"
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       json: {"source":"redfish","xnames":["{compute_module_xname}"]}
@@ -121,8 +126,8 @@ stages:
 
   - name: capmcAPIxnameOffPOSTonComputeModuleRecursiveStatusCheckNode - Verify that the target node is powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
-    max_retries: 30
-    delay_after: 10
+    max_retries: !int "{xname_on_poll_num_attempts}"
+    delay_after: !float "{xname_on_poll_interval}"
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       # this assumes a fully populated Chassis with NodeBMC 0 and Node 0 under all ComputeModules
@@ -187,8 +192,8 @@ stages:
 
   - name: capmcAPIxnameOffPOSTonComputeModuleRecursiveStatusCheckComputeModule - Verify that the target compute module is powered off using get_xname_status
     # retry here if needed since there can be delays to the state change
-    max_retries: 30
-    delay_after: 10
+    max_retries: !int "{xname_off_poll_num_attempts}"
+    delay_after: !float "{xname_off_poll_interval}"
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       json: {"source":"redfish","xnames":["{compute_module_xname}"]}
@@ -225,8 +230,8 @@ stages:
 
   - name: capmcAPIxnameOffPOSTonComputeModuleRecursiveStatusCheckNode - Verify that the target node is powered off using get_xname_status
     # retry here if needed since there can be delays to the state change
-    max_retries: 30
-    delay_after: 10
+    max_retries: !int "{xname_off_poll_num_attempts}"
+    delay_after: !float "{xname_off_poll_interval}"
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       # this assumes a fully populated Chassis with NodeBMC 0 and Node 0 under all ComputeModules
@@ -307,8 +312,8 @@ stages:
 
   - name: capmcAPIxnameOffPOSTonComputeNodePrereqStatusCheckNode - Verify that the target node is powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
-    max_retries: 30
-    delay_after: 10
+    max_retries: !int "{xname_on_poll_num_attempts}"
+    delay_after: !float "{xname_on_poll_interval}"
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       # this assumes a fully populated Chassis with NodeBMC 0 and Node 0 under all ComputeModules
@@ -346,8 +351,8 @@ stages:
 
   - name: capmcAPIxnameOffPOSTonComputeNodePrereqStatusCheckComputeModule - Verify that the target compute module is powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
-    max_retries: 30
-    delay_after: 10
+    max_retries: !int "{xname_on_poll_num_attempts}"
+    delay_after: !float "{xname_on_poll_interval}"
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       json: {"source":"redfish","xnames":["{compute_module_xname}"]}
@@ -412,8 +417,8 @@ stages:
 
   - name: capmcAPIxnameOffPOSTonComputeNodePrereqStatusCheckNode - Verify that the target node is powered off using get_xname_status
     # retry here if needed since there can be delays to the state change
-    max_retries: 30
-    delay_after: 10
+    max_retries: !int "{xname_off_poll_num_attempts}"
+    delay_after: !float "{xname_off_poll_interval}"
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       # this assumes a fully populated Chassis with NodeBMC 0 and Node 0 under all ComputeModules
@@ -451,8 +456,8 @@ stages:
 
   - name: capmcAPIxnameOffPOSTonComputeNodePrereqStatusCheckComputeModule - Verify that the target compute module is powered off using get_xname_status
     # retry here if needed since there can be delays to the state change
-    max_retries: 30
-    delay_after: 10
+    max_retries: !int "{xname_off_poll_num_attempts}"
+    delay_after: !float "{xname_off_poll_interval}"
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       json: {"source":"redfish","xnames":["{compute_module_xname}"]}

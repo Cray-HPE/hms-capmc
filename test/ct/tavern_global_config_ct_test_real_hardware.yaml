@@ -6,4 +6,9 @@ variables:
   verify: false
   hsm_base_url: http://cray-smd:27779
   capmc_base_url: http://cray-capmc:27777
-
+  xname_on_poll_num_attempts: 60
+  xname_on_poll_interval: 5
+  xname_off_poll_num_attempts: 60
+  xname_off_poll_interval: 5
+  xname_reinit_poll_num_attempts: 60
+  xname_reinit_poll_interval: 5

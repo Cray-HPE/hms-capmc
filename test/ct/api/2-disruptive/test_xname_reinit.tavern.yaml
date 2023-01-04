@@ -1,6 +1,6 @@
 # MIT License
 #
-# (C) Copyright [2022] Hewlett Packard Enterprise Development LP
+# (C) Copyright [2022-2023] Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -85,8 +85,8 @@ stages:
 
   - name: capmcAPIxnameReinitPOSTonComputeNodeStatusCheck - Verify that the target node is powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
-    max_retries: 30
-    delay_after: 10
+    max_retries: !int "{xname_on_poll_num_attempts}"
+    delay_after: !float "{xname_on_poll_interval}"
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       json: {"source":"redfish","xnames":["{node_xname}"]}
@@ -152,8 +152,8 @@ stages:
 
   - name: capmcAPIxnameReinitPOSTonComputeNodeStatusCheck - Verify that the target node is powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
-    max_retries: 30
-    delay_after: 10
+    max_retries: !int "{xname_reinit_poll_num_attempts}"
+    delay_after: !float "{xname_reinit_poll_interval}"
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       json: {"source":"redfish","xnames":["{node_xname}"]}
@@ -233,8 +233,8 @@ stages:
 
   - name: capmcAPIxnameReinitPOSTmultipleOnComputeNodesStatusCheck - Verify that the target nodes are powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
-    max_retries: 30
-    delay_after: 10
+    max_retries: !int "{xname_on_poll_num_attempts}"
+    delay_after: !float "{xname_on_poll_interval}"
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       json: {"source":"redfish","xnames":["{node_1_xname}","{node_2_xname}"]}
@@ -299,8 +299,8 @@ stages:
 
   - name: capmcAPIxnameReinitPOSTmultipleOnComputeNodesStatusCheck - Verify that the target nodes are powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
-    max_retries: 30
-    delay_after: 10
+    max_retries: !int "{xname_reinit_poll_num_attempts}"
+    delay_after: !float "{xname_reinit_poll_interval}"
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       json: {"source":"redfish","xnames":["{node_1_xname}","{node_2_xname}"]}
@@ -380,8 +380,8 @@ stages:
 
   - name: capmcAPIxnameReinitPOSToffComputeNodeStatusCheck - Verify that the target node is powered off using get_xname_status
     # retry here if needed since there can be delays to the state change
-    max_retries: 30
-    delay_after: 10
+    max_retries: !int "{xname_off_poll_num_attempts}"
+    delay_after: !float "{xname_off_poll_interval}"
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       json: {"source":"redfish","xnames":["{node_xname}"]}
@@ -445,8 +445,8 @@ stages:
 
   - name: capmcAPIxnameReinitPOSToffComputeNodeStatusCheck - Verify that the target node is powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
-    max_retries: 30
-    delay_after: 10
+    max_retries: !int "{xname_reinit_poll_num_attempts}"
+    delay_after: !float "{xname_reinit_poll_interval}"
     request:
       url: "{capmc_base_url}/capmc/v1/get_xname_status"
       json: {"source":"redfish","xnames":["{node_xname}"]}
