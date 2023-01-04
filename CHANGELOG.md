@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [2.7.0] - 2023-01-04
+
+### Changed
+
+- Centralized the setting of power operation polling for CT tests and lowered the limits for the build pipeline
+
 ## [2.6.0] - 2022-12-07
 
 ### Changed
