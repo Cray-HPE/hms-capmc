@@ -50,6 +50,7 @@ docker compose up -d cray-capmc
 
 sleep 15
 
+docker compose logs cray-power
 docker compose logs cray-capmc
 if ! docker compose up --no-recreate --exit-code-from smoke smoke; then
   echo "CT smoke tests FAILED!"
@@ -61,6 +62,8 @@ docker compose up --exit-code-from wait-for-smd wait-for-smd
 # execute the CT functional tests
 if ! docker compose up --exit-code-from tavern tavern; then
   echo "CT tavern tests FAILED!"
+  # docker compose logs cray-power
+  # docker compose logs cray-capmc > capmc.log
   cleanup 1
 fi
 

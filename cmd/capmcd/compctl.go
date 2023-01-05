@@ -38,6 +38,30 @@ import (
 	rf "github.com/Cray-HPE/hms-smd/pkg/redfish"
 )
 
+func cmdCompPowerSeq(cmd string) ([]string, error) {
+	return svc.cmdCompPowerSeq(cmd)
+}
+
+func (d *CapmcD) cmdCompPowerSeq(cmd string) ([]string, error) {
+
+	pc, ok := d.config.PowerControls[cmd]
+	if !ok {
+		return []string{}, fmt.Errorf("no power controls for %s operation", cmd)
+	}
+
+	return pc.CompSeq, nil
+}
+
+// hasCompPowerSupport - Returns true if the component type exists in the power
+// sequence configuration for the specified command type.
+func (d *CapmcD) hasCompPowerSupport(cmd, ctype string) (bool, error) {
+	types, err := d.cmdCompPowerSeq(cmd)
+	if err != nil {
+		return false, err
+	}
+	return stringInSlice(ctype, types), nil
+}
+
 // PCS Support structures
 type PCSLocation struct {
 	Xname     string `json:"xname"`
@@ -80,12 +104,38 @@ type PCSTransitionGet struct {
 func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameControlResponse {
 	var data capmc.XnameControlResponse
 	data.Xnames = make([]*capmc.XnameControlErr, 0, 1)
+	var failures int
 
 	var targetedXname []string
 	for _, v := range nl {
+		supported, err := d.hasCompPowerSupport(command, v.Type)
+		if err != nil {
+			failures++
+			msg := fmt.Sprintf("%s", err)
+			log.Printf("Error: %s.", msg)
+			xnameErr := capmc.MakeXnameError(v.Hostname, -1, msg)
+			data.Xnames = append(data.Xnames, xnameErr)
+			continue
+		}
+		if !supported {
+			// Skip components not in the power action sequencing list.
+			msg := fmt.Sprintf("Skipping %s: Type, '%s', not defined in power sequence for '%s'", v.Hostname, v.Type, command)
+			log.Printf("Info: %s.", msg)
+			failures++
+			xnameErr := capmc.MakeXnameError(v.Hostname, -1, msg)
+			data.Xnames = append(data.Xnames, xnameErr)
+			continue
+		}
 		targetedXname = append(targetedXname, v.Hostname)
 	}
 
+	if failures > 0 {
+		data.ErrResponse.E = -1
+		data.ErrResponse.ErrMsg = fmt.Sprintf("Errors encountered with %d components for %s",
+			failures, command)
+
+		return data
+	}
 	// Grab the new list just in case a power off was done on a chassis
 	// or compute module
 	targetedXname, err := d.reserveComponents(targetedXname, command)
@@ -103,7 +153,6 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 	res := d.reservation.Status()
 
 	var tReq PCSTransition
-	var failures int
 
 	// Build PCS payload with deputy keys
 	for _, x := range targetedXname {

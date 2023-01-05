@@ -487,15 +487,14 @@ func main() {
 			svc.pcsURL.String())
 		// Stash the PCS Base version in the URL.Path (default)
 		switch svc.pcsURL.Path {
-		case "":
-			svc.pcsURL.Path = "/power-control/v1"
-		case "/power-control/v1":
-			// do nothing
+		case "/testing":
+			svc.pcsURL.Path = ""
 		default:
 			if !strings.HasSuffix(svc.pcsURL.Path, "/power-control/v1") {
 				svc.pcsURL.Path += "/power-control/v1"
 			}
 		}
+
 	default:
 		log.Fatalf("Unexpected PCS URL scheme: %s", svc.pcsURL.Scheme)
 	}
