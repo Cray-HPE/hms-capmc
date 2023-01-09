@@ -31,6 +31,7 @@ import (
 	"log"
 	"net/http"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/Cray-HPE/hms-capmc/internal/capmc"
@@ -99,6 +100,19 @@ type PCSTransitionGet struct {
 	TransitionStatus string        `json:"transitionStatus"`
 	TaskCounts       PCSTaskCounts `json:"taskCounts"`
 	Tasks            []PCSTasks    `json:"tasks"`
+}
+
+type PCSPowerStatus struct {
+	Xname                     string   `json:"xname"`
+	PowerState                string   `json:"powerState"`
+	ManagementState           string   `json:"managementState"`
+	Error                     string   `json:"error"`
+	SupportedPowerTransitions []string `json:"suportedPowerTransitions"`
+	LastUpdated               string   `json:"lastUpdated"`
+}
+
+type PCSStatusGet struct {
+	Status []PCSPowerStatus `json:"status"`
 }
 
 func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameControlResponse {
@@ -244,7 +258,7 @@ func powerFunction(tReq PCSTransition, data capmc.XnameControlResponse, d *Capmc
 	httpReq.Header.Set("Accept", "application/json")
 
 	// Arbitrary delay of 2 seconds
-	time.Sleep(2)
+	time.Sleep(2 * time.Second)
 
 	var tGet PCSTransitionGet
 
@@ -270,11 +284,11 @@ func powerFunction(tReq PCSTransition, data capmc.XnameControlResponse, d *Capmc
 			return 0, data
 		}
 
-		if tGet.TaskCounts.New == 0 {
+		if tGet.TransitionStatus != "new" && tGet.TaskCounts.New == 0 {
 			retry = false
 		} else {
 			// Arbitrary delay of 2 seconds
-			time.Sleep(2)
+			time.Sleep(2 * time.Second)
 		}
 	}
 
@@ -310,7 +324,7 @@ func powerFunction(tReq PCSTransition, data capmc.XnameControlResponse, d *Capmc
 				retry = false
 			} else {
 				// Arbitrary delay of 2 seconds
-				time.Sleep(2)
+				time.Sleep(2 * time.Second)
 			}
 
 		}
@@ -337,42 +351,81 @@ func (d *CapmcD) doCompStatus(nl []*NodeInfo, command string, filter uint) capmc
 	data.On = make([]string, 0, 1)
 	data.Off = make([]string, 0, 1)
 	data.Undefined = make([]string, 0, 1)
+	xnames := ""
 
-	waitNum, waitCh := d.queueBmcCmd(bmcCmd{cmd: bmcCmdPowerStatus}, nl)
+	first := true
+	sort.Slice(nl, func(i, j int) bool {
+		return nl[i].Hostname < nl[j].Hostname
+	})
+	for _, x := range nl {
+		if first {
+			xnames += "?xname=" + x.Hostname
+			first = false
+		} else {
+			xnames += "&xname=" + x.Hostname
+		}
+	}
+
+	url := d.pcsURL.String() + "/power-status" + xnames
+	httpReq, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		errstr := fmt.Sprintf("Error: Failed to create new request for power operation.")
+		log.Printf(errstr)
+		data.ErrResponse.E = http.StatusInternalServerError
+		data.ErrResponse.ErrMsg = errstr
+		return data
+	}
+
+	var sGet PCSStatusGet
+
+	body, err := d.doRequest(httpReq)
+	if err != nil {
+		errstr := fmt.Sprintf("Error: Failed to get status from PCS.")
+		log.Printf(errstr)
+		data.ErrResponse.E = http.StatusInternalServerError
+		data.ErrResponse.ErrMsg = errstr
+		return data
+	}
+
+	err = json.Unmarshal(body, &sGet)
+	if err != nil {
+		errstr := fmt.Sprintf("Error: Failed to unmarshal status from PCS.")
+		log.Printf(errstr)
+		data.ErrResponse.E = http.StatusInternalServerError
+		data.ErrResponse.ErrMsg = errstr
+		return data
+	}
 
 	var failures int
-	for i := 0; i < waitNum; i++ {
-		// Wait for each task to complete.
-		result := <-waitCh
-		// If any BMC/Node op fails then record overall error code for
-		// the call. The HTTP code returned will still be 200.
-		if result.rc != 0 {
+	for _, s := range sGet.Status {
+		if s.Error != "" {
+			data.Undefined = append(data.Undefined, s.Xname)
 			failures++
-			// TODO develop a method to return more detailed failure info
+			continue
 		}
-
-		switch result.state {
-		case rf.POWER_STATE_ON:
+		switch s.PowerState {
+		case strings.ToLower(rf.POWER_STATE_ON):
 			if filter&capmc.FilterShowOnBit != 0 {
-				data.On = append(data.On, result.ni.Hostname)
+				data.On = append(data.On, s.Xname)
 			}
-		case rf.POWER_STATE_OFF:
+		case strings.ToLower(rf.POWER_STATE_OFF):
 			if filter&capmc.FilterShowOffBit != 0 {
-				data.Off = append(data.Off, result.ni.Hostname)
+				data.Off = append(data.Off, s.Xname)
 			}
 		// Other hardware states are not implemented
 		default:
 			// These are reported if there's a problem communicating
 			// with the BMC.
-			data.Undefined = append(data.Undefined, result.ni.Hostname)
+			data.Undefined = append(data.Undefined, s.Xname)
 		}
+
 	}
 
 	if failures > 0 {
 		data.ErrResponse.E = -1
 		data.ErrResponse.ErrMsg =
 			fmt.Sprintf("Errors encountered with %d/%d Xnames for %s",
-				failures, waitNum, command)
+				failures, len(sGet.Status), command)
 	}
 
 	// Sorting is mostly for convenience; not strictly needed for capmc.

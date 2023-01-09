@@ -27,6 +27,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -290,6 +291,12 @@ const x1002c0s1b1n1CompEndpoint = `{"ComponentEndpoints":[{"ID":"x1002c0s1b1n1",
 
 const RedfishPowerStateOn = `{"@odata.context":"/redfish/v1/$metadata#ComputerSystem.ComputerSystem","@odata.etag":"W/\"1592257487\"","@odata.id":"/redfish/v1/Systems/Node0","@odata.type":"#ComputerSystem.v1_5_0.ComputerSystem","Actions":{"#ComputerSystem.Reset":{"@Redfish.ActionInfo":"/redfish/v1/Systems/Node0/ResetActionInfo","target":"/redfish/v1/Systems/Node0/Actions/ComputerSystem.Reset"},"#ComputerSystem.SetDefaultBootOrder":{"@Redfish.ActionInfo":"/redfish/v1/Systems/Node0/SetDefaultBootOrderActionInfo","target":"/redfish/v1/Systems/Node0/Actions/ComputerSystem.SetDefaultBootOrder"}},"Bios":{"@odata.id":"/redfish/v1/Systems/Node0/Bios"},"BiosVersion":"wnc.bios-1.1.1-SBIOS-1625-vm4","Boot":{"BootOptions":{"@odata.id":"/redfish/v1/Systems/Node0/BootOptions"},"BootOrder":["Boot0001","Boot0002"]},"Description":"WNC","EthernetInterfaces":{"@odata.id":"/redfish/v1/Systems/Node0/EthernetInterfaces"},"Id":"Node0","Manufacturer":"Cray Inc","Memory":{"@odata.id":"/redfish/v1/Systems/Node0/Memory"},"MemorySummary":{"TotalSystemMemoryGiB":256},"Model":"WNC-Rome","Name":"Node0","PartNumber":"101920703","PowerState":"On","ProcessorSummary":{"Count":2,"Model":"AMD EPYC 7742 64-Core Processor"},"Processors":{"@odata.id":"/redfish/v1/Systems/Node0/Processors"},"SerialNumber":"HS19510077","Status":{"State":"Enabled"},"SystemType":"Physical"}`
 const RedfishPowerStateOff = `{"@odata.context":"/redfish/v1/$metadata#ComputerSystem.ComputerSystem","@odata.etag":"W/\"1592257487\"","@odata.id":"/redfish/v1/Systems/Node0","@odata.type":"#ComputerSystem.v1_5_0.ComputerSystem","Actions":{"#ComputerSystem.Reset":{"@Redfish.ActionInfo":"/redfish/v1/Systems/Node0/ResetActionInfo","target":"/redfish/v1/Systems/Node0/Actions/ComputerSystem.Reset"},"#ComputerSystem.SetDefaultBootOrder":{"@Redfish.ActionInfo":"/redfish/v1/Systems/Node0/SetDefaultBootOrderActionInfo","target":"/redfish/v1/Systems/Node0/Actions/ComputerSystem.SetDefaultBootOrder"}},"Bios":{"@odata.id":"/redfish/v1/Systems/Node0/Bios"},"BiosVersion":"wnc.bios-1.1.1-SBIOS-1625-vm4","Boot":{"BootOptions":{"@odata.id":"/redfish/v1/Systems/Node0/BootOptions"},"BootOrder":["Boot0001","Boot0002"]},"Description":"WNC","EthernetInterfaces":{"@odata.id":"/redfish/v1/Systems/Node0/EthernetInterfaces"},"Id":"Node0","Manufacturer":"Cray Inc","Memory":{"@odata.id":"/redfish/v1/Systems/Node0/Memory"},"MemorySummary":{"TotalSystemMemoryGiB":256},"Model":"WNC-Rome","Name":"Node0","PartNumber":"101920703","PowerState":"Off","ProcessorSummary":{"Count":2,"Model":"AMD EPYC 7742 64-Core Processor"},"Processors":{"@odata.id":"/redfish/v1/Systems/Node0/Processors"},"SerialNumber":"HS19510077","Status":{"State":"Enabled"},"SystemType":"Physical"}`
+const PCSPowerStatex1002c0s0b0n0 = `{"status":[{"xname":"x1002c0s0b0n0","powerState":"on","managementState":"available","error":"","supportedPowerTransitions":["on","off"],"lastUpdated":"2022-08-24T16:45:53.953811137Z"}]}`
+const PCSPowerStatex1002c0s0b0n1 = `{"status":[{"xname":"x1002c0s0b0n1","powerState":"on","managementState":"available","error":"","supportedPowerTransitions":["on","off"],"lastUpdated":"2022-08-24T16:45:53.953811137Z"}]}`
+const PCSPowerStatex1002c0s0b1n1 = `{"status":[{"xname":"x1002c0s0b1n1","powerState":"off","managementState":"available","error":"","supportedPowerTransitions":["on","off"],"lastUpdated":"2022-08-24T16:45:53.953811137Z"}]}`
+const PCSPowerStatex1002c0s1b0n0 = `{"status":[{"xname":"x1002c0s1b0n0","powerState":"on","managementState":"available","error":"","supportedPowerTransitions":["on","off"],"lastUpdated":"2022-08-24T16:45:53.953811137Z"}]}`
+const PCSPowerStatex1002c0s1b0n1 = `{"status":[{"xname":"x1002c0s1b0n1","powerState":"on","managementState":"available","error":"","supportedPowerTransitions":["on","off"],"lastUpdated":"2022-08-24T16:45:53.953811137Z"}]}`
+const PCSPowerStatex1002c0s1b1n1 = `{"status":[{"xname":"x1002c0s1b1n1","powerState":"off","managementState":"available","error":"","supportedPowerTransitions":["on","off"],"lastUpdated":"2022-08-24T16:45:53.953811137Z"}]}`
 
 func StatusFunc() RoundTripFunc {
 	return func(req *http.Request) (*http.Response, error) {
@@ -385,10 +392,47 @@ func StatusFunc() RoundTripFunc {
 				Body:       ioutil.NopCloser(bytes.NewBufferString(RedfishPowerStateOn)),
 				Header:     make(http.Header),
 			}, nil
+		case "http://localhost:28007/power-status?xname=x1002c0s0b0n0":
+			fmt.Print("GOT IT GOT IT GOT IT x1002c0s0b0n0\n")
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s0b0n0)),
+				Header:     make(http.Header),
+			}, nil
+		case "http://localhost:28007/power-status?xname=x1002c0s0b0n1":
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s0b0n1)),
+				Header:     make(http.Header),
+			}, nil
+		case "http://localhost:28007/power-status?xname=x1002c0s1b0n0":
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s1b0n0)),
+				Header:     make(http.Header),
+			}, nil
+		case "http://localhost:28007/power-status?xname=x1002c0s1b0n1":
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s1b0n1)),
+				Header:     make(http.Header),
+			}, nil
 		case "https://10.104.8.12/redfish/v1/Systems/Node0":
 			return &http.Response{
 				StatusCode: 200,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(RedfishPowerStateOff)),
+				Header:     make(http.Header),
+			}, nil
+		case "http://localhost:28007/power-status?xname=x1002c0s0b1n1":
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s0b1n1)),
+				Header:     make(http.Header),
+			}, nil
+		case "http://localhost:28007/power-status?xname=x1002c0s1b1n1":
+			return &http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s1b1n1)),
 				Header:     make(http.Header),
 			}, nil
 		default:
@@ -406,6 +450,7 @@ func TestDoXnameStatus(t *testing.T) {
 	var tSvc CapmcD
 	var err error
 	tSvc.hsmURL, err = url.Parse("http://localhost:27779")
+	tSvc.pcsURL, err = url.Parse("http://localhost:28007")
 	if err != nil {
 		t.Fatal(err)
 	}
