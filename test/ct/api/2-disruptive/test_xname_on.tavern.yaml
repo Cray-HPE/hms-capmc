@@ -450,7 +450,7 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameOnPOSTonComputeNodeStatusCheck - Verify that the target node is powered on using get_xname_status
+  - name: capmcAPIxnameOnPOSTonComputeNodeStatusCheck - Verify that the target node remained powered on using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: !int "{xname_on_poll_num_attempts}"
     delay_after: !float "{xname_on_poll_interval}"

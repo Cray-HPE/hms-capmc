@@ -150,7 +150,7 @@ stages:
 
   # not checking that the node powers "Off" before powering back "On" again, could only get that to work on Intel compute node w/ force=true
 
-  - name: capmcAPIxnameReinitPOSTonComputeNodeStatusCheck - Verify that the target node is powered on using get_xname_status
+  - name: capmcAPIxnameReinitPOSTonComputeNodeStatusCheck - Verify that the target node is powered on after restarting it using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: !int "{xname_reinit_poll_num_attempts}"
     delay_after: !float "{xname_reinit_poll_interval}"
@@ -297,7 +297,9 @@ stages:
                 enum:
                   - ""
 
-  - name: capmcAPIxnameReinitPOSTmultipleOnComputeNodesStatusCheck - Verify that the target nodes are powered on using get_xname_status
+  # not checking that the node powers "Off" before powering back "On" again, could only get that to work on Intel compute node w/ force=true
+
+  - name: capmcAPIxnameReinitPOSTmultipleOnComputeNodesStatusCheck - Verify that the target nodes are powered on after restarting them using get_xname_status
     # retry here if needed since there can be delays to the state change
     max_retries: !int "{xname_reinit_poll_num_attempts}"
     delay_after: !float "{xname_reinit_poll_interval}"
