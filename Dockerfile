@@ -66,6 +66,7 @@ COPY files/config.toml /usr/local/etc/capmc-service/default/config.toml
 # Setup environment variables.
 ENV HSM_URL=https://api-gateway.default.svc.cluster.local/apis/smd
 ENV CAPMC_CONFIG=/usr/local/etc/capmc-service/default/config.toml
+ENV PCS_URL=https://api-gateway.default.svc.cluster.local/apis/power-control/v1
 #ENV CAPMC_CA_URI= #
 ENV LOG_LEVEL="INFO"
 
@@ -79,4 +80,4 @@ COPY configs configs
 USER 65534:65534
 
 # Start the service.
-CMD ["sh", "-c", "capmc-service -config=$CAPMC_CONFIG -hsm=$HSM_URL "]
+CMD ["sh", "-c", "capmc-service -config=$CAPMC_CONFIG -hsm=$HSM_URL -pcs=$PCS_URL"]

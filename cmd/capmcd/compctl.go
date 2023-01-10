@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2023] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -25,9 +25,13 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/Cray-HPE/hms-capmc/internal/capmc"
@@ -59,180 +63,93 @@ func (d *CapmcD) hasCompPowerSupport(cmd, ctype string) (bool, error) {
 	return stringInSlice(ctype, types), nil
 }
 
-// Removes a component from the component map for the specified actions
-func doRemoveComp(
-	cmap map[string]map[string][]*NodeInfo,
-	xname string,
-	ctype string,
-	actionList []string) {
-
-	for _, action := range actionList {
-		if _, ok := cmap[action]; !ok {
-			continue
-		}
-		for idx, comp := range cmap[action][ctype] {
-			if xname == comp.Hostname {
-				// Remove the component from the future action
-				cmap[action][ctype] = append(cmap[action][ctype][:idx], cmap[action][ctype][idx+1:]...)
-				break
-			}
-		}
-	}
+// PCS Support structures
+type PCSLocation struct {
+	Xname     string `json:"xname"`
+	DeputyKey string `json:"deputyKey"`
 }
 
-// Takes a list of components and inserts them into a map sorted by type and
-// action type. This returns the number of unique components inserted into the
-// map and the number of components with errors.
-// NOTE: This modifies the specified 'data' and 'cmap' args.
-func (d *CapmcD) doSortActionMap(
-	nl []*NodeInfo,
-	cmap map[string]map[string][]*NodeInfo,
-	cmd string,
-	data *capmc.XnameControlResponse) (int, int) {
-
-	var (
-		failures  int
-		totalWait int
-	)
-	// Simulate restart by doing an 'Off' then 'On'.
-	simulate := map[string][]string{
-		bmcCmdPowerRestart:      {bmcCmdPowerOff, bmcCmdPowerOn},
-		bmcCmdPowerForceRestart: {bmcCmdPowerForceOff, bmcCmdPowerForceOn},
-	}
-	for _, c := range nl {
-		// Check if the component type is supported for this power action.
-		supported, err := d.hasCompPowerSupport(cmd, c.Type)
-		if err != nil {
-			failures++
-			msg := fmt.Sprintf("%s", err)
-			log.Printf("Error: %s.", msg)
-			xnameErr := capmc.MakeXnameError(c.Hostname, -1, msg)
-			data.Xnames = append(data.Xnames, xnameErr)
-			continue
-		}
-		if !supported {
-			// Skip components not in the power action sequencing list.
-			msg := fmt.Sprintf("Skipping %s: Type, '%s', not defined in power sequence for '%s'", c.Hostname, c.Type, cmd)
-			log.Printf("Info: %s.", msg)
-			failures++
-			xnameErr := capmc.MakeXnameError(c.Hostname, -1, msg)
-			data.Xnames = append(data.Xnames, xnameErr)
-			continue
-		}
-		// Set totalWait here so it will count of all components only once in
-		// the case of more than one operation being done on a component.
-		totalWait++
-		if cmd == bmcCmdPowerRestart || cmd == bmcCmdPowerForceRestart {
-			// Checking for an error from cmdToResetType() will tell us
-			// if the component has the actions we need. If not, we check
-			// OnUnsupportedAction for what we should do next.
-			_, err := d.cmdToResetType(cmd, c.RfResetTypes)
-			if err != nil {
-				switch d.OnUnsupportedAction {
-				case actionSimulate:
-					for _, simAction := range simulate[cmd] {
-						if _, ok := cmap[simAction]; !ok {
-							cmap[simAction] = make(map[string][]*NodeInfo)
-						}
-						cmap[simAction][c.Type] = append(cmap[simAction][c.Type], c)
-					}
-					//TODO: Find dependant components and add to cmap when we
-					// add reinit support for more than nodes.
-				case actionError:
-					// Fail the operation.
-					failures++
-					msg := fmt.Sprintf("%s %s: %s", c.BmcType, c.BmcFQDN, err)
-					xnameErr := capmc.MakeXnameError(c.Hostname, -1, msg)
-					data.Xnames = append(data.Xnames, xnameErr)
-				case actionIgnore:
-					// Leave out of the list but still report as ignored. Don't
-					// increment 'failures' because these are "report only".
-					msg := fmt.Sprintf("Ignored: %s %s: %s", c.BmcType, c.BmcFQDN, err)
-					xnameErr := capmc.MakeXnameError(c.Hostname, 0, msg)
-					data.Xnames = append(data.Xnames, xnameErr)
-				default:
-					// Leave in the list. This will just let doBmcCall() handle
-					// the error as normal.
-					cmap[cmd][c.Type] = append(cmap[cmd][c.Type], c)
-				}
-			} else {
-				cmap[cmd][c.Type] = append(cmap[cmd][c.Type], c)
-			}
-		} else {
-			cmap[cmd][c.Type] = append(cmap[cmd][c.Type], c)
-		}
-	}
-	return totalWait, failures
+type PCSTransition struct {
+	Operation string        `json:"operation"`
+	Location  []PCSLocation `json:"location"`
 }
 
-func (d *CapmcD) waitForOff(ni *NodeInfo) bmcPowerRc {
-	var res = bmcPowerRc{ni: ni, rc: -1, state: "Unknown"}
-	var nl []*NodeInfo
-	var retries int
+type PCSTransitionResponse struct {
+	TransitionID string `json:"transitionID"`
+	Operation    string `json:"operation"`
+}
 
-	nl = append(nl, ni)
+type PCSTaskCounts struct {
+	Total       int `json:"total"`
+	New         int `json:"new"`
+	InProgress  int `json:"in-progress"`
+	Failed      int `json:"failed"`
+	Succeeded   int `json:"succeeded"`
+	UnSupported int `json:"un-supported"`
+}
 
-	offRetries := d.config.CapmcConf.WaitForOffRetries
-	offSleep := d.config.CapmcConf.WaitForOffSleep
+type PCSTasks struct {
+	Xname          string `json:"xname"`
+	TaskStatus     string `json:"taskStatus"`
+	TaskStatusDesc string `json:"taskStatusDescription"`
+}
 
-	for retries = 0; retries < offRetries; retries++ {
-		rsp := d.doCompStatus(nl, bmcCmdPowerStatus, capmc.FilterShowOffBit)
-		if len(rsp.Off) > 0 {
-			res.rc = 0
-			res.state = "Off"
-			break
-		} else {
-			time.Sleep(time.Duration(offSleep) * time.Second)
-		}
-	}
+type PCSTransitionGet struct {
+	TransitionID     string        `json:"transitionID"`
+	Operation        string        `json:"operation"`
+	TransitionStatus string        `json:"transitionStatus"`
+	TaskCounts       PCSTaskCounts `json:"taskCounts"`
+	Tasks            []PCSTasks    `json:"tasks"`
+}
 
-	// One last attempt to get the power state after the last sleep
-	if retries == offRetries {
-		rsp := d.doCompStatus(nl, bmcCmdPowerStatus, capmc.FilterShowOffBit)
-		if len(rsp.Off) > 0 {
-			res.rc = 0
-			res.state = "Off"
-		} else {
-			res.msg = "exceeded retries waiting for component to be Off"
-		}
-	}
+type PCSPowerStatus struct {
+	Xname                     string   `json:"xname"`
+	PowerState                string   `json:"powerState"`
+	ManagementState           string   `json:"managementState"`
+	Error                     string   `json:"error"`
+	SupportedPowerTransitions []string `json:"suportedPowerTransitions"`
+	LastUpdated               string   `json:"lastUpdated"`
+}
 
-	return res
+type PCSStatusGet struct {
+	Status []PCSPowerStatus `json:"status"`
 }
 
 func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameControlResponse {
 	var data capmc.XnameControlResponse
 	data.Xnames = make([]*capmc.XnameControlErr, 0, 1)
+	var failures int
 
-	// Build the sorted xname list here. The nl contains all of the
-	// components that exist and should be powered on/off or restarted.
-	// cmap maps lists of components, sorted by component type, to the
-	// power action to be taken on them.
-	// cmap[on/off/reinit][ComponentType]:[xname,xname,xname]
-	// A single component may end up in multiple lists if multiple power
-	// actions are being taken on it. For instance if a reinit is requested
-	// on a node but the node doesn't support restart. A restart may be
-	// simulated by doing an 'off' action then a power 'on' action. The
-	// component would then end up in cmap[off][node]:[xname] and
-	// cmap[on][node]:[xname].
-	cmap := make(map[string]map[string][]*NodeInfo)
-	cmap[command] = make(map[string][]*NodeInfo)
-	totalWait, failures := d.doSortActionMap(nl, cmap, command, &data)
+	var targetedXname []string
+	for _, v := range nl {
+		supported, err := d.hasCompPowerSupport(command, v.Type)
+		if err != nil {
+			failures++
+			msg := fmt.Sprintf("%s", err)
+			log.Printf("Error: %s.", msg)
+			xnameErr := capmc.MakeXnameError(v.Hostname, -1, msg)
+			data.Xnames = append(data.Xnames, xnameErr)
+			continue
+		}
+		if !supported {
+			// Skip components not in the power action sequencing list.
+			msg := fmt.Sprintf("Skipping %s: Type, '%s', not defined in power sequence for '%s'", v.Hostname, v.Type, command)
+			log.Printf("Info: %s.", msg)
+			failures++
+			xnameErr := capmc.MakeXnameError(v.Hostname, -1, msg)
+			data.Xnames = append(data.Xnames, xnameErr)
+			continue
+		}
+		targetedXname = append(targetedXname, v.Hostname)
+	}
 
 	if failures > 0 {
-		// Fail the operation before doBmcCall()
 		data.ErrResponse.E = -1
 		data.ErrResponse.ErrMsg = fmt.Sprintf("Errors encountered with %d components for %s",
 			failures, command)
 
 		return data
 	}
-
-	var targetedXname []string
-	for _, v := range nl {
-		targetedXname = append(targetedXname, v.Hostname)
-	}
-
 	// Grab the new list just in case a power off was done on a chassis
 	// or compute module
 	targetedXname, err := d.reserveComponents(targetedXname, command)
@@ -246,74 +163,40 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 		return data
 	}
 
-	// The order of keys when ranging over a map is undefined in newer
-	// versions of Go. For this reason, range over an ordered list of
-	// power actions, 'ReinitActionSeq', to control the order.
-	for actionNum, cmd := range d.ReinitActionSeq {
-		// Skip the power action if it has no power sequence defined.
-		compPowerSeq, err := d.cmdCompPowerSeq(cmd)
-		if err != nil {
-			continue
+	// Get lock status information
+	res := d.reservation.Status()
+
+	var tReq PCSTransition
+
+	// Build PCS payload with deputy keys
+	for _, x := range targetedXname {
+		comp := PCSLocation{
+			Xname:     x,
+			DeputyKey: res[x].DeputyKey,
+		}
+		tReq.Location = append(tReq.Location, comp)
+	}
+
+	totalWait := len(tReq.Location)
+
+	// If Off or Reinit, call PCS Off
+	if command == bmcCmdPowerOff || command == bmcCmdPowerRestart ||
+		command == bmcCmdPowerForceOff || command == bmcCmdPowerForceRestart {
+		tReq.Operation = "off"
+		if command == bmcCmdPowerForceOff || command == bmcCmdPowerForceRestart {
+			tReq.Operation = "force-off"
 		}
 
-		// Skip the power action if there is no map of components
-		// defined or the map is empty.
-		ct, ok := cmap[cmd]
-		if !ok || len(ct) == 0 {
-			continue
-		}
+		failures, data = powerFunction(tReq, data, d, command, failures)
+	}
 
-		for _, t := range compPowerSeq {
-			if list, ok := cmap[cmd][t]; ok {
-				waitNum, waitCh := d.queueBmcCmd(bmcCmd{cmd: cmd}, list)
+	// If On or Reinit, call PCS On
+	if (command == bmcCmdPowerOn || command == bmcCmdPowerRestart ||
+		command == bmcCmdPowerForceOn || command == bmcCmdPowerForceRestart) &&
+		data.E == 0 {
+		tReq.Operation = "on"
 
-				for i := 0; i < waitNum; i++ {
-					// Wait for each task to complete.
-					result := <-waitCh
-					// If any BMC/Node op fails then record overall error code for the
-					// call. The HTTP code returned will still be 200.
-					if result.rc != 0 {
-						failures++
-						xnameErr := capmc.MakeXnameError(result.ni.Hostname, result.rc, result.msg)
-						data.Xnames = append(data.Xnames, xnameErr)
-						// Check any future actions for the same xname and remove it.
-						// For example, if a component fails for 'Off' we shouldn't
-						// try 'On'
-						doRemoveComp(cmap, t, result.ni.Hostname, d.ReinitActionSeq[actionNum+1:])
-					}
-
-					if command == bmcCmdPowerRestart {
-						if (cmd == bmcCmdPowerOff || cmd == bmcCmdPowerForceOff) &&
-							result.rc == 0 {
-							offResult := d.waitForOff(result.ni)
-							if offResult.rc != 0 {
-								failures++
-								xnameErr := capmc.MakeXnameError(offResult.ni.Hostname, offResult.rc, offResult.msg)
-								data.Xnames = append(data.Xnames, xnameErr)
-								// Check any future actions for the same xname and remove it.
-								doRemoveComp(cmap, t, result.ni.Hostname, d.ReinitActionSeq[actionNum+1:])
-							}
-						}
-					}
-				}
-
-				// Do a simple wait to allow time for the components to be powered
-				// on. Can't start the next batch of power ons until the previous
-				// batch is done. No need to wait for the Nodes or RouterModules
-				// since there is nothing below them currently that has power
-				// control. Time estimates pulled from demo scripts for Q1'19.
-				switch cmd {
-				case bmcCmdPowerOn, bmcCmdPowerForceOn:
-					switch t {
-					case "Chassis":
-						time.Sleep(90 * time.Second)
-					case "ComputeModule":
-						time.Sleep(15 * time.Second)
-					default:
-					}
-				}
-			}
-		}
+		failures, data = powerFunction(tReq, data, d, command, failures)
 	}
 
 	if failures > 0 {
@@ -325,6 +208,141 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 	return data
 }
 
+func powerFunction(tReq PCSTransition, data capmc.XnameControlResponse, d *CapmcD, command string, failures int) (int, capmc.XnameControlResponse) {
+	payload, err := json.Marshal(tReq)
+	if err != nil {
+		errstr := fmt.Sprintf("Error: Failed to marshal power request for PCS.")
+		log.Printf(errstr)
+		data.ErrResponse.E = http.StatusInternalServerError
+		data.ErrResponse.ErrMsg = errstr
+		return 0, data
+	}
+
+	url := d.pcsURL.String() + "/transitions"
+	httpReq, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		errstr := fmt.Sprintf("Error: Failed to create new request for power operation.")
+		log.Printf(errstr)
+		data.ErrResponse.E = http.StatusInternalServerError
+		data.ErrResponse.ErrMsg = errstr
+		return 0, data
+	}
+
+	httpReq.Header.Set("Accept", "application/json")
+	httpReq.Header.Set("Content-Type", "application/json")
+
+	body, err := d.doRequest(httpReq)
+	if err != nil {
+		errstr := fmt.Sprintf("Error: Failed to send power request to PCS.")
+		log.Printf(errstr)
+		data.ErrResponse.E = http.StatusInternalServerError
+		data.ErrResponse.ErrMsg = errstr
+		return 0, data
+	}
+
+	var tRsp PCSTransitionResponse
+	err = json.Unmarshal(body, &tRsp)
+
+	tID := tRsp.TransitionID
+
+	url = d.pcsURL.String() + "/transitions/" + tID
+	httpReq, err = http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		errstr := fmt.Sprintf("Error: Failed to create new request for power operation.")
+		log.Printf(errstr)
+		data.ErrResponse.E = http.StatusInternalServerError
+		data.ErrResponse.ErrMsg = errstr
+		return 0, data
+	}
+
+	httpReq.Header.Set("Accept", "application/json")
+
+	// Arbitrary delay of 2 seconds
+	time.Sleep(2 * time.Second)
+
+	var tGet PCSTransitionGet
+
+	retry := true
+
+	// Wait for all to be !"New"
+	for retry {
+		body, err = d.doRequest(httpReq)
+		if err != nil {
+			errstr := fmt.Sprintf("Error: Failed to get transition from PCS.")
+			log.Printf(errstr)
+			data.ErrResponse.E = http.StatusInternalServerError
+			data.ErrResponse.ErrMsg = errstr
+			return 0, data
+		}
+
+		err = json.Unmarshal(body, &tGet)
+		if err != nil {
+			errstr := fmt.Sprintf("Error: Failed to unmarshal transition from PCS.")
+			log.Printf(errstr)
+			data.ErrResponse.E = http.StatusInternalServerError
+			data.ErrResponse.ErrMsg = errstr
+			return 0, data
+		}
+
+		if tGet.TransitionStatus != "new" && tGet.TaskCounts.New == 0 {
+			retry = false
+		} else {
+			// Arbitrary delay of 2 seconds
+			time.Sleep(2 * time.Second)
+		}
+	}
+
+	// If the off portion of Reinit, wait for Off
+	counts := tGet.TaskCounts
+	if (command == bmcCmdPowerRestart || command == bmcCmdPowerForceRestart) &&
+		(tReq.Operation == "off" || tReq.Operation == "force-off") {
+		if (counts.Failed + counts.Succeeded + counts.UnSupported) < counts.Total {
+			retry = true
+		}
+		for retry {
+			body, err = d.doRequest(httpReq)
+			if err != nil {
+				errstr := fmt.Sprintf("Error: Failed to get transition from PCS.")
+				log.Printf(errstr)
+				data.ErrResponse.E = http.StatusInternalServerError
+				data.ErrResponse.ErrMsg = errstr
+				return 0, data
+			}
+
+			err = json.Unmarshal(body, &tGet)
+			if err != nil {
+				errstr := fmt.Sprintf("Error: Failed to unmarshal transition from PCS.")
+				log.Printf(errstr)
+				data.ErrResponse.E = http.StatusInternalServerError
+				data.ErrResponse.ErrMsg = errstr
+				return 0, data
+			}
+
+			counts = tGet.TaskCounts
+
+			if (counts.Failed + counts.Succeeded + counts.UnSupported) == counts.Total {
+				retry = false
+			} else {
+				// Arbitrary delay of 2 seconds
+				time.Sleep(2 * time.Second)
+			}
+
+		}
+	}
+
+	// Check for failed components
+	failures = counts.Failed + counts.UnSupported
+	if failures > 0 {
+		for _, task := range tGet.Tasks {
+			if task.TaskStatus == "Failed" || task.TaskStatus == "Un-supported" {
+				xnameErr := capmc.MakeXnameError(task.Xname, -1, task.TaskStatusDesc)
+				data.Xnames = append(data.Xnames, xnameErr)
+			}
+		}
+	}
+	return failures, data
+}
+
 func (d *CapmcD) doCompStatus(nl []*NodeInfo, command string, filter uint) capmc.XnameStatusResponse {
 	// The JSON encoder omits empty lists. The Cascade CAPMC API response
 	// contains more lists than this, but at this time these are the only
@@ -333,42 +351,81 @@ func (d *CapmcD) doCompStatus(nl []*NodeInfo, command string, filter uint) capmc
 	data.On = make([]string, 0, 1)
 	data.Off = make([]string, 0, 1)
 	data.Undefined = make([]string, 0, 1)
+	xnames := ""
 
-	waitNum, waitCh := d.queueBmcCmd(bmcCmd{cmd: bmcCmdPowerStatus}, nl)
+	first := true
+	sort.Slice(nl, func(i, j int) bool {
+		return nl[i].Hostname < nl[j].Hostname
+	})
+	for _, x := range nl {
+		if first {
+			xnames += "?xname=" + x.Hostname
+			first = false
+		} else {
+			xnames += "&xname=" + x.Hostname
+		}
+	}
+
+	url := d.pcsURL.String() + "/power-status" + xnames
+	httpReq, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		errstr := fmt.Sprintf("Error: Failed to create new request for power operation.")
+		log.Printf(errstr)
+		data.ErrResponse.E = http.StatusInternalServerError
+		data.ErrResponse.ErrMsg = errstr
+		return data
+	}
+
+	var sGet PCSStatusGet
+
+	body, err := d.doRequest(httpReq)
+	if err != nil {
+		errstr := fmt.Sprintf("Error: Failed to get status from PCS.")
+		log.Printf(errstr)
+		data.ErrResponse.E = http.StatusInternalServerError
+		data.ErrResponse.ErrMsg = errstr
+		return data
+	}
+
+	err = json.Unmarshal(body, &sGet)
+	if err != nil {
+		errstr := fmt.Sprintf("Error: Failed to unmarshal status from PCS.")
+		log.Printf(errstr)
+		data.ErrResponse.E = http.StatusInternalServerError
+		data.ErrResponse.ErrMsg = errstr
+		return data
+	}
 
 	var failures int
-	for i := 0; i < waitNum; i++ {
-		// Wait for each task to complete.
-		result := <-waitCh
-		// If any BMC/Node op fails then record overall error code for
-		// the call. The HTTP code returned will still be 200.
-		if result.rc != 0 {
+	for _, s := range sGet.Status {
+		if s.Error != "" {
+			data.Undefined = append(data.Undefined, s.Xname)
 			failures++
-			// TODO develop a method to return more detailed failure info
+			continue
 		}
-
-		switch result.state {
-		case rf.POWER_STATE_ON:
+		switch s.PowerState {
+		case strings.ToLower(rf.POWER_STATE_ON):
 			if filter&capmc.FilterShowOnBit != 0 {
-				data.On = append(data.On, result.ni.Hostname)
+				data.On = append(data.On, s.Xname)
 			}
-		case rf.POWER_STATE_OFF:
+		case strings.ToLower(rf.POWER_STATE_OFF):
 			if filter&capmc.FilterShowOffBit != 0 {
-				data.Off = append(data.Off, result.ni.Hostname)
+				data.Off = append(data.Off, s.Xname)
 			}
 		// Other hardware states are not implemented
 		default:
 			// These are reported if there's a problem communicating
 			// with the BMC.
-			data.Undefined = append(data.Undefined, result.ni.Hostname)
+			data.Undefined = append(data.Undefined, s.Xname)
 		}
+
 	}
 
 	if failures > 0 {
 		data.ErrResponse.E = -1
 		data.ErrResponse.ErrMsg =
 			fmt.Sprintf("Errors encountered with %d/%d Xnames for %s",
-				failures, waitNum, command)
+				failures, len(sGet.Status), command)
 	}
 
 	// Sorting is mostly for convenience; not strictly needed for capmc.

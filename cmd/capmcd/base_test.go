@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2023] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -28,6 +28,7 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -38,15 +39,177 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	base "github.com/Cray-HPE/hms-base"
 	"github.com/Cray-HPE/hms-certs/pkg/hms_certs"
 	compcreds "github.com/Cray-HPE/hms-compcredentials"
 	sstorage "github.com/Cray-HPE/hms-securestorage"
+	svcres "github.com/Cray-HPE/hms-smd/pkg/service-reservations"
+	"github.com/sirupsen/logrus"
 )
 
 var replayList *[]testData
 var mockVault *sstorage.MockAdapter
+
+const (
+	hsmReservationPath        = "/hsm/v2/locks/service/reservations"
+	hsmReservationReleasePath = "/hsm/v2/locks/service/reservations/release"
+	hsmReservationRenewPath   = "/hsm/v2/locks/service/reservations/renew"
+)
+
+var prod = &svcres.Production{}
+var smServer *httptest.Server
+var initDone = false
+var failAquire = false
+var logger = logrus.New()
+
+//Storage of our fake reservations
+
+var resMap map[string]*svcres.ReservationCreateSuccessResponse
+
+/////////////////////////////////////////////////////////////////////////////
+// Funcs to simulate HSM APIs for reservations.
+/////////////////////////////////////////////////////////////////////////////
+
+func smReservationHandler(w http.ResponseWriter, r *http.Request) {
+	fname := "smReservationHandler()"
+	var jdata svcres.ReservationCreateParameters
+	var rsp svcres.ReservationCreateResponse
+
+	body, _ := ioutil.ReadAll(r.Body)
+	err := json.Unmarshal(body, &jdata)
+	if err != nil {
+		logger.Errorf("%s: Error unmarshalling req data: %v", fname, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	now := time.Now()
+	for ix, comp := range jdata.ID {
+		if failAquire && (ix == 0) {
+			rsp.Failure = append(rsp.Failure, svcres.FailureResponse{ID: comp,
+				Reason: "Forced Failure"})
+		} else {
+			lres := svcres.ReservationCreateSuccessResponse{ID: comp,
+				ReservationKey: fmt.Sprintf("RSVKey_%d", ix),
+				DeputyKey:      fmt.Sprintf("DEPKey_%d", ix),
+				ExpirationTime: now.Format(time.RFC3339)}
+			resMap[comp] = &lres
+			rsp.Success = append(rsp.Success, lres)
+		}
+	}
+
+	//TODO: how to simulate failure components?
+
+	ba, baerr := json.Marshal(&rsp)
+	if baerr != nil {
+		logger.Errorf("%s: Error marshalling response data: %v", fname, baerr)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(ba)
+}
+
+func smReservationRenewHandler(w http.ResponseWriter, r *http.Request) {
+	var inData svcres.ReservationRenewalParameters
+	var retData svcres.ReservationReleaseRenewResponse
+	fname := "smReservationRenewHandler()"
+
+	body, _ := ioutil.ReadAll(r.Body)
+	err := json.Unmarshal(body, &inData)
+	if err != nil {
+		logger.Errorf("%s: Error unmarshalling req data: %v", fname, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	//Just copy gozintas into gozoutas
+
+	for _, key := range inData.ReservationKeys {
+		retData.Success.ComponentIDs = append(retData.Success.ComponentIDs,
+			key.ID)
+	}
+
+	retData.Counts.Success = len(inData.ReservationKeys)
+	retData.Counts.Failure = 0
+	retData.Counts.Total = retData.Counts.Success + retData.Counts.Failure
+
+	ba, baerr := json.Marshal(&retData)
+	if baerr != nil {
+		logger.Errorf("%s: Error marshalling response data: %v", fname, baerr)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(ba)
+}
+
+func smReservationReleaseHandler(w http.ResponseWriter, r *http.Request) {
+	var relList svcres.ReservationReleaseParameters
+	var retData svcres.ReservationReleaseRenewResponse
+	fname := "smReservationReleaseHandler()"
+
+	body, _ := ioutil.ReadAll(r.Body)
+	err := json.Unmarshal(body, &relList)
+	if err != nil {
+		logger.Errorf("%s: Error unmarshalling req data: %v", fname, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	for _, comp := range relList.ReservationKeys {
+		//Check for key existence, present == success, else failure
+		_, ok := resMap[comp.ID]
+		if ok {
+			delete(resMap, comp.ID)
+			retData.Success.ComponentIDs = append(retData.Success.ComponentIDs,
+				comp.ID)
+		} else {
+			retData.Failure = append(retData.Failure,
+				svcres.FailureResponse{ID: comp.ID, Reason: "Reservation not found."})
+		}
+	}
+	retData.Counts.Success = len(retData.Success.ComponentIDs)
+	retData.Counts.Failure = len(retData.Failure)
+	retData.Counts.Total = retData.Counts.Success + retData.Counts.Failure
+
+	ba, baerr := json.Marshal(&retData)
+	if baerr != nil {
+		logger.Errorf("%s: Error marshalling response data: %v", fname, baerr)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(ba)
+}
+
+// Insure various stuff is initialized.  Needed since we don't know which
+// test will be run when.
+
+func checkInit() {
+	if !initDone {
+		mux := http.NewServeMux()
+		mux.HandleFunc(hsmReservationPath,
+			http.HandlerFunc(smReservationHandler))
+		mux.HandleFunc(hsmReservationReleasePath,
+			http.HandlerFunc(smReservationReleaseHandler))
+		mux.HandleFunc(hsmReservationRenewPath,
+			http.HandlerFunc(smReservationRenewHandler))
+		smServer = httptest.NewServer(mux)
+		//logger.SetLevel(logrus.TraceLevel)
+		prod.InitInstance(smServer.URL, "", 1, logger, "RSVTest")
+		resMap = make(map[string]*svcres.ReservationCreateSuccessResponse)
+		initDone = true
+	}
+}
 
 // The replay function is called to intercept external service requests and
 // replay the previously recorded responses rather than contacting the actual
@@ -251,6 +414,7 @@ func compareResults(t *testing.T, expected, actual string) {
 
 // The runTest function is used to run the captured tests.
 func runTest(t *testing.T, hsm string, testReq *testData, rlist *[]testData, vaultData []sstorage.MockLookup) {
+	checkInit()
 	replayList = rlist
 	var err error
 	// Set the HSM URL for this test.
@@ -261,6 +425,11 @@ func runTest(t *testing.T, hsm string, testReq *testData, rlist *[]testData, vau
 	svc.ActionMaxWorkers = svc.config.CapmcConf.ActionMaxWorkers
 	svc.OnUnsupportedAction = svc.config.CapmcConf.OnUnsupportedAction
 	svc.ReinitActionSeq = svc.config.CapmcConf.ReinitActionSeq
+	svc.reservationsEnabled = true
+	svc.reservation = *prod
+	if svc.pcsURL, err = url.Parse("https://fake-system.us.cray.com/apis/power-control/v1"); err != nil {
+		log.Fatalf("Invalid PCS URI specified: %s", err)
+	}
 	mockVault.LookupNum = 0
 	mockVault.LookupData = vaultData
 	handler := findHandler(testReq.reqURL)
