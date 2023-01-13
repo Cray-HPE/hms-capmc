@@ -384,7 +384,7 @@ func main() {
 		"Hardware State Manager location as URI, e.g. [scheme]://[host[:port]]")
 	flag.StringVar(&hms_ca_uri, "ca_uri", "",
 		"Certificate Authority CA bundle URI")
-	flag.StringVar(&pcs, "pcs", "http://localhost:xxxxx",
+	flag.StringVar(&pcs, "pcs", "http://localhost:28007",
 		"Power Control Service location as URI, e.g. [scheme]://[host[:port]]")
 
 	// The "default" is installed with the service. The intent is
@@ -477,7 +477,6 @@ func main() {
 
 	// Set up the PCS information before connecting to any external
 	// resources since we may bail if we don't find what we want
-	// Check for non-empty URL (URI) scheme
 	if !svc.pcsURL.IsAbs() {
 		log.Fatal("WARNING: PCS URL not absolute\n")
 	}
@@ -485,16 +484,6 @@ func main() {
 	case "http", "https":
 		log.Printf("Info: power control service (PCS) --> %s\n",
 			svc.pcsURL.String())
-		// Stash the PCS Base version in the URL.Path (default)
-		switch svc.pcsURL.Path {
-		case "/testing":
-			svc.pcsURL.Path = ""
-		default:
-			if !strings.HasSuffix(svc.pcsURL.Path, "/power-control/v1") {
-				svc.pcsURL.Path += "/power-control/v1"
-			}
-		}
-
 	default:
 		log.Fatalf("Unexpected PCS URL scheme: %s", svc.pcsURL.Scheme)
 	}
