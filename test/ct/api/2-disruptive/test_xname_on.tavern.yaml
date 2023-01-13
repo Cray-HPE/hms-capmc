@@ -56,7 +56,7 @@ test_name: capmcAPIxnameOnPOSToffComputeNode - Verify xname_on powers on a compu
 stages:
   - name: capmcAPIxnameOnPOSToffComputeNodeTarget - Retrieve a compute node from HSM to be used in later stages
     request:
-      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute&locked=False"
       method: GET
       verify: !bool "{verify}"
     response:
@@ -201,7 +201,7 @@ test_name: capmcAPIxnameOnPOSTmultipleOffComputeNodes - Verify xname_on powers o
 stages:
   - name: capmcAPIxnameOnPOSTmultipleOffComputeNodesTargets - Retrieve two compute nodes from HSM to be used in later stages
     request:
-      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute&locked=False"
       method: GET
       verify: !bool "{verify}"
     response:
@@ -349,7 +349,7 @@ test_name: capmcAPIxnameOnPOSTonComputeNode - Verify xname_on keeps power on for
 stages:
   - name: capmcAPIxnameOnPOSTonComputeNodeTarget - Retrieve a compute node from HSM to be used in later stages
     request:
-      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute&locked=False"
       method: GET
       verify: !bool "{verify}"
     response:
@@ -494,7 +494,7 @@ test_name: capmcAPIxnameOnPOSToffChassis - Verify xname_on powers on a chassis t
 stages:
   - name: capmcAPIxnameOnPOSToffChassisTarget - Retrieve a chassis from HSM to be used in later stages
     request:
-      url: "{hsm_base_url}/hsm/v2/State/Components?type=Chassis"
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Chassis&locked=False"
       method: GET
       verify: !bool "{verify}"
     response:
@@ -637,7 +637,7 @@ test_name: capmcAPIxnameOnPOSToffComputeModule - Verify xname_on powers on a com
 stages:
   - name: capmcAPIxnameOnPOSToffComputeModuleTarget - Retrieve a compute module from HSM to be used in later stages
     request:
-      url: "{hsm_base_url}/hsm/v2/State/Components?type=ComputeModule"
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=ComputeModule&locked=False"
       method: GET
       verify: !bool "{verify}"
     response:

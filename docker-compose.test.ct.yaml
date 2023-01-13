@@ -370,7 +370,7 @@ services:
       - LOG_LEVEL=DEBUG
       - TRS_IMPLEMENTATION=LOCAL
       - HSMLOCK_ENABLED=true
-      - PCS_URL=http://cray-power-control:28007/testing
+      - PCS_URL=http://cray-power-control:28007
     networks:
       - capmc
     depends_on:
