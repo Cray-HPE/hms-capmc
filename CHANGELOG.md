@@ -24,7 +24,13 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
-## [3.0.0] - 2022-01-10
+## [3.0.1] - 2023-01-13
+
+### Changed
+
+- Fixed the PCS URL handling
+
+## [3.0.0] - 2023-01-10
 
 ### Changed
 
