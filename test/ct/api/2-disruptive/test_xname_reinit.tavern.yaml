@@ -47,7 +47,7 @@ test_name: capmcAPIxnameReinitPOSTonComputeNode - Verify xname_reinit restarts a
 stages:
   - name: capmcAPIxnameReinitPOSTonComputeNodeTarget - Retrieve a compute node from HSM to be used in later stages
     request:
-      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute&locked=False"
       method: GET
       verify: !bool "{verify}"
     response:
@@ -194,7 +194,7 @@ test_name: capmcAPIxnameReinitPOSTmultipleOnComputeNodes - Verify xname_reinit r
 stages:
   - name: capmcAPIxnameReinitPOSTmultipleOnComputeNodesTargets - Retrieve two compute nodes from HSM to be used in later stages
     request:
-      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute&locked=False"
       method: GET
       verify: !bool "{verify}"
     response:
@@ -344,7 +344,7 @@ test_name: capmcAPIxnameReinitPOSToffComputeNode - Verify xname_reinit restarts 
 stages:
   - name: capmcAPIxnameReinitPOSToffComputeNodeTarget - Retrieve a compute node from HSM to be used in later stages
     request:
-      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute&locked=False"
       method: GET
       verify: !bool "{verify}"
     response:

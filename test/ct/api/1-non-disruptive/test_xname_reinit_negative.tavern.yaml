@@ -1,6 +1,6 @@
 # MIT License
 #
-# (C) Copyright [2022] Hewlett Packard Enterprise Development LP
+# (C) Copyright [2022-2023] Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -177,7 +177,7 @@ test_name: capmcAPIxnameReinitPOSTnodeXnameRecursiveAndPrereq
 stages:
   - name: capmcAPIxnameReinitPOSTnodeXnameRecursiveAndPrereqPrep - Get compute Node xname from HSM Components to use in upcoming stage
     request:
-      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute"
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=Node&role=Compute&locked=False"
       method: GET
       verify: !bool "{verify}"
     response:

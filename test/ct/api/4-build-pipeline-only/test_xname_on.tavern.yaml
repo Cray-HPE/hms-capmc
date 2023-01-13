@@ -50,7 +50,7 @@ test_name: capmcAPIxnameOnPOSToffComputeModuleRecursive - Verify xname_on with t
 stages:
   - name: capmcAPIxnameOnPOSToffComputeModuleRecursiveTarget - Retrieve a compute module from HSM to be used in later stages
     request:
-      url: "{hsm_base_url}/hsm/v2/State/Components?type=ComputeModule"
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=ComputeModule&locked=False"
       method: GET
       verify: !bool "{verify}"
     response:
@@ -273,7 +273,7 @@ test_name: capmcAPIxnameOnPOSToffComputeNodePrereq - Verify xname_on with the pr
 stages:
   - name: capmcAPIxnameOnPOSToffComputeNodePrereqTarget - Retrieve a compute module from HSM to be used in later stages
     request:
-      url: "{hsm_base_url}/hsm/v2/State/Components?type=ComputeModule"
+      url: "{hsm_base_url}/hsm/v2/State/Components?type=ComputeModule&locked=False"
       method: GET
       verify: !bool "{verify}"
     response:
