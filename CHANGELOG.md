@@ -24,7 +24,7 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
-## [3.0.1] - 2023-01-13
+## [3.1.0] - 2023-01-13
 
 ### Changed
 
