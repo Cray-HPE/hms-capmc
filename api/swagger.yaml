@@ -166,7 +166,7 @@ definitions:
     example:
       e: 500
       err_msg: >-
-        Connection to the secure store isn't ready. Cannot get redfish
+        Connection to the secure store isn't ready. Cannot get Redfish
         credentials.
 
 
@@ -209,7 +209,7 @@ paths:
         **Notice**
 
 
-        The hardware management system no longer supports a "diag" state, as
+        The Hardware Management System no longer supports a "diag" state, as
         such the `show_diag` filter is considered deprecated. Specifying only
         the `show_diag` filter will not return any results.
       parameters:
@@ -284,7 +284,7 @@ paths:
                 description: >-
                   Optional, list of disabled components by xname. The component
                   is physically installed, but ignored by system management
-                  software. The hardware management system does not treat
+                  software. The Hardware Management System does not treat
                   disabled as a separate state and as such disabled does not
                   indicate the anything about the hardware or software state of
                   a node.
@@ -762,7 +762,7 @@ paths:
           in: body
           required: true
           description: >-
-            A JSON object to get power capping controls of selected nids.
+            A JSON object to get power capping controls of selected NIDs.
           schema:
             type: object
             properties:
@@ -892,7 +892,7 @@ paths:
           in: body
           required: true
           description: >-
-            A JSON object to get power capping capabilities of selected nids.
+            A JSON object to get power capping capabilities of selected NIDs.
           schema:
             type: object
             properties:
@@ -935,7 +935,7 @@ paths:
                   properties:
                     name:
                       description: >-
-                        Opaque identifier which Cray system management sofware
+                        Opaque identifier which Cray System Management Software
                         uses to uniquely identify a node type.
                       type: string
                     desc:
@@ -1029,7 +1029,7 @@ paths:
               groups:
                 - name: '01:000d:306e:0082:000a:0020:3a34:8300'
                   desc: 'ComputeANC_IVB_130W_10c_32GB_14900_IntelKNCAccel'
-                  suppy: 425
+                  supply: 425
                   host_limit_min: 100
                   host_limit_max: 200
                   static: 0
@@ -1046,7 +1046,7 @@ paths:
                       max: 460
                 - name: '01:000d:306e:00e6:0014:0040:3a34:0000'
                   desc: 'ComputeANC_IVB_230W_20c_64GB_14900_NoAccel'
-                  suppy: 425
+                  supply: 425
                   host_limit_min: 200
                   host_limit_max: 350
                   static: 0
@@ -1082,7 +1082,7 @@ paths:
           in: body
           required: true
           description: >-
-            A JSON object to set power capping parameters of selected nids.
+            A JSON object to set power capping parameters of selected NIDs.
           schema:
             type: object
             properties:
@@ -1119,7 +1119,7 @@ paths:
                         cap of 400 watts is applied and an accelerator power
                         cap of 180 watts is applied, then the total node power
                         consumption is limited to 400 watts. If the
-                        accelerator is activerly consuming its entire 180 watt
+                        accelerator is actively consuming its entire 180 watt
                         power allocation, then the host processor, memory
                         subsystem, and support logic for that node may consume
                         a maximum of 220 watts.

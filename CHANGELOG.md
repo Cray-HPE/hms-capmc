@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [3.2.0] - 2023-01-25
+
+### Fixed
+
+- CASMHMS-5898: Linting (primarily of language issues) in API spec; corrected markdown errors in changelog
+
 ## [3.1.0] - 2023-01-13
 
 ### Changed
@@ -434,47 +440,47 @@ Added TLS verification capability to Redfish HTTP transports.
 ### Fixed
 - Updated SMA Postgres cluster address.
 
-# [1.16.5] - 2020-02-22
+## [1.16.5] - 2020-02-22
 
 ### Changed
 - CASMHMS-2733 - Update dependencies to not use hms-common packages any more.
 
-# [1.16.4] - 2020-02-13
+## [1.16.4] - 2020-02-13
 
 ### Fixed
 - CASMHMS-2997 - Fixed health endpoint interaction with HSM.
 
-# [1.16.3] - 2020-01-31
+## [1.16.3] - 2020-01-31
 
 ### Added
 - CASMHMS-2474 - Added initial set of CAPMC Tavern API tests for CT framework.
 
-# [1.16.2] - 2020-01-28
+## [1.16.2] - 2020-01-28
 
 ### Fixed
 - CASMHMS-2847 - Fixed River telemetry queries to use sql functions we have
   licenses for.
 
-# [1.16.1] - 2020-01-22
+## [1.16.1] - 2020-01-22
 
 ### Changed
 - CASMHMS-884 - Added liveness, readiness, and health endpoints for the capmc
   service.
 
-# [1.16.0] - 2020-01-07
+## [1.16.0] - 2020-01-07
 
 ### Changed
 - CASM-1642 - Include River telemetry data in the queries for get_system_power,
   get_system_power_details, get_node_energy, get_node_energy_stats, and
   get_node_energy_counter.
 
-# [1.15.9] - 2019-12-18
+## [1.15.9] - 2019-12-18
 
 ### Changed
 - CASM-1455 - add routes to 'not implemented' for old Cascade endpoints
   that are not going to be implemented in Shasta
 
-# [1.15.8] - 2019-12-17
+## [1.15.8] - 2019-12-17
 
 ### Fixed
 - CASMHMS-2576 - get_system_power now returns a better error message
@@ -492,18 +498,18 @@ Added TLS verification capability to Redfish HTTP transports.
 - CASMHMS-2598 - get_node_energy_stats now returns a better error message when
   there is no data in the specified time window
 
-# [1.15.7] - 2019-12-16
+## [1.15.7] - 2019-12-16
 
 ### Changed
 - Updated swagger file to match the code
 - Turned off a CT test that needs to be fixed
 
-# [1.15.6] - 2019-12-12
+## [1.15.6] - 2019-12-12
 
 ### Changed
 - Updated hms-common lib.
 
-# [1.15.5] - 2019-12-11
+## [1.15.5] - 2019-12-11
 
 ### Fixed
 - CASMHMS-2572 - get_node_energy_counter was returning all the same nid
@@ -546,7 +552,7 @@ Added TLS verification capability to Redfish HTTP transports.
   early Dell iDRAC Redfish implementations that don't return a DMTF
   standard Redfish Error (schema) format response.
 
-# [1.15.3] - 2019-11-27
+## [1.15.3] - 2019-11-27
 
 ### Fixed
 - CASMHMS-2563 - Fixed the DoSystemPower function to not cause a
@@ -554,14 +560,14 @@ Added TLS verification capability to Redfish HTTP transports.
   also correctly returns an error if there is no data present for
   the requested time interval.
 
-# [1.15.2] - 2019-11-19
+## [1.15.2] - 2019-11-19
 
 ### Fixed
 - CASMHMS-2246 - Removed the separate Debug variable controlling log
   level information from config.go.  The log level is now determined
   by the global log level.
 
-# [1.15.1] - 2019-11-14
+## [1.15.1] - 2019-11-14
 
 ### Changed
 - CASMHMS-2172 - Clean up resources and exit cleanly when capmcd
@@ -569,7 +575,7 @@ Added TLS verification capability to Redfish HTTP transports.
   and return to the clients before the server stops.  It also
   shuts down the conenctions to resources as cleanly as possible.
 
-# [1.15.0] - 2019-11-12
+## [1.15.0] - 2019-11-12
 
 ### Added
 - CASMHMS-2471 - Add ability to return Component Id (aka xname) status from
@@ -579,20 +585,20 @@ Added TLS verification capability to Redfish HTTP transports.
   faster than going to every Redfish endpoint (controller). The default
   behavior is (still) to go to Redfish.
 
-# [1.14.5] - 2019-11-12
+## [1.14.5] - 2019-11-12
 
 ### Changed
 - CASMHMS-2327 - Use the HSM discovered Mountain EPO information
   instead of hard coded paths to perform the EPO.
 
-# [1.14.4] - 2019-11-11
+## [1.14.4] - 2019-11-11
 
 ### Changed
 - CASMHMS-2345 - Prefer the PowerControl OData.ID over the PowerControlURL
   returned by HSM for get/set power cap. The later is still the fallback
   when OData.ID isn't present for the control.
 
-# [1.14.3] - 2019-11-08
+## [1.14.3] - 2019-11-08
 
 ### Added
 - CASMHMS-1545 - Adds a method for specifying the source CAPMC should use
@@ -600,7 +606,7 @@ Added TLS verification capability to Redfish HTTP transports.
   be selected by adding `"source": "redfish"` to the JSON payload. The default
   remains using the HSM for status if source is not specified.
 
-# [1.14.2] - 2019-11-06
+## [1.14.2] - 2019-11-06
 
 ### Fixed
 - CASMHMS-2298 - Return the Cascade NID map format for NIDs not found in
