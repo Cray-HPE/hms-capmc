@@ -1,6 +1,6 @@
 # MIT License
 #
-# (C) Copyright [2020-2022] Hewlett Packard Enterprise Development LP
+# (C) Copyright [2020-2023] Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -58,29 +58,29 @@ stages:
     response:
       status_code: 400
       verify_response_with:
-        function: tavern.testutils.helpers:validate_pykwalify
-        extra_kwargs:
-          schema:
-            type: map
-            required: True
-            mapping:
-              "e":
-                type: int
-                required: True
-                enum:
-                  - 400
-              "err_msg":
-                required: True
-                type: str
-                enum:
-                  - "xnames not found: [{bmc_xname}]"
-        function: tavern.testutils.helpers:validate_content
-        extra_kwargs:
-          comparisons:
-            # response body should have "e" and "err_msg" keys
-            - jmespath: "length(keys(@))"
-              operator: "eq"
-              expected: 2
+        - function: tavern.testutils.helpers:validate_pykwalify
+          extra_kwargs:
+            schema:
+              type: map
+              required: True
+              mapping:
+                "e":
+                  type: int
+                  required: True
+                  enum:
+                    - 400
+                "err_msg":
+                  required: True
+                  type: str
+                  enum:
+                    - "xnames not found: [{bmc_xname}]"
+        - function: tavern.testutils.helpers:validate_content
+          extra_kwargs:
+            comparisons:
+              # response body should have "e" and "err_msg" keys
+              - jmespath: "length(keys(@))"
+                operator: "eq"
+                expected: 2
 
 ---
 test_name: capmcAPIGetXnameStatus invalid filter
