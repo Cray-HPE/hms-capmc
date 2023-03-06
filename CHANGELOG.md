@@ -24,6 +24,13 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [3.3.0] - 2023-02-28
+
+### Fixed
+
+- Fixed bug in CT tests that use multiple verify response functions
+- Pulled get_power_cap_capabilities test into separate test stage
+
 ## [3.2.0] - 2023-01-25
 
 ### Fixed
