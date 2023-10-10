@@ -37,6 +37,7 @@ import (
 	base "github.com/Cray-HPE/hms-base"
 	"github.com/Cray-HPE/hms-capmc/internal/capmc"
 	"github.com/Cray-HPE/hms-smd/pkg/sm"
+	"github.com/Cray-HPE/hms-xname/xnametypes"
 )
 
 // List of seen PowerControl.Name values. This may not be the best long term.
@@ -166,6 +167,7 @@ func (d *CapmcD) doPowerCapCapabilities(w http.ResponseWriter, r *http.Request) 
 			fmt.Sprintf("Bad Request: JSON: %s", err))
 		return
 	}
+
 	//filter hwInventory.Nodes according to NidlistRequest
 	//Per Manny III, the HSM HWInventory Query API currently only supports getting the whole SystemHWInventory
 	//so it is necessary to prune the resulting HWInventory list here
@@ -181,6 +183,11 @@ func (d *CapmcD) doPowerCapCapabilities(w http.ResponseWriter, r *http.Request) 
 		if len(prunedNodeArray) > 0 {
 			hwInventory.Nodes = &prunedNodeArray
 		}
+		//when there are no capabilities found for any of the nids
+		//this will return all the capabilities
+		//the fix would be to set create an empty prunedNodeArray and set it to hwInventory.Nodes
+		// 	prunedNodeArray = make([]*sm.HWInvByLoc, 0)
+		// 	hwInventory.Nodes = &prunedNodeArray
 	}
 
 	var powerCapGroups []capmc.PowerCapGroup
@@ -294,7 +301,11 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 		// HSM for this task as this information needs to be passed
 		// back to the caller.
 		for _, node := range nodes {
-			if !node.Enabled || node.State != string(base.StateReady) {
+			if node.Type == xnametypes.VirtualNode.String() {
+				data.Nids = append(data.Nids,
+					newPowerCapNidError(node.Nid, 22,
+						"Operation not supported for the type: "+node.Type))
+			} else if !node.Enabled || node.State != string(base.StateReady) {
 				data.Nids = append(data.Nids,
 					newPowerCapNidError(node.Nid, 22,
 						"Invalid state, NID is not 'ready'"))
@@ -543,6 +554,13 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 	bmcCmds := make(map[*NodeInfo]bmcCmd)
 	var newNodes []*NodeInfo
 	for _, node := range nodes {
+		if node.Type == xnametypes.VirtualNode.String() {
+			data.Nids = append(data.Nids,
+				newPowerCapNidError(node.Nid, 22,
+					"Operation not supported for the type: "+node.Type))
+			continue
+		}
+
 		if !node.Enabled || node.State != string(base.StateReady) {
 			data.Nids = append(data.Nids,
 				newPowerCapNidError(node.Nid, 22,
@@ -817,7 +835,7 @@ func expandNodeListForControlStruct(nl []*NodeInfo) []*NodeInfo {
 	return nl
 }
 
-//buildPowerCapCapabilitiesGroup - build a PowerCapGroup
+// buildPowerCapCapabilitiesGroup - build a PowerCapGroup
 func buildPowerCapCapabilitiesGroup(monikerGroup PowerCapCapabilityMonikerGroup, xnameComponentLookup map[string]*sm.ComponentEndpoint) (group capmc.PowerCapGroup, err error) {
 	if monikerGroup.Xnames == nil {
 		return group, errors.New(InvalidArguments)
@@ -915,7 +933,7 @@ func buildPowerCapCapabilitiesGroup(monikerGroup PowerCapCapabilityMonikerGroup,
 	return group, err
 }
 
-//get the set of uniqueMonikerGroups contained in the provided SystemHWInventory
+// get the set of uniqueMonikerGroups contained in the provided SystemHWInventory
 func convertSystemHWInventoryToUniqueMonikerGroups(hwInventory sm.SystemHWInventory) (uniqueMonikerGroups []PowerCapCapabilityMonikerGroup) {
 	//iterate across the nodes in hwInventory list of nodes, and prune any node not in the NidlistRequest
 	monikerMap := make(map[string]PowerCapCapabilityMonikerGroup)

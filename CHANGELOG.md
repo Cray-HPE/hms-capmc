@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [3.4.0] - 2023-10-10
+
+### Changed
+
+- Made changes so that get_power_cap and set_power_cap return better errors for VirtualNode NIDs
+
 ## [3.3.0] - 2023-02-28
 
 ### Fixed
