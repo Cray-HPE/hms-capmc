@@ -93,7 +93,7 @@ type PowerControl struct {
 	PowerAllocatedWatts *int             `json:"PowerAllocatedWatts,omitempty"`
 	PowerAvailableWatts *int             `json:"PowerAvailableWatts,omitempty"`
 	PowerCapacityWatts  *int             `json:"PowerCapacityWatts,omitempty"`
-	PowerConsumedWatts  *int             `json:"PowerConsumedWatts,omitempty"`
+	PowerConsumedWatts  *float64         `json:"PowerConsumedWatts,omitempty"`
 	PowerLimit          *PowerLimit      `json:"PowerLimit,omitempty"`
 	PowerMetrics        *PowerMetric     `json:"PowerMetrics,omitempty"`
 	PowerRequestedWatts *int             `json:"PowerRequestedWatts,omitempty"`

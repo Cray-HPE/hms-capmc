@@ -329,6 +329,17 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 			}
 
 			var rfPower capmc.Power
+			// JW_TODO: Error I get on tyr for:  cray capmc get_power_cap create --nids 2 --format json | jq .
+			// 2024/03/25 17:59:26 capmcd.go:170: Info: <-- 127.0.0.6:56945 HTTP POST /capmc/v1/get_power_cap
+			// 2024/03/25 17:59:26 nodecap.go:259: Info: CAPMC Get Power Cap - [2]
+			// 2024/03/25 17:59:26 [DEBUG] GET http://cray-smd/hsm/v2/State/Components?nid=2
+			// 2024/03/25 17:59:26 [DEBUG] GET http://cray-smd/hsm/v2/Inventory/ComponentEndpoints?id=x3000c0s33b2n0
+			// 2024/03/25 17:59:26 bmcapi.go:655: Info: Node: 'x3000c0s33b2n0', NodeBMC: 'x3000c0s33b2', Command: 'GetPowerCap'
+			// 2024/03/25 17:59:26 [DEBUG] GET https://x3000c0s33b2/redfish/v1/Chassis/ProcessorModule_0/Power
+			// 2024/03/25 17:59:26 bmcapi.go:655: Info: Node: 'x3000c0s33b2n0', NodeBMC: 'x3000c0s33b2', Command: 'GetPowerCap'
+			// 2024/03/25 17:59:26 [DEBUG] GET https://x3000c0s33b2/redfish/v1/Chassis/ProcessorModule_0/Controls/ProcessorModule_0_EDPpPowerNonvolatile_0
+			// 2024/03/25 17:59:28 nodecap.go:338: Notice: Unmarshal failed: json: cannot unmarshal number 129.479 into Go struct field PowerControl.PowerControl.PowerConsumedWatts of type int
+			// 2024/03/25 17:59:28 capmcd.go:195: Info: --> 127.0.0.6:56945 HTTP 200 OK POST /capmc/v1/get_power_cap (1.76026153s)
 			err := json.Unmarshal([]byte(result.msg), &rfPower)
 			if err != nil {
 				data.Nids = append(data.Nids,
@@ -615,6 +626,14 @@ func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// There were no supported PowerControls
+	// JW_TODO: What I get on tyr with: cray capmc set_power_cap create --nids 2 --control "Node Power Limit" 580 --format json | jq .
+	// 2024/03/25 18:06:39 capmcd.go:170: Info: <-- 127.0.0.6:51647 HTTP POST /capmc/v1/set_power_cap
+	// 2024/03/25 18:06:39 nodecap.go:514: Info: CAPMC Set Power Cap - [2]
+	// 2024/03/25 18:06:39 [DEBUG] GET http://cray-smd/hsm/v2/State/Components?nid=2
+	// 2024/03/25 18:06:39 [DEBUG] GET http://cray-smd/hsm/v2/Inventory/ComponentEndpoints?id=x3000c0s33b2n0
+	// 2024/03/25 18:06:39 nodecap.go:671: Notice: skipping undefined control for NID: Node Power Limit
+	// 2024/03/25 18:06:39 nodecap.go:619: Info: no supported power capping controls for request
+	// 2024/03/25 18:06:39 capmcd.go:195: Info: --> 127.0.0.6:51647 HTTP 200 OK POST /capmc/v1/set_power_cap (27.830846ms)
 	if len(bmcCmds) <= 0 {
 		log.Printf("Info: no supported power capping controls for request")
 		data.E = 22 // EINVAL
