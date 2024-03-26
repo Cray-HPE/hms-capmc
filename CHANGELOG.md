@@ -24,6 +24,13 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [3.4.0] - 2024-03-26
+
+### Added
+
+- CASMHMS-6157: Added details in the API spec about possible limitations when calling `get_xname_status` on
+  large systems with no xnames specified in the request.
+
 ## [3.3.0] - 2023-02-28
 
 ### Fixed
