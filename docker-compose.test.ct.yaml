@@ -131,7 +131,7 @@ services:
       - capmc
 
   cray-power-control:
-    image: artifactory.algol60.net/csm-docker/unstable/cray-power-control:2.2.0
+    image: artifactory.algol60.net/csm-docker/stable/cray-power-control:2.2.0
     environment:
       - SMS_SERVER=http://cray-smd:27779
       - CRAY_VAULT_AUTH_PATH=auth/token/create
