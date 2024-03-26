@@ -30,9 +30,9 @@ Security - in case of vulnerabilities
 
 - Update HMS image versions used for CT tests
 
-### Added
-
 ## [3.4.0] - 2024-03-26
+
+### Added
 
 - CASMHMS-6157: Added details in the API spec about possible limitations when calling `get_xname_status` on
   large systems with no xnames specified in the request.
