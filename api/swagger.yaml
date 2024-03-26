@@ -245,7 +245,10 @@ paths:
                 description: >-
                   User specified list of component IDs (xnames) to get the
                   status of. An empty array indicates all components in the
-                  system. If invalid xnames are specified then an error will be
+                  system. On systems with more than around 200 nodes, requests
+                  that specify an empty array may not succeed; in those cases,
+                  explicitly specifying the desired xnames should work.
+                  If invalid xnames are specified then an error will be
                   returned.
                 type: array
                 items:
