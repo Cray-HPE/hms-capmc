@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [3.5.0] - 2024-03-26
+
+### Fixed
+
+- Update HMS image versions used for CT tests
+
 ## [3.4.0] - 2024-03-26
 
 ### Added
