@@ -348,7 +348,7 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 				if pwrCtl.PowerConsumedWatts != nil {
 					switch v := (*pwrCtl.PowerConsumedWatts).(type) {
 					case float64:	// Convert to int
-						*pwrCtl.PowerConsumedWatts = math.Round(v)
+						*pwrCtl.PowerConsumedWatts = int(math.Round(v))
 					case int:		// noop - no conversion needed
 					default:		// unexpected type, set to zero
 						*pwrCtl.PowerConsumedWatts = int(0)
