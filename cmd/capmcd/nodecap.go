@@ -344,7 +344,7 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 			// Convert PowerConsumedWatts to an int if not already - Needed
 			// for Foxconn Paradise, perhaps others in the future
 			if len(rfPower.PowerCtl) > 0 && rfPower.PowerCtl[0].PowerConsumedWatts != nil {
-				switch v := *rfPower.PowerCtl[0].PowerConsumedWatts.(type) {
+				switch v := (*rfPower.PowerCtl[0].PowerConsumedWatts).(type) {
 				case float64:	// Convert to int
 					errlog.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: float=%f\n", v)
 					*rfPower.PowerCtl[0].PowerConsumedWatts = math.Round(v)
