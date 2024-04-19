@@ -344,7 +344,7 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 			// Convert PowerConsumedWatts to an int if not already (it's an interface{}
 			// type that can support ints and floats) - Needed for Foxconn Paradise,
 			// perhaps others in the future
-			for i, pwrCtl := range rfPower.PowerCtl {
+			for _, pwrCtl := range rfPower.PowerCtl {
 				if pwrCtl.PowerConsumedWatts != nil {
 					switch v := (*pwrCtl.PowerConsumedWatts).(type) {
 					case float64:	// Convert to int
