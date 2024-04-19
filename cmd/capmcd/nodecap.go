@@ -1,7 +1,7 @@
 //
 // MIT License
 //
-// (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
+// (C) Copyright [2019-2022,2024] Hewlett Packard Enterprise Development LP
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -345,13 +345,10 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 			// type that can support ints and floats) - Needed for Foxconn Paradise,
 			// perhaps others in the future
 			for i, pwrCtl := range rfPower.PowerCtl {
-				log.Printf("<========== JW_DEBUG ==========> Processing pwrCtl %d\n", i)
 				if pwrCtl.PowerConsumedWatts != nil {
 					switch v := (*pwrCtl.PowerConsumedWatts).(type) {
 					case float64:	// Convert to int
-						log.Printf("<========== JW_DEBUG ==========> float=%f\n", v)
 						*pwrCtl.PowerConsumedWatts = math.Round(v)
-						log.Printf("<========== JW_DEBUG ==========> converted from float = %d\n", *pwrCtl.PowerConsumedWatts)
 					case int:		// noop - no conversion needed
 					default:		// unexpected type, set to zero
 						*pwrCtl.PowerConsumedWatts = int(0)
