@@ -341,24 +341,24 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
-			// Convert PowerConsumedWatts to an int if not already - Needed
-			// for Foxconn Paradise, perhaps others in the future
-			if len(rfPower.PowerCtl) > 0 && rfPower.PowerCtl[0].PowerConsumedWatts != nil {
-				switch v := (*rfPower.PowerCtl[0].PowerConsumedWatts).(type) {
-				case float64:	// Convert to int
-					log.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: float=%f\n", v)
-					*rfPower.PowerCtl[0].PowerConsumedWatts = math.Round(v)
-					log.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: converted from float = %d\n", *rfPower.PowerCtl[0].PowerConsumedWatts)
-				case int:		// noop - no conversion needed
-					log.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: not converted v=%d\n", v)
-				default:		// unexpected type, set to zero
-					*rfPower.PowerCtl[0].PowerConsumedWatts = int(0)
-					log.Printf("ERROR: unexpected type/value '%T'/'%v' detected for PowerConsumedWatts, setting to 0\n", *rfPower.PowerCtl[0].PowerConsumedWatts, *rfPower.PowerCtl[0].PowerConsumedWatts)
-					log.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: unknown type\n")
+			// Convert PowerConsumedWatts to an int if not already (it's an interface{}
+			// type that can support ints and floats) - Needed for Foxconn Paradise,
+			// perhaps others in the future
+			for i, pwrCtl := range rfPower.PowerCtl {
+				log.Printf("<========== JW_DEBUG ==========> Processing pwrCtl %d\n", i)
+				if pwrCtl.PowerConsumedWatts != nil {
+					switch v := (*pwrCtl.PowerConsumedWatts).(type) {
+					case float64:	// Convert to int
+						log.Printf("<========== JW_DEBUG ==========> float=%f\n", v)
+						*pwrCtl.PowerConsumedWatts = math.Round(v)
+						log.Printf("<========== JW_DEBUG ==========> converted from float = %d\n", *pwrCtl.PowerConsumedWatts)
+					case int:		// noop - no conversion needed
+					default:		// unexpected type, set to zero
+						*pwrCtl.PowerConsumedWatts = int(0)
+						log.Printf("ERROR: unexpected type/value '%T'/'%v' detected for PowerConsumedWatts, setting to 0\n", *pwrCtl.PowerConsumedWatts, *pwrCtl.PowerConsumedWatts)
+					}
 				}
-				log.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: rfPower.PowerCtl[0]=%+v\n", rfPower.PowerCtl[0])
 			}
-			log.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: rfPower=%+v\n", rfPower)
 
 			// This would be nice to use but not all versions
 			// of the schema support PowerControl@odata.count.
