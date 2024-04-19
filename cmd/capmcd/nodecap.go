@@ -346,19 +346,19 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 			if len(rfPower.PowerCtl) > 0 && rfPower.PowerCtl[0].PowerConsumedWatts != nil {
 				switch v := (*rfPower.PowerCtl[0].PowerConsumedWatts).(type) {
 				case float64:	// Convert to int
-					errlog.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: float=%f\n", v)
+					log.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: float=%f\n", v)
 					*rfPower.PowerCtl[0].PowerConsumedWatts = math.Round(v)
-					errlog.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: converted from float = %d\n", *rfPower.PowerCtl[0].PowerConsumedWatts)
+					log.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: converted from float = %d\n", *rfPower.PowerCtl[0].PowerConsumedWatts)
 				case int:		// noop - no conversion needed
-					errlog.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: not converted v=%d\n", v)
+					log.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: not converted v=%d\n", v)
 				default:		// unexpected type, set to zero
 					*rfPower.PowerCtl[0].PowerConsumedWatts = int(0)
-					errlog.Printf("ERROR: unexpected type/value '%T'/'%v' detected for PowerConsumedWatts, setting to 0\n", *rfPower.PowerCtl[0].PowerConsumedWatts, *rfPower.PowerCtl[0].PowerConsumedWatts)
-					errlog.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: unknown type\n")
+					log.Printf("ERROR: unexpected type/value '%T'/'%v' detected for PowerConsumedWatts, setting to 0\n", *rfPower.PowerCtl[0].PowerConsumedWatts, *rfPower.PowerCtl[0].PowerConsumedWatts)
+					log.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: unknown type\n")
 				}
-				errlog.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: rfPower.PowerCtl[0]=%+v\n", rfPower.PowerCtl[0])
+				log.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: rfPower.PowerCtl[0]=%+v\n", rfPower.PowerCtl[0])
 			}
-			errlog.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: rfPower=%+v\n", rfPower)
+			log.Printf("<========== JW_DEBUG ==========> doPowerCapCapabilities: rfPower=%+v\n", rfPower)
 
 			// This would be nice to use but not all versions
 			// of the schema support PowerControl@odata.count.
