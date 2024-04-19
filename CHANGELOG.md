@@ -24,6 +24,12 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [3.6.0] - 2023-04-15
+
+### Added
+
+- Parse PowerConsumedWatts for any data type
+
 ## [3.5.0] - 2024-03-26
 
 ### Fixed
