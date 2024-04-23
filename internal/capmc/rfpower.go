@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2022,2024] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -93,7 +93,7 @@ type PowerControl struct {
 	PowerAllocatedWatts *int             `json:"PowerAllocatedWatts,omitempty"`
 	PowerAvailableWatts *int             `json:"PowerAvailableWatts,omitempty"`
 	PowerCapacityWatts  *int             `json:"PowerCapacityWatts,omitempty"`
-	PowerConsumedWatts  *int             `json:"PowerConsumedWatts,omitempty"`
+	PowerConsumedWatts  *interface{}     `json:"PowerConsumedWatts,omitempty"`
 	PowerLimit          *PowerLimit      `json:"PowerLimit,omitempty"`
 	PowerMetrics        *PowerMetric     `json:"PowerMetrics,omitempty"`
 	PowerRequestedWatts *int             `json:"PowerRequestedWatts,omitempty"`

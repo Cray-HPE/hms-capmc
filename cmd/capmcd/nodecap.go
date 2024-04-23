@@ -1,7 +1,7 @@
 //
 // MIT License
 //
-// (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
+// (C) Copyright [2019-2022,2024] Hewlett Packard Enterprise Development LP
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -30,6 +30,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"net/http"
 	"path"
 	"strings"
@@ -338,6 +339,22 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 				log.Printf("Notice: Unmarshal failed: %s", err)
 				failed++
 				continue
+			}
+
+			// Convert PowerConsumedWatts to an int if not already (it's an interface{}
+			// type that can support ints and floats) - Needed for Foxconn Paradise,
+			// perhaps others in the future
+			for _, pwrCtl := range rfPower.PowerCtl {
+				if pwrCtl.PowerConsumedWatts != nil {
+					switch v := (*pwrCtl.PowerConsumedWatts).(type) {
+					case float64:	// Convert to int
+						*pwrCtl.PowerConsumedWatts = int(math.Round(v))
+					case int:		// noop - no conversion needed
+					default:		// unexpected type, set to zero
+						*pwrCtl.PowerConsumedWatts = int(0)
+						log.Printf("ERROR: unexpected type/value '%T'/'%v' detected for PowerConsumedWatts, setting to 0\n", *pwrCtl.PowerConsumedWatts, *pwrCtl.PowerConsumedWatts)
+					}
+				}
 			}
 
 			// This would be nice to use but not all versions
