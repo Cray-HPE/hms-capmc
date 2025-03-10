@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2021] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2021,2025] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -34,11 +34,12 @@ import (
 	"strconv"
 	"strings"
 
-	base "github.com/Cray-HPE/hms-base"
+	base "github.com/Cray-HPE/hms-base/v2"
 	"github.com/Cray-HPE/hms-capmc/internal/capmc"
 	compcreds "github.com/Cray-HPE/hms-compcredentials"
-	rf "github.com/Cray-HPE/hms-smd/pkg/redfish"
-	"github.com/Cray-HPE/hms-smd/pkg/sm"
+	rf "github.com/Cray-HPE/hms-smd/v2/pkg/redfish"
+	"github.com/Cray-HPE/hms-smd/v2/pkg/sm"
+	"github.com/Cray-HPE/hms-xname/xnametypes"
 )
 
 // HSMQuery is used for restricting HSM queries
@@ -435,7 +436,7 @@ func (d *CapmcD) GetNodes(query HSMQuery) ([]*NodeInfo, error) {
 
 		ni.BmcUser = cred.Username
 		ni.BmcPass = cred.Password
-		ni.BmcType = base.GetHMSTypeString(componentEndpoint.RfEndpointID)
+		ni.BmcType = xnametypes.GetHMSTypeString(componentEndpoint.RfEndpointID)
 	}
 
 	nodeList := make([]*NodeInfo, 0, len(nodeMap))

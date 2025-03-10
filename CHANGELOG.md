@@ -31,6 +31,7 @@ Security - in case of vulnerabilities
 - Updated image and module dependencies
 - Various code changes to accomodate module updates
 - Resolved build warnings in Dockerfiles and docker compose files
+- Update version of Go to v1.23
 
 ## [3.6.0] - 2023-04-24
 

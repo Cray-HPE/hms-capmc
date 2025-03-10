@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2023] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2023,2025] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -46,7 +46,7 @@ import (
 	"github.com/Cray-HPE/hms-capmc/internal/capmc"
 	"github.com/Cray-HPE/hms-certs/pkg/hms_certs"
 
-	base "github.com/Cray-HPE/hms-base"
+	base "github.com/Cray-HPE/hms-base/v2"
 	compcreds "github.com/Cray-HPE/hms-compcredentials"
 	sstorage "github.com/Cray-HPE/hms-securestorage"
 )
@@ -489,27 +489,25 @@ func main() {
 	}
 
 	//CA/cert stuff
-
-	vurl := os.Getenv("CAPMC_VAULT_CA_URL")
-	if vurl != "" {
-		log.Printf("Replacing default Vault CA URL with: '%s'", vurl)
-		hms_certs.ConfigParams.VaultCAUrl = vurl
+	
+	envstr := os.Getenv("CAPMC_VAULT_CA_CHAIN_PATH")
+	if envstr != "" {
+		log.Printf("Replacing default Vault CA Chain with: %s", envstr)
+		hms_certs.ConfigParams.CAChainPath = envstr
 	}
-	vurl = os.Getenv("CAPMC_VAULT_PKI_URL")
-	if vurl != "" {
-		log.Printf("Replacing default Vault PKI URL with: '%s'", vurl)
-		hms_certs.ConfigParams.VaultPKIUrl = vurl
+	envstr = os.Getenv("CAPMC_VAULT_PKI_BASE")
+	if envstr != "" {
+		log.Printf("Replacing default Vault PKI Base with: %s", envstr)
+		hms_certs.ConfigParams.VaultPKIBase = envstr
 	}
-	if hms_ca_uri == "" {
-		vurl = os.Getenv("CAPMC_CA_URI")
-		if vurl != "" {
-			log.Printf("Using CA URI: '%s'", vurl)
-			hms_ca_uri = vurl
-		}
+	envstr = os.Getenv("CAPMC_VAULT_PKI_PATH")
+	if envstr != "" {
+		log.Printf("Replacing default Vault PKI Path with: %s", envstr)
+		hms_certs.ConfigParams.PKIPath = envstr
 	}
-	vurl = os.Getenv("CAPMC_LOG_INSECURE_FAILOVER")
-	if vurl != "" {
-		yn, _ := strconv.ParseBool(vurl)
+	envstr = os.Getenv("CAPMC_LOG_INSECURE_FAILOVER")
+	if envstr != "" {
+		yn, _ := strconv.ParseBool(envstr)
 		if yn == false {
 			hms_certs.ConfigParams.LogInsecureFailover = false
 		}

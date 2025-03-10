@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2022,2025] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -41,8 +41,8 @@ import (
 	"github.com/Cray-HPE/hms-certs/pkg/hms_certs"
 	compcreds "github.com/Cray-HPE/hms-compcredentials"
 	sstorage "github.com/Cray-HPE/hms-securestorage"
-	rf "github.com/Cray-HPE/hms-smd/pkg/redfish"
-	"github.com/Cray-HPE/hms-smd/pkg/sm"
+	rf "github.com/Cray-HPE/hms-smd/v2/pkg/redfish"
+	"github.com/Cray-HPE/hms-smd/v2/pkg/sm"
 )
 
 // testEq tests for equality between two arrays/slices

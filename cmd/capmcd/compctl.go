@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2023] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2023,2025] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -36,7 +36,7 @@ import (
 
 	"github.com/Cray-HPE/hms-capmc/internal/capmc"
 
-	rf "github.com/Cray-HPE/hms-smd/pkg/redfish"
+	rf "github.com/Cray-HPE/hms-smd/v2/pkg/redfish"
 )
 
 func cmdCompPowerSeq(cmd string) ([]string, error) {

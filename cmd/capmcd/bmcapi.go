@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2022,2025] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -40,7 +40,7 @@ import (
 	"time"
 
 	"github.com/Cray-HPE/hms-capmc/internal/capmc"
-	rf "github.com/Cray-HPE/hms-smd/pkg/redfish"
+	rf "github.com/Cray-HPE/hms-smd/v2/pkg/redfish"
 )
 
 // warRedFishPowerOID takes a NodeInfo and constructs what the HSM normally

@@ -1,6 +1,6 @@
 # MIT License
 #
-# (C) Copyright [2019-2022] Hewlett Packard Enterprise Development LP
+# (C) Copyright [2019-2022,2025] Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -23,7 +23,7 @@
 # Dockerfile for building hms-capmc.
 
 # Build base just has the packages installed we need.
-FROM artifactory.algol60.net/docker.io/library/golang:1.16-alpine AS build-base
+FROM artifactory.algol60.net/docker.io/library/golang:1.23-alpine AS build-base
 
 RUN set -eux \
     && apk -U upgrade \
@@ -44,11 +44,11 @@ COPY vendor $GOPATH/src/github.com/Cray-HPE/hms-capmc/vendor
 
 FROM base AS builder
 
-RUN set -ex && go build -v -i -o /usr/local/bin/capmc-service github.com/Cray-HPE/hms-capmc/cmd/capmcd
+RUN set -ex && go build -v -o /usr/local/bin/capmc-service github.com/Cray-HPE/hms-capmc/cmd/capmcd
 
 ### Final Stage ###
 
-FROM artifactory.algol60.net/docker.io/library/alpine:3.15
+FROM artifactory.algol60.net/docker.io/library/alpine:3.21
 
 RUN set -eux \
     && apk -U upgrade
