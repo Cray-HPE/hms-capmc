@@ -24,6 +24,14 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [3.7.0] - 2025-03-12
+
+### Security
+
+- Updated image and module dependencies
+- Various code changes to accomodate module updates
+- Resolved build warnings in Dockerfiles and docker compose files
+
 ## [3.6.0] - 2023-04-24
 
 ### Added
