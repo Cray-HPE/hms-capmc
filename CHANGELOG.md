@@ -28,7 +28,7 @@ Security - in case of vulnerabilities
 
 ### Security
 
-- Updated image and module dependencies
+- Updated image and module dependencies for security updates
 - Various code changes to accomodate module updates
 - Resolved build warnings in Dockerfiles and docker compose files
 - Update version of Go to v1.23
