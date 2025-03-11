@@ -1,7 +1,7 @@
 #
 # MIT License
 #
-# (C) Copyright [2019-2021] Hewlett Packard Enterprise Development LP
+# (C) Copyright [2019-2021,2025] Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -22,14 +22,14 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 # Build base has the packages installed that we need.
-FROM artifactory.algol60.net/docker.io/library/golang:1.16-alpine AS build-base
+FROM artifactory.algol60.net/docker.io/library/golang:1.23-alpine AS build-base
 
 RUN set -ex \
     && apk -U upgrade \
     && apk add build-base
 
 # Copy the files in for the next stages to use.
-FROM build-base as builder
+FROM build-base AS builder
 
 RUN go env -w GO111MODULE=auto
 
@@ -37,7 +37,7 @@ COPY cmd $GOPATH/src/github.com/Cray-HPE/hms-capmc/cmd
 COPY vendor $GOPATH/src/github.com/Cray-HPE/hms-capmc/vendor
 COPY internal $GOPATH/src/github.com/Cray-HPE/hms-capmc/internal
 
-FROM builder as testing
+FROM builder AS testing
 
 # Run unit tests...
 RUN set -ex \

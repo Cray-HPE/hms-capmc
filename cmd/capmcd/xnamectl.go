@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * (C) Copyright [2019-2021] Hewlett Packard Enterprise Development LP
+ * (C) Copyright [2019-2021,2025] Hewlett Packard Enterprise Development LP
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -34,8 +34,9 @@ import (
 	"net/url"
 	"strings"
 
-	base "github.com/Cray-HPE/hms-base"
+	base "github.com/Cray-HPE/hms-base/v2"
 	"github.com/Cray-HPE/hms-capmc/internal/capmc"
+	"github.com/Cray-HPE/hms-xname/xnametypes"
 )
 
 // getCabinetType determines if the xname provided exists in a Mountain, Hill,
@@ -69,15 +70,15 @@ func (d *CapmcD) handleDependentComponents(xnames []string, cmd string) []string
 
 	for _, xname := range xnames {
 		xmap[xname] = true
-		hmsType := base.GetHMSType(xname)
+		hmsType := xnametypes.GetHMSType(xname)
 		switch hmsType {
-		case base.HSNBoard:
+		case xnametypes.HSNBoard:
 			if cmd == bmcCmdPowerOn || cmd == bmcCmdPowerForceOn {
 				cabType := d.getCabinetType(xname)
 				switch cabType {
 				case base.ClassHill, base.ClassMountain:
 					// Remove the Rosetta from the target list
-					if _, ok := xmap[base.GetHMSCompParent(xname)]; ok {
+					if _, ok := xmap[xnametypes.GetHMSCompParent(xname)]; ok {
 						delete(xmap, xname)
 					}
 				case base.ClassRiver:
@@ -87,7 +88,7 @@ func (d *CapmcD) handleDependentComponents(xnames []string, cmd string) []string
 						"type of %s\n", xname)
 				}
 			}
-		case base.RouterModule:
+		case xnametypes.RouterModule:
 			if cmd == bmcCmdPowerOff || cmd == bmcCmdPowerForceOff {
 				// Add the Rosetta to the target list
 				xmap[xname+"e0"] = true
@@ -97,7 +98,7 @@ func (d *CapmcD) handleDependentComponents(xnames []string, cmd string) []string
 					delete(xmap, xname+"e0")
 				}
 			}
-		case base.CabinetPDUPowerConnector, base.CabinetPDUOutlet:
+		case xnametypes.CabinetPDUPowerConnector, xnametypes.CabinetPDUOutlet:
 			// TODO: CASMHMS-4223
 		}
 	}
@@ -136,11 +137,11 @@ func (d *CapmcD) GenerateXnameDescendantList(query HSMQuery) ([]string, error) {
 	for _, xname := range query.ComponentIDs {
 		_, inMap := xmap[xname]
 		if inMap == false {
-			hmsType := base.GetHMSType(xname)
-			if hmsType == base.Node ||
-				hmsType == base.CabinetPDUOutlet ||
-				hmsType == base.CabinetPDUPowerConnector ||
-				hmsType == base.HSNBoard {
+			hmsType := xnametypes.GetHMSType(xname)
+			if hmsType == xnametypes.Node ||
+				hmsType == xnametypes.CabinetPDUOutlet ||
+				hmsType == xnametypes.CabinetPDUPowerConnector ||
+				hmsType == xnametypes.HSNBoard {
 				xmap[xname] = true
 			} else {
 				// Retrieve a list of component structures
@@ -198,8 +199,8 @@ func (d *CapmcD) GenerateXnamePrereqList(query HSMQuery) ([]string, error) {
 
 	for _, xname := range query.ComponentIDs {
 		if _, valid := compMap[xname]; valid {
-			switch base.GetHMSType(xname) {
-			case base.Node:
+			switch xnametypes.GetHMSType(xname) {
+			case xnametypes.Node:
 				// Need to determine which iPDU sockets this node is plugged into
 				pduS1 := ""
 				pduS2 := ""
@@ -211,23 +212,23 @@ func (d *CapmcD) GenerateXnamePrereqList(query HSMQuery) ([]string, error) {
 				}
 				xmap[xname] = true
 				// Strip the node and BMC field
-				xname = base.GetHMSCompParent(xname)
-				xname = base.GetHMSCompParent(xname)
+				xname = xnametypes.GetHMSCompParent(xname)
+				xname = xnametypes.GetHMSCompParent(xname)
 				fallthrough
-			case base.HSNBoard:
+			case xnametypes.HSNBoard:
 				if _, valid := compMap[xname]; valid {
 					xmap[xname] = true
 				}
 				// Strip the enclosure field
-				xname = base.GetHMSCompParent(xname)
-			case base.RouterModule, base.ComputeModule:
+				xname = xnametypes.GetHMSCompParent(xname)
+			case xnametypes.RouterModule, xnametypes.ComputeModule:
 				if _, valid := compMap[xname]; valid {
 					xmap[xname] = true
 				}
 				// Strip the compute/switch module field
-				xname = base.GetHMSCompParent(xname)
+				xname = xnametypes.GetHMSCompParent(xname)
 				fallthrough
-			case base.Chassis:
+			case xnametypes.Chassis:
 				if _, valid := compMap[xname]; valid {
 					xmap[xname] = true
 				}
@@ -320,7 +321,7 @@ func (d *CapmcD) doXnameStatus(w http.ResponseWriter, r *http.Request) {
 	if len(args.Xnames) > 0 {
 		var bad []string
 
-		query.ComponentIDs, bad = base.ValidateCompIDs(args.Xnames, false)
+		query.ComponentIDs, bad = xnametypes.ValidateCompIDs(args.Xnames, false)
 		if len(bad) > 0 {
 			sendJsonError(w, http.StatusBadRequest,
 				fmt.Sprintf("invalid/duplicate xnames: %v", bad))
@@ -526,7 +527,7 @@ func (d *CapmcD) doXnameOnOffCtrl(w http.ResponseWriter, r *http.Request, comman
 	}
 
 	duplicatesOK := args.Force || args.Continue
-	xnames, badXnames := base.ValidateCompIDs(args.Xnames, duplicatesOK)
+	xnames, badXnames := xnametypes.ValidateCompIDs(args.Xnames, duplicatesOK)
 	if len(badXnames) > 0 {
 		continueCmd := handleErr(&InvalidCompIDsError{
 			err:     "invalid/duplicate xnames",
