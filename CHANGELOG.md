@@ -24,7 +24,7 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
-## [3.7.0] - 2025-03-12
+## [3.7.0] - 2025-03-11
 
 ### Security
 

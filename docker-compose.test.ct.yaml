@@ -234,7 +234,7 @@ services:
 
   rfemulator0:
     hostname: x0c0s0b0
-    image: artifactory.algol60.net/csm-docker/unstable/csm-rie:1.7.0-20250310190309.6e04b55
+    image: artifactory.algol60.net/csm-docker/stable/csm-rie:1.7.0
     environment:
       - MOCKUPFOLDER=EX235a
       - MAC_SCHEMA=Mountain
@@ -247,7 +247,7 @@ services:
 
   rfemulator1:
     hostname: x0c0s1b0
-    image: artifactory.algol60.net/csm-docker/unstable/csm-rie:1.7.0-20250310190309.6e04b55
+    image: artifactory.algol60.net/csm-docker/stable/csm-rie:1.7.0
     environment:
       - MOCKUPFOLDER=EX235a
       - MAC_SCHEMA=Mountain
@@ -260,7 +260,7 @@ services:
 
   rfemulator2:
     hostname: x0c0s2b0
-    image: artifactory.algol60.net/csm-docker/unstable/csm-rie:1.7.0-20250310190309.6e04b55
+    image: artifactory.algol60.net/csm-docker/stable/csm-rie:1.7.0
     environment:
       - MOCKUPFOLDER=EX235a
       - MAC_SCHEMA=Mountain
@@ -273,7 +273,7 @@ services:
 
   rfemulator3:
     hostname: x0c0s3b0
-    image: artifactory.algol60.net/csm-docker/unstable/csm-rie:1.7.0-20250310190309.6e04b55
+    image: artifactory.algol60.net/csm-docker/stable/csm-rie:1.7.0
     environment:
       - MOCKUPFOLDER=EX235a
       - MAC_SCHEMA=Mountain
@@ -286,7 +286,7 @@ services:
 
   rfemulator4:
     hostname: x0c0s4b0
-    image: artifactory.algol60.net/csm-docker/unstable/csm-rie:1.7.0-20250310190309.6e04b55
+    image: artifactory.algol60.net/csm-docker/stable/csm-rie:1.7.0
     environment:
       - MOCKUPFOLDER=EX235a
       - MAC_SCHEMA=Mountain
@@ -299,7 +299,7 @@ services:
 
   rfemulator5:
     hostname: x0c0s5b0
-    image: artifactory.algol60.net/csm-docker/unstable/csm-rie:1.7.0-20250310190309.6e04b55
+    image: artifactory.algol60.net/csm-docker/stable/csm-rie:1.7.0
     environment:
       - MOCKUPFOLDER=EX235a
       - MAC_SCHEMA=Mountain
@@ -312,7 +312,7 @@ services:
 
   rfemulator6:
     hostname: x0c0s6b0
-    image: artifactory.algol60.net/csm-docker/unstable/csm-rie:1.7.0-20250310190309.6e04b55
+    image: artifactory.algol60.net/csm-docker/stable/csm-rie:1.7.0
     environment:
       - MOCKUPFOLDER=EX235a
       - MAC_SCHEMA=Mountain
@@ -325,7 +325,7 @@ services:
 
   rfemulator7:
     hostname: x0c0s7b0
-    image: artifactory.algol60.net/csm-docker/unstable/csm-rie:1.7.0-20250310190309.6e04b55
+    image: artifactory.algol60.net/csm-docker/stable/csm-rie:1.7.0
     environment:
       - MOCKUPFOLDER=EX235a
       - MAC_SCHEMA=Mountain
@@ -338,7 +338,7 @@ services:
 
   rfemulator8:
     hostname: x0c0b0
-    image: artifactory.algol60.net/csm-docker/unstable/csm-rie:1.7.0-20250310190309.6e04b55
+    image: artifactory.algol60.net/csm-docker/stable/csm-rie:1.7.0
     environment:
       - MOCKUPFOLDER=CMM
       - XNAME=x0c0b0
