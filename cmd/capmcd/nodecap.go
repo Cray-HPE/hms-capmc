@@ -66,6 +66,9 @@ func newPowerCapNidError(nid, ecode int, emsg string) capmc.PowerCapNid {
 // doPowerCapCapabilities is the HTTP handler for the
 // get_power_cap_capabilities API
 func (d *CapmcD) doPowerCapCapabilities(w http.ResponseWriter, r *http.Request) {
+
+	defer base.DrainAndCloseRequestBody(r)
+
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", "POST")
 		sendJsonError(w, http.StatusMethodNotAllowed,
@@ -221,6 +224,9 @@ func (d *CapmcD) doPowerCapCapabilities(w http.ResponseWriter, r *http.Request) 
 
 // doPowerCapGet is the HTTP handler for the get_power_cap API
 func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
+
+	defer base.DrainAndCloseRequestBody(r)
+
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", "POST")
 		sendJsonError(w, http.StatusMethodNotAllowed,
@@ -480,6 +486,9 @@ func (d *CapmcD) doPowerCapGet(w http.ResponseWriter, r *http.Request) {
 
 // doPowerCapGet is the HTTP handler for the get_power_cap API
 func (d *CapmcD) doPowerCapSet(w http.ResponseWriter, r *http.Request) {
+
+	defer base.DrainAndCloseRequestBody(r)
+
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", "POST")
 		sendJsonError(w, http.StatusMethodNotAllowed,

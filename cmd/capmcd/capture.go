@@ -231,6 +231,7 @@ func capture(req *http.Request) (*http.Response, error) {
 
 	base.SetHTTPUserAgent(req, serviceName)
 	resp, err := realClient.Do(req)
+	// resp is returned from capture() so don't call DrainAndCloseResponseBody on it
 	captureMutex.Lock()
 	defer captureMutex.Unlock()
 	td.SaveResp(resp)

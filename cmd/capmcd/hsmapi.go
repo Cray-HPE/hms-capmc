@@ -1101,11 +1101,11 @@ func (d *CapmcD) doRequest(req *http.Request) ([]byte, error) {
 
 	//This func is only for HSM access, so use the non-cert transport.
 	rsp, err := d.smClient.Do(req)
+	defer base.DrainAndCloseResponseBody(rsp)
 	if err != nil {
 		return nil, err
 	}
 
-	defer rsp.Body.Close()
 	body, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {
 		return nil, err

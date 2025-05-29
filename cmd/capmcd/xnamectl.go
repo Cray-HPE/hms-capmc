@@ -258,20 +258,28 @@ func (d *CapmcD) GenerateXnamePrereqList(query HSMQuery) ([]string, error) {
 // doXnameOn handles a node on request
 func (d *CapmcD) doXnameOn(w http.ResponseWriter, r *http.Request) {
 	d.doXnameOnOffCtrl(w, r, bmcCmdPowerOn)
+
+	base.DrainAndCloseRequestBody(r)
 }
 
 // doXnameOff handles a node off request
 func (d *CapmcD) doXnameOff(w http.ResponseWriter, r *http.Request) {
 	d.doXnameOnOffCtrl(w, r, bmcCmdPowerOff)
+
+	base.DrainAndCloseRequestBody(r)
 }
 
 // doXnameReinit handles a node reinit request
 func (d *CapmcD) doXnameReinit(w http.ResponseWriter, r *http.Request) {
 	d.doXnameOnOffCtrl(w, r, bmcCmdPowerRestart)
+
+	base.DrainAndCloseRequestBody(r)
 }
 
 // doXnameStatus handles a status request for a component reference via an xname
 func (d *CapmcD) doXnameStatus(w http.ResponseWriter, r *http.Request) {
+
+	defer base.DrainAndCloseRequestBody(r)
 
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", "POST")
