@@ -203,11 +203,11 @@ func (td *testData) Write(w io.Writer, pad string) {
 	fmt.Fprintf(w, "{\"%s\",\n", td.reqURL)
 	fmt.Fprintf(w, pad+"\t\"%s\",\n", td.reqMethod)
 	fmt.Fprintf(w, pad+"\t`%s`,\n", td.reqBody)
-	fmt.Fprintf(w, pad+"\t")
+	fmt.Fprintf(w, "%s", pad+"\t")
 	td.writeHeader(w, &td.reqHeader)
 	fmt.Fprintf(w, pad+"\t\"%s\", %d,\n", td.respStatus, td.respStatusCode)
 	fmt.Fprintf(w, pad+"\t\"%s\", %d, %d,\n", td.respProto, td.respProtoMajor, td.respProtoMinor)
-	fmt.Fprintf(w, pad+"\t")
+	fmt.Fprintf(w, "%s", pad+"\t")
 	td.writeHeader(w, &td.respHeader)
 	fmt.Fprintf(w, pad+"\t`%s`}", td.respBody)
 }
@@ -231,6 +231,7 @@ func capture(req *http.Request) (*http.Response, error) {
 
 	base.SetHTTPUserAgent(req, serviceName)
 	resp, err := realClient.Do(req)
+	// resp is returned from capture() so don't call DrainAndCloseResponseBody on it
 	captureMutex.Lock()
 	defer captureMutex.Unlock()
 	td.SaveResp(resp)

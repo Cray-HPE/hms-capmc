@@ -39,6 +39,7 @@ import (
 	"strings"
 	"time"
 
+	base "github.com/Cray-HPE/hms-base/v2"
 	"github.com/Cray-HPE/hms-capmc/internal/capmc"
 	rf "github.com/Cray-HPE/hms-smd/v2/pkg/redfish"
 )
@@ -214,14 +215,13 @@ func (d *CapmcD) doBmcStatusCall(ni *NodeInfo) bmcPowerRc {
 	rfClientLock.RLock()
 	rsp, err := d.rfClient.Do(req)
 	rfClientLock.RUnlock()
+	defer base.DrainAndCloseResponseBody(rsp)
 	if err != nil {
 		log.Printf("GET %s\n %s Network Error: %s",
 			nodePath, ni.BmcType, err)
 		res.msg = fmt.Sprintf("%s Communication Error", ni.BmcType)
 		return res
 	}
-
-	defer rsp.Body.Close()
 
 	stsBody, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {
@@ -374,13 +374,13 @@ func (d *CapmcD) doBmcPowerCall(call bmcCall) bmcPowerRc {
 		rfClientLock.RLock()
 		rsp, err := d.rfClient.Do(req)
 		rfClientLock.RUnlock()
+		defer base.DrainAndCloseResponseBody(rsp)
 		if err != nil {
 			log.Printf("POST %s\n%s Network Error: %s",
 				sessionAuthPath, ni.BmcType, err)
 			res.msg = fmt.Sprintf("%s Communication Error", ni.BmcType)
 			return res
 		}
-		defer rsp.Body.Close()
 		sessionAuthToken = rsp.Header.Get("X-Auth-Token")
 	}
 	log.Printf("doBmcPowerCall with: POST %s, Data: %s", actionPath, body)
@@ -397,14 +397,13 @@ func (d *CapmcD) doBmcPowerCall(call bmcCall) bmcPowerRc {
 	rfClientLock.RLock()
 	rsp, err := d.rfClient.Do(req)
 	rfClientLock.RUnlock()
+	defer base.DrainAndCloseResponseBody(rsp)
 	if err != nil {
 		log.Printf("POST %s\n Body           --> %s\n %s Network Error: %s",
 			actionPath, body, ni.BmcType, err)
 		res.msg = fmt.Sprintf("%s Communication Error", ni.BmcType)
 		return res
 	}
-
-	defer rsp.Body.Close()
 
 	cmdBody, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {
@@ -468,13 +467,12 @@ func (d *CapmcD) doBmcGetCall(call bmcCall) bmcPowerRc {
 	rfClientLock.RLock()
 	rsp, err := d.rfClient.Do(req)
 	rfClientLock.RUnlock()
+	defer base.DrainAndCloseResponseBody(rsp)
 	if err != nil {
 		res.msg = fmt.Sprintf("%s Communication Error", call.ni.BmcType)
 		log.Printf("GET %s\n %s: %s", bmcURI, res.msg, err)
 		return res
 	}
-
-	defer rsp.Body.Close()
 
 	stsBody, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {
@@ -553,7 +551,7 @@ func (d *CapmcD) doBmcPatchCall(call bmcCall) bmcPowerRc {
 		if err != nil {
 			res.msg = fmt.Sprintf("%s unable to unmarshal status request",
 				call.bmcCmd)
-			log.Printf(res.msg)
+			log.Printf("%s", res.msg)
 			return res
 		}
 		req.Header.Set("If-Match", rfPower.Oetag)
@@ -563,14 +561,13 @@ func (d *CapmcD) doBmcPatchCall(call bmcCall) bmcPowerRc {
 	rfClientLock.RLock()
 	rsp, err := d.rfClient.Do(req)
 	rfClientLock.RUnlock()
+	defer base.DrainAndCloseResponseBody(rsp)
 	if err != nil {
 		log.Printf("PATCH %s\n Body           --> %s\n %s Network Error: %s",
 			bmcURI, call.payload, call.ni.BmcType, err)
 		res.msg = fmt.Sprintf("%s Communication Error", call.ni.BmcType)
 		return res
 	}
-
-	defer rsp.Body.Close()
 
 	cmdBody, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {
@@ -620,14 +617,13 @@ func (d *CapmcD) doBmcPostCall(call bmcCall, path string) bmcPowerRc {
 	rfClientLock.RLock()
 	rsp, err := d.rfClient.Do(req)
 	rfClientLock.RUnlock()
+	defer base.DrainAndCloseResponseBody(rsp)
 	if err != nil {
 		log.Printf("POST %s\n Body           --> %s\n %s Network Error: %s",
 			actionPath, call.payload, ni.BmcType, err)
 		res.msg = fmt.Sprintf("%s Communication Error", ni.BmcType)
 		return res
 	}
-
-	defer rsp.Body.Close()
 
 	cmdBody, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {

@@ -157,7 +157,7 @@ func (d *CapmcD) doCompOnOffCtrl(nl []*NodeInfo, command string) capmc.XnameCont
 
 	if err != nil {
 		errstr := fmt.Sprintf("Error: Failed to reserve components while performing a %s.", command)
-		log.Printf(errstr)
+		log.Printf("%s", errstr)
 		data.ErrResponse.E = 37 // ENOLCK
 		data.ErrResponse.ErrMsg = errstr
 		return data
@@ -212,7 +212,7 @@ func powerFunction(tReq PCSTransition, data capmc.XnameControlResponse, d *Capmc
 	payload, err := json.Marshal(tReq)
 	if err != nil {
 		errstr := fmt.Sprintf("Error: Failed to marshal power request for PCS.")
-		log.Printf(errstr)
+		log.Printf("%s", errstr)
 		data.ErrResponse.E = http.StatusInternalServerError
 		data.ErrResponse.ErrMsg = errstr
 		return 0, data
@@ -222,7 +222,7 @@ func powerFunction(tReq PCSTransition, data capmc.XnameControlResponse, d *Capmc
 	httpReq, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer([]byte(payload)))
 	if err != nil {
 		errstr := fmt.Sprintf("Error: Failed to create new request for power operation.")
-		log.Printf(errstr)
+		log.Printf("%s", errstr)
 		data.ErrResponse.E = http.StatusInternalServerError
 		data.ErrResponse.ErrMsg = errstr
 		return 0, data
@@ -234,7 +234,7 @@ func powerFunction(tReq PCSTransition, data capmc.XnameControlResponse, d *Capmc
 	body, err := d.doRequest(httpReq)
 	if err != nil {
 		errstr := fmt.Sprintf("Error: Failed to send power request to PCS.")
-		log.Printf(errstr)
+		log.Printf("%s", errstr)
 		data.ErrResponse.E = http.StatusInternalServerError
 		data.ErrResponse.ErrMsg = errstr
 		return 0, data
@@ -249,7 +249,7 @@ func powerFunction(tReq PCSTransition, data capmc.XnameControlResponse, d *Capmc
 	httpReq, err = http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		errstr := fmt.Sprintf("Error: Failed to create new request for power operation.")
-		log.Printf(errstr)
+		log.Printf("%s", errstr)
 		data.ErrResponse.E = http.StatusInternalServerError
 		data.ErrResponse.ErrMsg = errstr
 		return 0, data
@@ -269,7 +269,7 @@ func powerFunction(tReq PCSTransition, data capmc.XnameControlResponse, d *Capmc
 		body, err = d.doRequest(httpReq)
 		if err != nil {
 			errstr := fmt.Sprintf("Error: Failed to get transition from PCS.")
-			log.Printf(errstr)
+			log.Printf("%s", errstr)
 			data.ErrResponse.E = http.StatusInternalServerError
 			data.ErrResponse.ErrMsg = errstr
 			return 0, data
@@ -278,7 +278,7 @@ func powerFunction(tReq PCSTransition, data capmc.XnameControlResponse, d *Capmc
 		err = json.Unmarshal(body, &tGet)
 		if err != nil {
 			errstr := fmt.Sprintf("Error: Failed to unmarshal transition from PCS.")
-			log.Printf(errstr)
+			log.Printf("%s", errstr)
 			data.ErrResponse.E = http.StatusInternalServerError
 			data.ErrResponse.ErrMsg = errstr
 			return 0, data
@@ -303,7 +303,7 @@ func powerFunction(tReq PCSTransition, data capmc.XnameControlResponse, d *Capmc
 			body, err = d.doRequest(httpReq)
 			if err != nil {
 				errstr := fmt.Sprintf("Error: Failed to get transition from PCS.")
-				log.Printf(errstr)
+				log.Printf("%s", errstr)
 				data.ErrResponse.E = http.StatusInternalServerError
 				data.ErrResponse.ErrMsg = errstr
 				return 0, data
@@ -312,7 +312,7 @@ func powerFunction(tReq PCSTransition, data capmc.XnameControlResponse, d *Capmc
 			err = json.Unmarshal(body, &tGet)
 			if err != nil {
 				errstr := fmt.Sprintf("Error: Failed to unmarshal transition from PCS.")
-				log.Printf(errstr)
+				log.Printf("%s", errstr)
 				data.ErrResponse.E = http.StatusInternalServerError
 				data.ErrResponse.ErrMsg = errstr
 				return 0, data
@@ -370,7 +370,7 @@ func (d *CapmcD) doCompStatus(nl []*NodeInfo, command string, filter uint) capmc
 	httpReq, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		errstr := fmt.Sprintf("Error: Failed to create new request for power operation.")
-		log.Printf(errstr)
+		log.Printf("%s", errstr)
 		data.ErrResponse.E = http.StatusInternalServerError
 		data.ErrResponse.ErrMsg = errstr
 		return data
@@ -381,7 +381,7 @@ func (d *CapmcD) doCompStatus(nl []*NodeInfo, command string, filter uint) capmc
 	body, err := d.doRequest(httpReq)
 	if err != nil {
 		errstr := fmt.Sprintf("Error: Failed to get status from PCS.")
-		log.Printf(errstr)
+		log.Printf("%s", errstr)
 		data.ErrResponse.E = http.StatusInternalServerError
 		data.ErrResponse.ErrMsg = errstr
 		return data
@@ -390,7 +390,7 @@ func (d *CapmcD) doCompStatus(nl []*NodeInfo, command string, filter uint) capmc
 	err = json.Unmarshal(body, &sGet)
 	if err != nil {
 		errstr := fmt.Sprintf("Error: Failed to unmarshal status from PCS.")
-		log.Printf(errstr)
+		log.Printf("%s", errstr)
 		data.ErrResponse.E = http.StatusInternalServerError
 		data.ErrResponse.ErrMsg = errstr
 		return data

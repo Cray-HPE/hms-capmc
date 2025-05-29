@@ -24,6 +24,16 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [3.8.0] - 2025-05-29
+
+### Updated
+
+- Updated image and module dependencies
+- Updated Go vo v1.24
+- Explicitly closed all request and response bodies using hms-base functions
+- Fixed bug with jq use in runSnyk.sh
+- Internal tracking ticket: CASMHMS-6390
+
 ## [3.7.0] - 2025-03-11
 
 ### Security
