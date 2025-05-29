@@ -553,7 +553,7 @@ func (d *CapmcD) doBmcPatchCall(call bmcCall) bmcPowerRc {
 		if err != nil {
 			res.msg = fmt.Sprintf("%s unable to unmarshal status request",
 				call.bmcCmd)
-			log.Printf(res.msg)
+			log.Printf("%s", res.msg)
 			return res
 		}
 		req.Header.Set("If-Match", rfPower.Oetag)
