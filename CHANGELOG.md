@@ -24,7 +24,7 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
-## [3.8.0] - 2025-05-30
+## [3.8.0] - 2025-05-29
 
 ### Updated
 
