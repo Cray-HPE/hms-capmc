@@ -395,16 +395,16 @@ func (d *CapmcD) doCompStatus(nl []*NodeInfo, command string, filter uint) capmc
 
 	// Do the request
 
+	var sGet PCSStatusGet
+
 	body, err := d.doRequest(httpReq)
 	if err != nil {
-		errstr := fmt.Sprintf("Error: Failed to get status from PCS. err=%v payload=%v", err, payload)
+		errstr := fmt.Sprintf("Error: Failed to get status from PCS.")
 		log.Printf("%s", errstr)
 		data.ErrResponse.E = http.StatusInternalServerError
 		data.ErrResponse.ErrMsg = errstr
 		return data
 	}
-
-	var sGet PCSStatusGet
 
 	err = json.Unmarshal(body, &sGet)
 	if err != nil {
