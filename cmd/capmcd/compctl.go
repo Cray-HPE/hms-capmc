@@ -30,7 +30,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -359,7 +358,7 @@ func (d *CapmcD) doCompStatus(nl []*NodeInfo, command string, filter uint) capmc
 	for i, n := range nl {
 		xnames[i] = n.Hostname
 	}
-	slices.Sort(xnames)
+	sort.Strings(xnames)
 
 	// Then wrap it in a map
 
