@@ -24,6 +24,13 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [3.6.1] - 2025-08-14
+
+### Fixed
+
+- Convert PCS status requests from GET to POST
+- Internal tracking ticket: CASMHMS-6570
+
 ## [3.6.0] - 2023-04-24
 
 ### Added
