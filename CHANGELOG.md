@@ -29,6 +29,7 @@ Security - in case of vulnerabilities
 ### Fixed
 
 - Convert PCS status requests from GET to POST
+- Update the docker-compose file for CT tests to use CSM 1.6.3 versions of HMS services
 - Internal tracking ticket: CASMHMS-6570
 
 ## [3.6.0] - 2023-04-24
