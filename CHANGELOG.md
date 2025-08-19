@@ -24,7 +24,7 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
-## [3.6.1] - 2025-08-14
+## [3.6.1] - 2025-08-19
 
 ### Fixed
 
