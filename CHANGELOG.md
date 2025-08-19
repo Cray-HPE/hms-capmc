@@ -24,6 +24,14 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [3.6.1] - 2025-08-19
+
+### Fixed
+
+- Convert PCS status requests from GET to POST
+- Update CT docker-compose file to use CSM 1.6.3 versions of HMS services
+- Internal tracking ticket: CASMHMS-6570
+
 ## [3.6.0] - 2023-04-24
 
 ### Added

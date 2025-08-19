@@ -351,23 +351,36 @@ func (d *CapmcD) doCompStatus(nl []*NodeInfo, command string, filter uint) capmc
 	data.On = make([]string, 0, 1)
 	data.Off = make([]string, 0, 1)
 	data.Undefined = make([]string, 0, 1)
-	xnames := ""
 
-	first := true
-	sort.Slice(nl, func(i, j int) bool {
-		return nl[i].Hostname < nl[j].Hostname
-	})
-	for _, x := range nl {
-		if first {
-			xnames += "?xname=" + x.Hostname
-			first = false
-		} else {
-			xnames += "&xname=" + x.Hostname
-		}
+	// Need a slice of xnames first
+
+	xnames := make([]string, len(nl))
+	for i, n := range nl {
+		xnames[i] = n.Hostname
+	}
+	sort.Strings(xnames)
+
+	// Then wrap it in a map
+
+	payload := map[string][]string{
+		"xname": xnames,
 	}
 
-	url := d.pcsURL.String() + "/power-status" + xnames
-	httpReq, err := http.NewRequest(http.MethodGet, url, nil)
+	// Now marshal up the POST body
+
+	postBody, merr := json.Marshal(&payload)
+	if merr != nil {
+		errstr := fmt.Sprintf("Error: Failed to marshal xnames to JSON.")
+		log.Printf("%s", errstr)
+		data.ErrResponse.E = http.StatusInternalServerError
+		data.ErrResponse.ErrMsg = errstr
+		return data
+	}
+
+	// And create the request
+
+	url := d.pcsURL.String() + "/power-status"
+	httpReq, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer([]byte(postBody)))
 	if err != nil {
 		errstr := fmt.Sprintf("Error: Failed to create new request for power operation.")
 		log.Printf(errstr)
@@ -375,6 +388,11 @@ func (d *CapmcD) doCompStatus(nl []*NodeInfo, command string, filter uint) capmc
 		data.ErrResponse.ErrMsg = errstr
 		return data
 	}
+
+	httpReq.Header.Set("Accept", "application/json")
+	httpReq.Header.Set("Content-Type", "application/json")
+
+	// Do the request
 
 	var sGet PCSStatusGet
 
