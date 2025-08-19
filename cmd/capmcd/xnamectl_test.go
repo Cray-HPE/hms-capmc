@@ -392,49 +392,88 @@ func StatusFunc() RoundTripFunc {
 				Body:       ioutil.NopCloser(bytes.NewBufferString(RedfishPowerStateOn)),
 				Header:     make(http.Header),
 			}, nil
-		case "http://localhost:28007/power-status?xname=x1002c0s0b0n0":
-			fmt.Print("GOT IT GOT IT GOT IT x1002c0s0b0n0\n")
-			return &http.Response{
-				StatusCode: 200,
-				Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s0b0n0)),
-				Header:     make(http.Header),
-			}, nil
-		case "http://localhost:28007/power-status?xname=x1002c0s0b0n1":
-			return &http.Response{
-				StatusCode: 200,
-				Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s0b0n1)),
-				Header:     make(http.Header),
-			}, nil
-		case "http://localhost:28007/power-status?xname=x1002c0s1b0n0":
-			return &http.Response{
-				StatusCode: 200,
-				Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s1b0n0)),
-				Header:     make(http.Header),
-			}, nil
-		case "http://localhost:28007/power-status?xname=x1002c0s1b0n1":
-			return &http.Response{
-				StatusCode: 200,
-				Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s1b0n1)),
-				Header:     make(http.Header),
-			}, nil
 		case "https://10.104.8.12/redfish/v1/Systems/Node0":
 			return &http.Response{
 				StatusCode: 200,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(RedfishPowerStateOff)),
 				Header:     make(http.Header),
 			}, nil
-		case "http://localhost:28007/power-status?xname=x1002c0s0b1n1":
-			return &http.Response{
-				StatusCode: 200,
-				Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s0b1n1)),
-				Header:     make(http.Header),
-			}, nil
-		case "http://localhost:28007/power-status?xname=x1002c0s1b1n1":
-			return &http.Response{
-				StatusCode: 200,
-				Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s1b1n1)),
-				Header:     make(http.Header),
-			}, nil
+		case "http://localhost:28007/power-status":
+			// Pull apart body
+			var sPost struct { XName []string `json:"xname"` }
+
+			bodyBytes, err := ioutil.ReadAll(req.Body)
+			if err != nil {
+				return &http.Response{
+					StatusCode: 400,
+					Body:       ioutil.NopCloser(bytes.NewBufferString("unable to read body")),
+					Header:     make(http.Header),
+				}, nil
+			}
+
+			err = json.Unmarshal(bodyBytes, &sPost)
+			if err != nil {
+				return &http.Response{
+					StatusCode: 400,
+					Body:       ioutil.NopCloser(bytes.NewBufferString("invalid JSON body")),
+					Header:     make(http.Header),
+				}, nil
+			}
+
+			xnames := sPost.XName
+			if len(xnames) == 0 {
+				return &http.Response{
+					StatusCode: 400,
+					Body:       ioutil.NopCloser(bytes.NewBufferString("missing xname")),
+					Header:     make(http.Header),
+				}, nil
+			}
+
+			switch xnames[0] {
+				case "x1002c0s0b0n0":
+					fmt.Print("GOT IT GOT IT GOT IT x1002c0s0b0n0\n")
+					return &http.Response{
+						StatusCode: 200,
+						Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s0b0n0)),
+						Header:     make(http.Header),
+					}, nil
+				case "x1002c0s0b0n1":
+					return &http.Response{
+						StatusCode: 200,
+						Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s0b0n1)),
+						Header:     make(http.Header),
+					}, nil
+				case "x1002c0s1b0n0":
+					return &http.Response{
+						StatusCode: 200,
+						Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s1b0n0)),
+						Header:     make(http.Header),
+					}, nil
+				case "x1002c0s1b0n1":
+					return &http.Response{
+						StatusCode: 200,
+						Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s1b0n1)),
+						Header:     make(http.Header),
+					}, nil
+				case "x1002c0s0b1n1":
+					return &http.Response{
+						StatusCode: 200,
+						Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s0b1n1)),
+						Header:     make(http.Header),
+					}, nil
+				case "x1002c0s1b1n1":
+					return &http.Response{
+						StatusCode: 200,
+						Body:       ioutil.NopCloser(bytes.NewBufferString(PCSPowerStatex1002c0s1b1n1)),
+						Header:     make(http.Header),
+					}, nil
+				default:
+					return &http.Response{
+						StatusCode: 400,
+						Body:       ioutil.NopCloser(bytes.NewBufferString("missing case for xname")),
+						Header:     make(http.Header),
+					}, nil
+			}
 		default:
 			return &http.Response{
 				StatusCode: 400,
