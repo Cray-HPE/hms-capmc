@@ -48,7 +48,7 @@ RUN set -ex && go build -v -o /usr/local/bin/capmc-service github.com/Cray-HPE/h
 
 ### Final Stage ###
 
-FROM artifactory.algol60.net/docker.io/library/alpine:3.21
+FROM artifactory.algol60.net/docker.io/library/alpine:3.22
 
 RUN set -eux \
     && apk -U upgrade
