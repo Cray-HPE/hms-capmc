@@ -24,6 +24,14 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [3.10.0] - 2025-09-26
+
+### Security
+
+- Updated Alpine base image to pick up security fixes
+- Updated HMS image and Go module version dependencies
+- Internal tracking ticket: CASMHMS-6602
+
 ## [3.9.0] - 2025-08-19
 
 ### Fixed

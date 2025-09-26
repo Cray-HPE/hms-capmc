@@ -40,7 +40,7 @@ services:
       - capmc
 
   cray-smd-init:
-    image: artifactory.algol60.net/csm-docker/stable/cray-smd:2.38.0
+    image: artifactory.algol60.net/csm-docker/stable/cray-smd:2.43.0
     environment:
       - SMD_DBHOST=hmsds-postgres
       - SMD_DBPORT=5432
@@ -51,7 +51,7 @@ services:
     command: /entrypoint.sh smd-init
 
   cray-smd:
-    image: artifactory.algol60.net/csm-docker/stable/cray-smd:2.38.0
+    image: artifactory.algol60.net/csm-docker/stable/cray-smd:2.43.0
     environment:
       - POSTGRES_HOST=hmsds-postgres
       - POSTGRES_PORT=5432
@@ -129,7 +129,7 @@ services:
       - capmc
 
   cray-power-control:
-    image: artifactory.algol60.net/csm-docker/stable/cray-power-control:2.12.0
+    image: artifactory.algol60.net/csm-docker/stable/cray-power-control:2.14.0
     environment:
       - SMS_SERVER=http://cray-smd:27779
       - CRAY_VAULT_AUTH_PATH=auth/token/create
