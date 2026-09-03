@@ -24,6 +24,13 @@ Fixed - for any bug fixes
 Security - in case of vulnerabilities
 -->
 
+## [3.11.0] - 2025-12-06
+
+### Updated
+
+- Updated hms-smd dependency to v2.45.0
+- Internal tracking ticket: CASMHMS-6621
+
 ## [3.10.0] - 2025-09-26
 
 ### Security
